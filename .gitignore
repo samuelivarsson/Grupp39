@@ -4,6 +4,8 @@
 [Bb]uild/
 [Bb]uilds/
 [Ll]ogs/
+ProjectSettings/Packages/com.unity.probuilder/
+ProjectSettings/Packages/com.unity.progrids/
 
 # Uncomment this line if you wish to ignore the asset store tools plugin
 # [Aa]ssets/AssetStoreTools*
