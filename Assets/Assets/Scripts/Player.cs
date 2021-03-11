@@ -51,11 +51,6 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        /*if (jumpKeyWasPressed)
-        {
-            rigidbodyComponent.AddForce(Vector3.up * 5, ForceMode.VelocityChange);
-            jumpKeyWasPressed = false;
-        }*/
 
         rigidbodyComponent.velocity = new Vector3(horizontalInput * 3, rigidbodyComponent.velocity.y, rigidbodyComponent.velocity.z);
         rigidbodyComponent.velocity = new Vector3(rigidbodyComponent.velocity.x, rigidbodyComponent.velocity.y, verticalInput * 3);
@@ -66,8 +61,6 @@ public class Player : MonoBehaviour
        
         if (collision.gameObject.tag == "Box" && jumpKeyWasPressed)
         {
-            
-           
             collision.gameObject.transform.parent = gameObject.transform;
             collision.gameObject.transform.position= gameObject.transform.position;
             isLifted = true;
