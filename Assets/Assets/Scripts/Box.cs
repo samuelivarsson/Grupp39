@@ -5,7 +5,8 @@ using UnityEngine;
 public class Box : MonoBehaviour
 {
 
-    List<GameObject> droppedDeliveries = new List<GameObject>();
+    //List<GameObject> droppedDeliveries = new List<GameObject>();
+    int gatheredPoints = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -25,8 +26,10 @@ public class Box : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("DropDown"))
         {
-            droppedDeliveries.Add(gameObject);
+            //droppedDeliveries.Add(gameObject);
+            gatheredPoints++;
             Destroy(gameObject);
+            Debug.Log("Points:"+ gatheredPoints);
         }
     }
 
