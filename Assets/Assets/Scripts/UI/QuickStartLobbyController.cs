@@ -12,6 +12,8 @@ public class QuickStartLobbyController : MonoBehaviourPunCallbacks {
     private GameObject quickCancelButton;
     [SerializeField]
     private int roomSize;
+
+    int randomRoomNr = 1;
    
     public override void OnConnectedToMaster() {
         PhotonNetwork.AutomaticallySyncScene = true;
@@ -31,11 +33,9 @@ public class QuickStartLobbyController : MonoBehaviourPunCallbacks {
     }
 
     void CreateRoom() {
-        Debug.Log("Creating room now");
-        int randomRoomNr = Random.Range(0, 10000);
         RoomOptions roomOps = new RoomOptions() {IsVisible = true, IsOpen = true, MaxPlayers = (byte) roomSize};
         PhotonNetwork.CreateRoom("Room" + randomRoomNr, roomOps);
-        Debug.Log(randomRoomNr);
+        Debug.Log("Created room number: " + randomRoomNr);
     }
 
     public override void OnCreateRoomFailed(short returnCode, string msg) {
