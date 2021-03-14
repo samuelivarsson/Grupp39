@@ -32,10 +32,10 @@ public class Timer : MonoBehaviour
         else
         {
             timesUpText.SetActive(true);
-            Time.timeScale = 0;
+            timeLeft -= (float) 0.01;
         }
 
-        if(timeLeft < 0)
+        if(timeLeft < -1)
         {
             taskWindow.SetActive(false);
         }
