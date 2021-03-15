@@ -8,10 +8,9 @@ public class PlayerController : MonoBehaviour
     Rigidbody rb;
     private float horizontalInput;
     private float verticalInput;
-    private bool jumpKeyWasPressed;
-    [SerializeField] bool isLifted;
-    [SerializeField] GameObject box;
-    [SerializeField] Transform hand;
+    private float horizontalInputRot;
+    private float verticalInputRot;
+    [SerializeField] int movementSpeed;
 
     PhotonView PV;
 
@@ -31,57 +30,32 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        /*if (Input.GetKeyDown(KeyCode.Space))
-        {
-            jumpKeyWasPressed = true;
-        }
-
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            jumpKeyWasPressed = false;
-            isLifted = false;
-            box.transform.parent = null;
-            box.GetComponent<Rigidbody>().useGravity = true;
-        }*/
-
         if (!PV.IsMine) return;
 
         horizontalInput = Input.GetAxis("Horizontal");
         verticalInput = Input.GetAxis("Vertical");
+        horizontalInputRot = Input.GetAxisRaw("Horizontal");
+        verticalInputRot = Input.GetAxisRaw("Vertical");
     }
 
     private void FixedUpdate()
     {
-        /*if (isLifted) //Om den är lyft ska man sätta dess koordinater till samma som player
-        {
-            //box.GetComponent<Rigidbody>().MovePosition(new Vector3(4f, 4f, 4f));
-            box.transform.localPosition = new Vector3(4f, 4f, 4f);
-        }
-        else
-        {
-            //detacha barnen 
-            gameObject.transform.DetachChildren();
-        }*/
-
         if (!PV.IsMine) return;
-        rb.velocity = new Vector3(horizontalInput * 4, rb.velocity.y, verticalInput * 4);
-        //rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, verticalInput * 4);
-
-       
+        move();
+        rotate();
     }
-    /*private void OnCollisionEnter(Collision collision)
+
+    private void move()
     {
+        Vector3 movement = new Vector3(horizontalInput * movementSpeed, rb.velocity.y, verticalInput * movementSpeed);
+        rb.velocity = movement;
+    }
 
-        if (collision.gameObject.tag == "Box" && jumpKeyWasPressed)
-        {
-            /*collision.gameObject.transform.parent = gameObject.transform;
-            collision.gameObject.transform.position = gameObject.transform.position;
-            collision.rigidbody.useGravity = false;
-            isLifted = true;*/
-
-            /*collision.rigidbody.useGravity = false;
-            collision.gameObject.transform.position = hand.position;
-            collision.gameObject.transform.parent = gameObject.transform;
+    private void rotate()
+    {
+        Vector3 dir = new Vector3(horizontalInputRot, 0.0f, verticalInputRot);
+        if (dir != Vector3.zero) {
+            transform.rotation = Quaternion.LookRotation(dir);
         }
-    }*/
+    }
 }

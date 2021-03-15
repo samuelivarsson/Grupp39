@@ -8,41 +8,74 @@ public class Box : MonoBehaviour
 
     //List<GameObject> droppedDeliveries = new List<GameObject>();
     int gatheredPoints = 0;
-    bool jumpKeyWasPressed;
+    bool spaceKeyWasPressed;
 
     Rigidbody rb;
     PhotonView PV;
-    [SerializeField] GameObject hand = GameObject.FindWithTag("Hand");
+    [SerializeField] Transform player;
+    Transform hand;
+    bool isLifted;
+
+    bool canPickUp;
+    Collision latestCollision;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         PV = GetComponent<PhotonView>();
+        hand = player.GetChild(0);
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        if (!PV.IsMine)
+        /*if (!PV.IsMine)
         {
             Destroy(rb);
-        }
+        }*/
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        /*
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            jumpKeyWasPressed = true;
+            spaceKeyWasPressed = true;
         }
-
+        */
+        if (Input.GetKeyDown(KeyCode.Space) && isLifted)
+        {
+            gameObject.transform.parent = null;
+            rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
+            rb.WakeUp();
+            isLifted = false;
+            canPickUp = false;
+        }
+        if (canPickUp)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+                rb.Sleep();
+                gameObject.transform.localPosition = hand.transform.localPosition;
+                gameObject.transform.parent = latestCollision.gameObject.transform;
+                isLifted = true;
+            }
+        }
+        /*
         if (Input.GetKeyUp(KeyCode.Space))
         {
-            jumpKeyWasPressed = false;
+            spaceKeyWasPressed = false;
             gameObject.transform.parent = null;
-            gameObject.GetComponent<Rigidbody>().useGravity = true;
+            rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
+            rb.WakeUp();
+            isLifted = false;
+        }
+        */
+        if (isLifted)
+        {
+            gameObject.transform.localPosition = hand.transform.localPosition;
         }
 
     }
@@ -57,12 +90,32 @@ public class Box : MonoBehaviour
             Debug.Log("Points:"+ gatheredPoints);
         }
 
-        if(collision.gameObject.tag == "Player" && jumpKeyWasPressed)
+        if(collision.gameObject.tag == "Player")
         {
-            gameObject.GetComponent<Rigidbody>().useGravity = false;
-            gameObject.transform.position = hand.transform.position;
+            canPickUp = true;
+            latestCollision = collision;
+            /*
+            rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+            rb.Sleep();
+            gameObject.transform.localPosition = hand.transform.localPosition;
             gameObject.transform.parent = collision.gameObject.transform;
+            isLifted = true;
+            */
         }
     }
 
+    private void OnCollisionExit(Collision collision)
+    {
+        if(collision.gameObject.tag == "Player")
+        {
+            canPickUp = false;
+            /*
+            rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+            rb.Sleep();
+            gameObject.transform.localPosition = hand.transform.localPosition;
+            gameObject.transform.parent = collision.gameObject.transform;
+            isLifted = true;
+            */
+        }
+    }
 }
