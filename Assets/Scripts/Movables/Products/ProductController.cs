@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Box : MonoBehaviour
+public class ProductController : MonoBehaviour
 {
 
     //List<GameObject> droppedDeliveries = new List<GameObject>();
