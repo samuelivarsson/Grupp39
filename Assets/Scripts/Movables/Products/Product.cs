@@ -7,8 +7,7 @@ public class Product : MonoBehaviour
 {
 
     //List<GameObject> droppedDeliveries = new List<GameObject>();
-    int gatheredPoints = 0;
-    bool spaceKeyWasPressed;
+
 
     Rigidbody rb;
     PhotonView PV;
@@ -38,12 +37,7 @@ public class Product : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        /*
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            spaceKeyWasPressed = true;
-        }
-        */
+        
         if (Input.GetKeyDown(KeyCode.Space) && isLifted)
         {
             gameObject.transform.parent = null;
@@ -63,16 +57,7 @@ public class Product : MonoBehaviour
                 isLifted = true;
             }
         }
-        /*
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            spaceKeyWasPressed = false;
-            gameObject.transform.parent = null;
-            rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
-            rb.WakeUp();
-            isLifted = false;
-        }
-        */
+        
         if (isLifted)
         {
             gameObject.transform.localPosition = hand.transform.localPosition;
@@ -82,25 +67,19 @@ public class Product : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        /*if (collision.gameObject.CompareTag("DropDown"))
+        if (collision.gameObject.CompareTag("Box"))
         {
             //droppedDeliveries.Add(gameObject);
-            gatheredPoints++;
+            //gatheredPoints++;
             Destroy(gameObject);
-            Debug.Log("Points:" + gatheredPoints);
-        }*/
+            Debug.Log("i lådan");
+        }
 
         if (collision.gameObject.tag == "Player")
         {
             canPickUp = true;
             latestCollision = collision;
-            /*
-            rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-            rb.Sleep();
-            gameObject.transform.localPosition = hand.transform.localPosition;
-            gameObject.transform.parent = collision.gameObject.transform;
-            isLifted = true;
-            */
+           
         }
     }
 
@@ -109,13 +88,7 @@ public class Product : MonoBehaviour
         if (collision.gameObject.tag == "Player")
         {
             canPickUp = false;
-            /*
-            rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-            rb.Sleep();
-            gameObject.transform.localPosition = hand.transform.localPosition;
-            gameObject.transform.parent = collision.gameObject.transform;
-            isLifted = true;
-            */
+            
         }
     }
 }
