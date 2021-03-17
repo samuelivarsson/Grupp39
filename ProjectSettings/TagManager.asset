@@ -7,6 +7,7 @@ TagManager:
   - Box
   - DropDown
   - Hand
+  - Pic
   layers:
   - Default
   - TransparentFX

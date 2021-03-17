@@ -2999,6 +2999,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 5522886019619821055, guid: c8d984670a54f80438e769f6875b8092, type: 3}
+  productController: {fileID: 380321004}
+--- !u!4 &380321004 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3290315257116680633, guid: 6aaf60338ba353345adecc98864a38f3,
+    type: 3}
+  m_PrefabInstance: {fileID: 380321001}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &385249435
 PrefabInstance:
   m_ObjectHideFlags: 0
