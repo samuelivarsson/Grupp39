@@ -18,7 +18,9 @@ public class product : MonoBehaviour
     Collision boxCol;
     private bool canDrop;
     [SerializeField] Transform productController;
-    Transform pic;
+    Transform pic1;
+    Transform pic2;
+    Transform pic3;
     private bool isDroped;
 
     void Awake()
@@ -26,7 +28,9 @@ public class product : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         PV = GetComponent<PhotonView>();
         hand = player.GetChild(0);
-        pic = productController.GetChild(0);
+        pic1 = productController.GetChild(0);
+        pic2 = productController.GetChild(1);
+        pic3 = productController.GetChild(2);
     }
 
 
@@ -51,7 +55,18 @@ public class product : MonoBehaviour
             {
                 rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
                 rb.Sleep();
-                gameObject.transform.localPosition = pic.transform.localPosition;
+                if (gameObject.tag == "Gold")
+                {
+                    gameObject.transform.localPosition = pic1.transform.localPosition;    
+                }
+                if (gameObject.tag == "Black")
+                {
+                    gameObject.transform.localPosition = pic2.transform.localPosition;
+                }
+                if (gameObject.tag == "Grey")
+                {
+                    gameObject.transform.localPosition = pic3.transform.localPosition;
+                }
                 gameObject.transform.parent = boxCol.gameObject.transform;
                 gameObject.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
                 isDroped = true;
@@ -76,7 +91,18 @@ public class product : MonoBehaviour
 
         if (isDroped)
         {
-            gameObject.transform.localPosition = pic.transform.localPosition;
+            if (gameObject.tag == "Gold")
+            {
+                gameObject.transform.localPosition = pic1.transform.localPosition;
+            }
+            if (gameObject.tag == "Black")
+            {
+                gameObject.transform.localPosition = pic2.transform.localPosition;
+            }
+            if (gameObject.tag == "Grey")
+            {
+                gameObject.transform.localPosition = pic3.transform.localPosition;
+            }
         }
     }
 

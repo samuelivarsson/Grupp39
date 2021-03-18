@@ -7,6 +7,9 @@ TagManager:
   - Box
   - DropDown
   - Hand
+  - Grey
+  - Black
+  - Gold
   layers:
   - Default
   - TransparentFX
