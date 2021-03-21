@@ -7,11 +7,12 @@ public class ProductController : MonoBehaviour
 {
 
     //List<GameObject> droppedDeliveries = new List<GameObject>();
-    int gatheredPoints = 0;
+    //int gatheredPoints = 0;
     bool spaceKeyWasPressed;
 
     Rigidbody rb;
     PhotonView PV;
+    public ScoreController score;
     [SerializeField] Transform player;
     Transform hand;
     bool isLifted;
@@ -85,9 +86,10 @@ public class ProductController : MonoBehaviour
         if (collision.gameObject.CompareTag("DropDown"))
         {
             //droppedDeliveries.Add(gameObject);
-            gatheredPoints++;
+            //gatheredPoints++;
             Destroy(gameObject);
-            Debug.Log("Points:"+ gatheredPoints);
+            score.Change(1);
+            //Debug.Log("Points:"+ gatheredPoints);
         }
 
         if(collision.gameObject.tag == "Player")
