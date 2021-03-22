@@ -7,6 +7,9 @@ TagManager:
   - Box
   - DropDown
   - Hand
+  - PlayerCollider
+  - ProductController
+  - Product
   layers:
   - Default
   - TransparentFX

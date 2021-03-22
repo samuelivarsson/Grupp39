@@ -2,10 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Realtime;
 
 public class ProductController : MonoBehaviour
 {
-
     //List<GameObject> droppedDeliveries = new List<GameObject>();
     //int gatheredPoints = 0;
     bool spaceKeyWasPressed;
@@ -14,11 +14,12 @@ public class ProductController : MonoBehaviour
     PhotonView PV;
     public ScoreController score;
     [SerializeField] Transform player;
+    GameObject[] players;
     Transform hand;
     bool isLifted;
 
     bool canPickUp;
-    Collision latestCollision;
+    Transform latestPlayer;
 
     void Awake()
     {
@@ -27,60 +28,70 @@ public class ProductController : MonoBehaviour
         hand = player.GetChild(0);
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        /*if (!PV.IsMine)
-        {
-            Destroy(rb);
-        }*/
-    }
-
     // Update is called once per frame
     void Update()
     {
-        /*
-        if (Input.GetKeyDown(KeyCode.Space))
+        CheckLiftAndDrop();
+
+        if (PV.OwnerActorNr == 0)
         {
-            spaceKeyWasPressed = true;
-        }
-        */
-        if (Input.GetKeyDown(KeyCode.Space) && isLifted)
-        {
-            gameObject.transform.parent = null;
-            rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
-            rb.WakeUp();
-            isLifted = false;
-            canPickUp = false;
-        }
-        if (canPickUp)
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (gameObject.transform.parent != null && !isLifted)
             {
-                rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-                rb.Sleep();
-                gameObject.transform.localPosition = hand.transform.localPosition;
-                gameObject.transform.parent = latestCollision.gameObject.transform;
-                isLifted = true;
+                gameObject.transform.parent = null;
             }
         }
-        /*
-        if (Input.GetKeyUp(KeyCode.Space))
+        else
         {
-            spaceKeyWasPressed = false;
-            gameObject.transform.parent = null;
-            rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
-            rb.WakeUp();
-            isLifted = false;
+            if (gameObject.transform.parent == null && !isLifted && PV.OwnerActorNr != PhotonNetwork.LocalPlayer.ActorNumber)
+            {
+                GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+                foreach (GameObject player in players)
+                {
+                    if (player.GetPhotonView().OwnerActorNr == PV.OwnerActorNr)
+                    {
+                        gameObject.transform.parent = player.transform;
+                        gameObject.transform.localPosition = hand.transform.localPosition;
+                    }
+                }
+            }
         }
-        */
-        if (isLifted)
-        {
-            gameObject.transform.localPosition = hand.transform.localPosition;
-        }
-
     }
 
+    private void CheckLiftAndDrop () 
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && isLifted && PV.IsMine)
+        {
+            Drop();
+        }
+        if (Input.GetKeyDown(KeyCode.Space) && !isLifted && canPickUp)
+        {
+            if (PV.OwnerActorNr == 0)
+            {
+                Lift();
+            }
+        }
+    }
+
+    public void Lift()
+    {
+        PV.TransferOwnership(PhotonNetwork.LocalPlayer.ActorNumber);
+        gameObject.transform.parent = latestPlayer;
+        gameObject.transform.localPosition = hand.transform.localPosition;
+        isLifted = true;
+        PlayerController playerController = latestPlayer.GetComponent<PlayerController>();
+        playerController.setIsLifting(true);
+    }
+
+    public void Drop()
+    {
+        gameObject.transform.parent = null;
+        isLifted = false;
+        canPickUp = false;
+        PV.TransferOwnership(0);
+        PlayerController playerController = latestPlayer.GetComponent<PlayerController>();
+        playerController.setIsLifting(false);
+    }
+    
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("DropDown"))
@@ -91,33 +102,15 @@ public class ProductController : MonoBehaviour
             score.Change(1);
             //Debug.Log("Points:"+ gatheredPoints);
         }
-
-        if(collision.gameObject.tag == "Player")
-        {
-            canPickUp = true;
-            latestCollision = collision;
-            /*
-            rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-            rb.Sleep();
-            gameObject.transform.localPosition = hand.transform.localPosition;
-            gameObject.transform.parent = collision.gameObject.transform;
-            isLifted = true;
-            */
-        }
+    }
+    
+    public void setCanPickUp(bool _canPickUp)
+    {
+        canPickUp = _canPickUp;
     }
 
-    private void OnCollisionExit(Collision collision)
+    public void setLatestPlayer(Transform player)
     {
-        if(collision.gameObject.tag == "Player")
-        {
-            canPickUp = false;
-            /*
-            rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-            rb.Sleep();
-            gameObject.transform.localPosition = hand.transform.localPosition;
-            gameObject.transform.parent = collision.gameObject.transform;
-            isLifted = true;
-            */
-        }
+        latestPlayer = player;
     }
 }
