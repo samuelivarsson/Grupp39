@@ -6,11 +6,13 @@ using Photon.Pun;
 public class PlayerController : MonoBehaviour
 {
     Rigidbody rb;
-    private float horizontalInput;
-    private float verticalInput;
-    private float horizontalInputRot;
-    private float verticalInputRot;
-    [SerializeField] int movementSpeed;
+    [SerializeField] float movementSpeed, smoothTime;
+    private float horizontalInput, verticalInput;
+    public bool isLifting;
+
+    Vector3 smoothMoveVelocity;
+    Vector3 moveDir;
+    Vector3 moveAmount;
 
     PhotonView PV;
 
@@ -18,44 +20,46 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         PV = GetComponent<PhotonView>();
+        isLifting = false;
     }
 
     void Start()
     {
-        if (!PV.IsMine)
-        {
-            Destroy(rb);
-        }
+        if (!PV.IsMine) Destroy(rb);
     }
 
     void Update()
     {
         if (!PV.IsMine) return;
 
-        horizontalInput = Input.GetAxis("Horizontal");
-        verticalInput = Input.GetAxis("Vertical");
-        horizontalInputRot = Input.GetAxisRaw("Horizontal");
-        verticalInputRot = Input.GetAxisRaw("Vertical");
+        move();
+    }
+
+    private void move()
+    {
+        horizontalInput = Input.GetAxisRaw("Horizontal");
+        verticalInput = Input.GetAxisRaw("Vertical");
+
+        moveDir = new Vector3(horizontalInput, 0, verticalInput).normalized;
+        moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * movementSpeed, ref smoothMoveVelocity, smoothTime);
     }
 
     private void FixedUpdate()
     {
         if (!PV.IsMine) return;
-        move();
-        rotate();
+
+        if (moveAmount != Vector3.zero) rb.MovePosition(rb.position + moveAmount * Time.fixedDeltaTime);
+        if (moveDir != Vector3.zero) transform.rotation = Quaternion.LookRotation(moveDir);
     }
 
-    private void move()
+    public void setIsLifting(bool _isLifting)
     {
-        Vector3 movement = new Vector3(horizontalInput * movementSpeed, rb.velocity.y, verticalInput * movementSpeed);
-        rb.velocity = movement;
+        isLifting = _isLifting;
     }
 
-    private void rotate()
-    {
-        Vector3 dir = new Vector3(horizontalInputRot, 0.0f, verticalInputRot);
-        if (dir != Vector3.zero) {
-            transform.rotation = Quaternion.LookRotation(dir);
-        }
-    }
+    //public Transform playerIsLifting(bool _isLifting) 
+    //{
+    //    isLifting = _isLifting;
+    //    return this.transform;
+    //}
 }
