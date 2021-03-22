@@ -29,7 +29,7 @@ public class PlayerCollideCheck : MonoBehaviour
             product.setLatestPlayer(playerController.gameObject.transform);
         }
         else if (other.gameObject != playerController.gameObject && other.gameObject.tag == "Package")
-        {
+        {         
             package = other.GetComponent<Package>();
             package.setCanPickUp(true);
             package.setLatestPlayer(playerController.gameObject.transform);
@@ -74,9 +74,9 @@ public class PlayerCollideCheck : MonoBehaviour
 
         else if (other.gameObject != playerController.gameObject && other.gameObject.tag == "Package")
         {
-            package = other.GetComponent<Package>();
+            package = other.GetComponent<Package>();          
             package.setCanPickUp(true);
-            package.setLatestPlayer(playerController.gameObject.transform);
+            package.setLatestPlayer(playerController.gameObject.transform);           
 
         }
     }

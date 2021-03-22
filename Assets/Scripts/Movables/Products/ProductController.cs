@@ -113,4 +113,10 @@ public class ProductController : MonoBehaviour
     {
         latestPlayer = player;
     }
+
+
+    public bool getIsLifted()
+    {
+        return true;
+    }
 }

@@ -16,16 +16,21 @@ public class Package : MonoBehaviour
     [SerializeField] Transform player;
     GameObject[] players;
     Transform hand;
+    [SerializeField] Transform package;
+    Transform pic1;
     bool isLifted;
+    
 
     bool canPickUp;
     Transform latestPlayer;
+    private bool canPackage;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         PV = GetComponent<PhotonView>();
         hand = player.GetChild(0);
+        pic1 = package.GetChild(0);
     }
 
     // Update is called once per frame
@@ -55,6 +60,27 @@ public class Package : MonoBehaviour
                 }
             }
         }
+        
+        if (canPackage)
+        {
+            
+            if (Input.GetKeyDown(KeyCode.LeftControl) && latestPlayer.GetChild(3))
+            {
+                Transform prod = latestPlayer.GetChild(3).transform;
+                latestPlayer.GetChild(3).transform.parent = null;
+                prod.parent = gameObject.transform;
+                prod.localPosition = pic1.transform.localPosition;
+                prod.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+
+            }
+            
+        }
+        if (Input.GetKeyDown(KeyCode.LeftShift) && canPickUp)
+        {
+            GetComponent<Renderer>().material.color = Color.green;
+        }
+
+
     }
 
     private void CheckLiftAndDrop()
@@ -65,7 +91,7 @@ public class Package : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Space) && !isLifted && canPickUp)
         {
-            Debug.Log("hej");
+            
             if (PV.OwnerActorNr == 0)
             {
                 Lift();
@@ -75,13 +101,13 @@ public class Package : MonoBehaviour
 
     public void Lift()
     {
-        Debug.Log("lyfter");
         PV.TransferOwnership(PhotonNetwork.LocalPlayer.ActorNumber);
         gameObject.transform.parent = latestPlayer;
         gameObject.transform.localPosition = hand.transform.localPosition;
         isLifted = true;
         PlayerController playerController = latestPlayer.GetComponent<PlayerController>();
         playerController.setIsLifting(true);
+        gameObject.transform.GetChild(1).localPosition= pic1.transform.localPosition;
     }
 
     public void Drop()
@@ -92,6 +118,8 @@ public class Package : MonoBehaviour
         PV.TransferOwnership(0);
         PlayerController playerController = latestPlayer.GetComponent<PlayerController>();
         playerController.setIsLifting(false);
+
+
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -114,5 +142,10 @@ public class Package : MonoBehaviour
     public void setLatestPlayer(Transform player)
     {
         latestPlayer = player;
+    }
+
+    public void setLifted(bool _canPackage)
+    {
+        canPackage = _canPackage;
     }
 }
