@@ -10,6 +10,7 @@ TagManager:
   - PlayerCollider
   - ProductController
   - Product
+  - Package
   layers:
   - Default
   - TransparentFX
