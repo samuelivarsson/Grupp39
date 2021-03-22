@@ -15,7 +15,6 @@ public class ProductController : MonoBehaviour
     [SerializeField] Transform player;
     Transform hand;
     bool isLifted;
-
     bool canPickUp;
     Collision latestCollision;
 
@@ -62,7 +61,16 @@ public class ProductController : MonoBehaviour
                 gameObject.transform.parent = latestCollision.gameObject.transform;
                 isLifted = true;
             }
+
+            if (Input.GetKeyDown(KeyCode.LeftControl))
+            {            
+                
+              GetComponent<Renderer>().material.color= Color.green;
+                
+            }
         }
+
+        
         /*
         if (Input.GetKeyUp(KeyCode.Space))
         {
@@ -79,6 +87,8 @@ public class ProductController : MonoBehaviour
         }
 
     }
+
+    
 
     private void OnCollisionEnter(Collision collision)
     {
