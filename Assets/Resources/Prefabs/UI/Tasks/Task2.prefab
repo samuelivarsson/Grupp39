@@ -12,6 +12,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Task 2
       objectReference: {fileID: 0}
+    - target: {fileID: 2500727850965504592, guid: 68234b50d9ff97d4e9dfce696721a117,
+        type: 3}
+      propertyPath: m_TagString
+      value: Task2
+      objectReference: {fileID: 0}
     - target: {fileID: 2500727850965504598, guid: 68234b50d9ff97d4e9dfce696721a117,
         type: 3}
       propertyPath: m_Color.b

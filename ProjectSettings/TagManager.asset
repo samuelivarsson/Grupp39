@@ -7,6 +7,9 @@ TagManager:
   - Box
   - DropDown
   - Hand
+  - Task1
+  - Task2
+  - Task3
   layers:
   - Default
   - TransparentFX

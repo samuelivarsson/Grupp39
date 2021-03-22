@@ -132,5 +132,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Task 3
       objectReference: {fileID: 0}
+    - target: {fileID: 7690100309756457549, guid: 1579345e0e66c2d4db458f7612d0eeec,
+        type: 3}
+      propertyPath: m_TagString
+      value: Task3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1579345e0e66c2d4db458f7612d0eeec, type: 3}
