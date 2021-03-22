@@ -19,9 +19,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         }
         DontDestroyOnLoad(gameObject);
         Instance = this;
-    }   
-
-
+    }
 
     public override void OnEnable()
     {
@@ -39,8 +37,14 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         if(scene.buildIndex == 1) // We're in the game scene
         {
-            PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerManager"), Vector3.zero, Quaternion.identity);
-            if (PhotonNetwork.IsMasterClient) PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "ProductManager"), Vector3.zero, Quaternion.identity);
+            PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Player", "PlayerManager"), Vector3.zero, Quaternion.identity);
+            if (PhotonNetwork.IsMasterClient) 
+            {
+                PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Product", "ProductManager"), Vector3.zero, Quaternion.identity);
+                GameObject canvasObj = PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "UI", "CanvasManager"), Vector3.zero, Quaternion.identity);
+                canvasObj.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
+                canvasObj.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+            }
         }
     }
     

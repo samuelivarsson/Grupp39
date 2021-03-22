@@ -12,7 +12,7 @@ public class ProductController : MonoBehaviour
 
     Rigidbody rb;
     PhotonView PV;
-    public ScoreController score;
+    [SerializeField] ScoreController scoreController;
     [SerializeField] Transform player;
     GameObject[] players;
     Transform hand;
@@ -99,7 +99,7 @@ public class ProductController : MonoBehaviour
             //droppedDeliveries.Add(gameObject);
             //gatheredPoints++;
             Destroy(gameObject);
-            score.Change(1);
+            scoreController.IncrementScore(1);
             //Debug.Log("Points:"+ gatheredPoints);
         }
     }

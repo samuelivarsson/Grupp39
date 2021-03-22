@@ -25,8 +25,8 @@ public class ProductManager : MonoBehaviour
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Products"), productPos1,  Quaternion.identity);
-            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Products"), productPos2,  Quaternion.identity);
+            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Product", "Products"), productPos2,  Quaternion.identity);
+            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Product", "Products"), productPos1,  Quaternion.identity);
         }
     }
 }

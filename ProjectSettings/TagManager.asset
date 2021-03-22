@@ -13,6 +13,7 @@ TagManager:
   - PlayerCollider
   - ProductController
   - Product
+  - Task4
   layers:
   - Default
   - TransparentFX
