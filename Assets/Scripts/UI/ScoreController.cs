@@ -5,13 +5,26 @@ using UnityEngine.UI;
 
 public class ScoreController : MonoBehaviour
 {
-    public int score;
-    public Text text;
+    GameObject canvasManager;
+
+    Vector3 startPos = new Vector3(50, -25, 0);
+
+    [SerializeField] int score;
+    [SerializeField] Text text;
+
+    void Awake()
+    {
+        canvasManager = CanvasManager.Instance.gameObject;
+        score = 0;
+        gameObject.transform.SetParent(canvasManager.transform);
+        GetComponent<RectTransform>().anchoredPosition3D = startPos;
+        GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        score = 0;
+        
     }
 
     // Update is called once per frame
@@ -20,7 +33,7 @@ public class ScoreController : MonoBehaviour
         
     }*/
 
-    public void Change(int change)
+    public void IncrementScore(int change)
     {
         score += change;
         text.text = score.ToString();

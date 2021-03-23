@@ -46,7 +46,7 @@ public class Products : MonoBehaviourPunCallbacks
         }
         if (!pc.isLifting && balance > 0)
         {
-            GameObject productControllerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "ProductController"), Vector3.zero,  Quaternion.identity);
+            GameObject productControllerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Product", "ProductController"), Vector3.zero,  Quaternion.identity);
             ProductController productController = productControllerObj.GetComponent<ProductController>();
             productController.setLatestPlayer(latestPlayer);
             productController.Lift();

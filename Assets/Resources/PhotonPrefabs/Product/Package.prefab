@@ -138,7 +138,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c45f768b756a60d4a85d54ce88db5077, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  score: {fileID: 0}
+  score: {fileID: 7005250142847623193, guid: 2ae1fd2cb9818d04b983cde78a1b91c8, type: 3}
   player: {fileID: 5522886019619821055, guid: c8d984670a54f80438e769f6875b8092, type: 3}
   package: {fileID: 7271022216631183784}
 --- !u!114 &-7625432177342621375
@@ -157,7 +157,7 @@ MonoBehaviour:
   Group: 0
   prefixField: -1
   Synchronization: 2
-  OwnershipTransfer: 1
+  OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents: []
   sceneViewId: 0
