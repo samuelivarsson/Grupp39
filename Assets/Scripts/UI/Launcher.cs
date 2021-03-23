@@ -10,6 +10,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     public static Launcher Instance;
 
     [SerializeField] TMP_InputField roomNameInputField;
+    [SerializeField] TMP_InputField createNickNameInputField;
+    [SerializeField] TMP_InputField findNickNameInputField;
     [SerializeField] TMP_Text errorText;
     [SerializeField] TMP_Text roomNameText;
     [SerializeField] Transform roomListContent;
@@ -17,6 +19,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] GameObject roomListItemPrefab;
     [SerializeField] GameObject playerListItemPrefab;
     [SerializeField] GameObject startGameButton;
+ 
     
     void Awake()
     {
@@ -42,16 +45,16 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         MenuManager.Instance.OpenMenu("title");
         Debug.Log("Joined Lobby");
-        PhotonNetwork.NickName = "Player" + Random.Range(0, 1000).ToString("000");
     }
   
     public void CreateRoom()
     {
-        if(string.IsNullOrEmpty(roomNameInputField.text))
+        if(string.IsNullOrEmpty(roomNameInputField.text) || string.IsNullOrEmpty(createNickNameInputField.text))
         {
           return;
         }
         PhotonNetwork.CreateRoom(roomNameInputField.text);
+        PhotonNetwork.NickName = createNickNameInputField.text;
         MenuManager.Instance.OpenMenu("loading");
     }
 
@@ -59,6 +62,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         roomNameText.text = PhotonNetwork.CurrentRoom.Name;
         MenuManager.Instance.OpenMenu("room");
+
 
         Player[] players = PhotonNetwork.PlayerList;
 
@@ -99,7 +103,12 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void JoinRoom(RoomInfo info)
     {
+        if(string.IsNullOrEmpty(findNickNameInputField.text))
+        {
+          return;
+        }
         PhotonNetwork.JoinRoom(info.Name);
+        PhotonNetwork.NickName = findNickNameInputField.text;
         MenuManager.Instance.OpenMenu("loading");
     }
 
@@ -125,6 +134,11 @@ public class Launcher : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         Instantiate(playerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(newPlayer);
+    }
+
+    public void quitGame()
+    {
+        Application.Quit();
     }
     
 }
