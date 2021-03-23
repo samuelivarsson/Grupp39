@@ -53,7 +53,7 @@ public class ProductController : MonoBehaviour
         isLifted = true;
         PlayerController playerController = latestPlayer.GetComponent<PlayerController>();
         playerController.setIsLifting(true);
-        PV.RPC("OnLift", RpcTarget.All, latestPlayer.GetComponent<PhotonView>().ViewID);
+        PV.RPC("OnLift", RpcTarget.OthersBuffered, latestPlayer.GetComponent<PhotonView>().ViewID);
     }
 
     [PunRPC]
@@ -71,7 +71,7 @@ public class ProductController : MonoBehaviour
         canPickUp = false;
         PlayerController playerController = latestPlayer.GetComponent<PlayerController>();
         playerController.setIsLifting(false);
-        PV.RPC("OnDrop", RpcTarget.All);
+        PV.RPC("OnDrop", RpcTarget.OthersBuffered);
     }
 
     [PunRPC]
