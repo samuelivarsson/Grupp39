@@ -7,9 +7,13 @@ TagManager:
   - Box
   - DropDown
   - Hand
+  - Task1
+  - Task2
+  - Task3
   - PlayerCollider
   - ProductController
   - Product
+  - Task4
   layers:
   - Default
   - TransparentFX
