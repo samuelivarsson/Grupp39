@@ -44,22 +44,22 @@ public class Package : MonoBehaviour
         if (canPackage)
         {
             
-            if (Input.GetKeyDown(KeyCode.LeftControl) && latestPlayer.GetComponentInChildren<ProductController>())
+            if (Input.GetKeyDown(KeyCode.LeftControl) && latestPlayer.GetComponentInChildren<ProductController>() && gameObject.transform.childCount<6)
             {
                ProductController prodController = latestPlayer.GetComponentInChildren<ProductController>();
                prodController.setIsLifted(false);
                Transform prod = prodController.transform;
                latestPlayer.GetComponentInChildren<ProductController>().transform.parent = gameObject.transform;
-               prod.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-                if (gameObject.transform.childCount <= 4)
+               prod.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+                if (gameObject.transform.childCount <= 3)
                 {
                    prod.localPosition = pic1.transform.localPosition;
                 }
-                if (gameObject.transform.childCount == 5)
+                if (gameObject.transform.childCount == 4)
                 {
                     prod.localPosition = pic2.transform.localPosition;
                 }
-                if (gameObject.transform.childCount == 6)
+                if (gameObject.transform.childCount == 5)
                 {
                     prod.localPosition = pic3.transform.localPosition;
                 }
@@ -92,7 +92,10 @@ public class Package : MonoBehaviour
         gameObject.transform.localPosition = hand.transform.localPosition;
         isLifted = true;
         PlayerController playerController = latestPlayer.GetComponent<PlayerController>();
-        playerController.setIsLifting(true);
+        if(playerController.transform.parent.tag == "Package")
+        {
+            playerController.setIsLifting(true);
+        }
         PV.RPC("OnLift", RpcTarget.OthersBuffered, latestPlayer.GetComponent<PhotonView>().ViewID);
     }
 
