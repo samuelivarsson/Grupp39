@@ -64,7 +64,7 @@ public class Package : MonoBehaviour
         if (canPackage)
         {
             
-            if (Input.GetKeyDown(KeyCode.LeftControl) && latestPlayer.GetChild(3))
+            if (Input.GetKeyDown(KeyCode.B) && latestPlayer.GetChild(3))
             {
                 Transform prod = latestPlayer.GetChild(3).transform;
                 latestPlayer.GetChild(3).transform.parent = null;
@@ -75,7 +75,7 @@ public class Package : MonoBehaviour
             }
             
         }
-        if (Input.GetKeyDown(KeyCode.LeftShift) && canPickUp)
+        if (Input.GetKeyDown(KeyCode.T) && canPickUp)
         {
             GetComponent<Renderer>().material.color = Color.green;
         }
