@@ -17,6 +17,8 @@ public class Package : MonoBehaviour
     GameObject[] players;
     Transform hand;
     Transform pic1;
+    Transform pic2;
+    Transform pic3;
     bool isLifted;
     
 
@@ -30,6 +32,8 @@ public class Package : MonoBehaviour
         PV = GetComponent<PhotonView>();
         hand = player.GetChild(0);
         pic1 = gameObject.transform.GetChild(0);
+        pic2 = gameObject.transform.GetChild(1);
+        pic3 = gameObject.transform.GetChild(2);
     }
 
     // Update is called once per frame
@@ -42,12 +46,23 @@ public class Package : MonoBehaviour
             
             if (Input.GetKeyDown(KeyCode.LeftControl) && latestPlayer.GetComponentInChildren<ProductController>())
             {
-                ProductController prodController = latestPlayer.GetComponentInChildren<ProductController>();
-                prodController.setIsLifted(false);
-                Transform prod = prodController.transform;
-                latestPlayer.GetComponentInChildren<ProductController>().transform.parent = gameObject.transform;
-                prod.localPosition = pic1.transform.localPosition;
-                prod.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+               ProductController prodController = latestPlayer.GetComponentInChildren<ProductController>();
+               prodController.setIsLifted(false);
+               Transform prod = prodController.transform;
+               latestPlayer.GetComponentInChildren<ProductController>().transform.parent = gameObject.transform;
+               prod.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+                if (gameObject.transform.childCount <= 4)
+                {
+                   prod.localPosition = pic1.transform.localPosition;
+                }
+                if (gameObject.transform.childCount == 5)
+                {
+                    prod.localPosition = pic2.transform.localPosition;
+                }
+                if (gameObject.transform.childCount == 6)
+                {
+                    prod.localPosition = pic3.transform.localPosition;
+                }
             }
             
         }
