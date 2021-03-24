@@ -5115,7 +5115,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 455176, guid: 18d51fb81a136504a8012d9c99ca47de, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 0.51
       objectReference: {fileID: 0}
     - target: {fileID: 455176, guid: 18d51fb81a136504a8012d9c99ca47de, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5891,6 +5891,14 @@ PrefabInstance:
     - target: {fileID: 5488840, guid: cc8eb93690a63be449a406207cbc120d, type: 3}
       propertyPath: m_Constraints
       value: 126
+      objectReference: {fileID: 0}
+    - target: {fileID: 5488840, guid: cc8eb93690a63be449a406207cbc120d, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6417256, guid: cc8eb93690a63be449a406207cbc120d, type: 3}
+      propertyPath: m_Convex
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11443446, guid: cc8eb93690a63be449a406207cbc120d, type: 3}
       propertyPath: m_Enabled
@@ -8654,6 +8662,14 @@ PrefabInstance:
     - target: {fileID: 5488840, guid: cc8eb93690a63be449a406207cbc120d, type: 3}
       propertyPath: m_Constraints
       value: 126
+      objectReference: {fileID: 0}
+    - target: {fileID: 5488840, guid: cc8eb93690a63be449a406207cbc120d, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6417256, guid: cc8eb93690a63be449a406207cbc120d, type: 3}
+      propertyPath: m_Convex
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11443446, guid: cc8eb93690a63be449a406207cbc120d, type: 3}
       propertyPath: m_Enabled
@@ -14090,7 +14106,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 455512, guid: a578316b64ef8fa4ea35895600971894, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.017129289
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 455512, guid: a578316b64ef8fa4ea35895600971894, type: 3}
       propertyPath: m_LocalPosition.z
@@ -28530,6 +28546,14 @@ PrefabInstance:
       propertyPath: m_Constraints
       value: 126
       objectReference: {fileID: 0}
+    - target: {fileID: 5488840, guid: cc8eb93690a63be449a406207cbc120d, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6417256, guid: cc8eb93690a63be449a406207cbc120d, type: 3}
+      propertyPath: m_Convex
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 11443446, guid: cc8eb93690a63be449a406207cbc120d, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -28910,6 +28934,14 @@ PrefabInstance:
     - target: {fileID: 5488840, guid: cc8eb93690a63be449a406207cbc120d, type: 3}
       propertyPath: m_Constraints
       value: 126
+      objectReference: {fileID: 0}
+    - target: {fileID: 5488840, guid: cc8eb93690a63be449a406207cbc120d, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6417256, guid: cc8eb93690a63be449a406207cbc120d, type: 3}
+      propertyPath: m_Convex
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11443446, guid: cc8eb93690a63be449a406207cbc120d, type: 3}
       propertyPath: m_Enabled
