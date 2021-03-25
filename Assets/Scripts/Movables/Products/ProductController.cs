@@ -32,54 +32,36 @@ public class ProductController : MonoBehaviour
     void Update()
     {
         CheckLiftAndDrop();
-
-        if (PV.OwnerActorNr == 0)
-        {
-            if (gameObject.transform.parent != null && !isLifted)
-            {
-                gameObject.transform.parent = null;
-            }
-        }
-        else
-        {
-            if (gameObject.transform.parent == null && !isLifted && PV.OwnerActorNr != PhotonNetwork.LocalPlayer.ActorNumber)
-            {
-                GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-                foreach (GameObject player in players)
-                {
-                    if (player.GetPhotonView().OwnerActorNr == PV.OwnerActorNr)
-                    {
-                        gameObject.transform.parent = player.transform;
-                        gameObject.transform.localPosition = hand.transform.localPosition;
-                    }
-                }
-            }
-        }
     }
 
     private void CheckLiftAndDrop () 
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isLifted && PV.IsMine)
+        if (Input.GetKeyDown(KeyCode.Space) && isLifted)
         {
             Drop();
         }
         if (Input.GetKeyDown(KeyCode.Space) && !isLifted && canPickUp)
         {
-            if (PV.OwnerActorNr == 0)
-            {
-                Lift();
-            }
+            Lift();
         }
     }
 
     public void Lift()
     {
-        PV.TransferOwnership(PhotonNetwork.LocalPlayer.ActorNumber);
         gameObject.transform.parent = latestPlayer;
         gameObject.transform.localPosition = hand.transform.localPosition;
         isLifted = true;
         PlayerController playerController = latestPlayer.GetComponent<PlayerController>();
         playerController.setIsLifting(true);
+        PV.RPC("OnLift", RpcTarget.OthersBuffered, latestPlayer.GetComponent<PhotonView>().ViewID);
+    }
+
+    [PunRPC]
+    void OnLift(int viewID)
+    {
+        GameObject player = PhotonView.Find(viewID).gameObject;
+        gameObject.transform.parent = player.transform;
+        gameObject.transform.localPosition = hand.transform.localPosition;
     }
 
     public void Drop()
@@ -87,9 +69,15 @@ public class ProductController : MonoBehaviour
         gameObject.transform.parent = null;
         isLifted = false;
         canPickUp = false;
-        PV.TransferOwnership(0);
         PlayerController playerController = latestPlayer.GetComponent<PlayerController>();
         playerController.setIsLifting(false);
+        PV.RPC("OnDrop", RpcTarget.OthersBuffered);
+    }
+
+    [PunRPC]
+    void OnDrop()
+    {
+        gameObject.transform.parent = null;
     }
     
     private void OnCollisionEnter(Collision collision)
