@@ -79,12 +79,9 @@ public class Package : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.LeftShift) && canPickUp)
         {
-            GetComponent<Renderer>().material.color = Color.green;
             timebar.enabled = true;
             cantape = true;
-            
         }
-
     }
 
     private void CheckLiftAndDrop()

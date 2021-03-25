@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class Taping : MonoBehaviour
@@ -19,7 +17,5 @@ public class Taping : MonoBehaviour
     {
         Vector3 imagePos = Camera.main.WorldToScreenPoint(this.transform.position);
         timerBar.transform.position = imagePos;
-        
-       
     }
 }
