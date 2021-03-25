@@ -24,8 +24,8 @@ public class ProductController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         PV = GetComponent<PhotonView>();
+        playerController = PlayerManager.myPlayerController;
         player = PlayerManager.myPlayerController.transform;
-        playerController = player.GetComponent<PlayerController>();
         hand = player.GetChild(0);
     }
 
