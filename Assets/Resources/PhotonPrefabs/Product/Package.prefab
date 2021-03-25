@@ -87,7 +87,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d2b2389b58c94795ad03cf16e410d8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxTime: 5
+  maxTime: 10
   timeLeft: 0
 --- !u!1 &2439032743813474722
 GameObject:
@@ -469,6 +469,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   score: {fileID: 7005250142847623193, guid: 2ae1fd2cb9818d04b983cde78a1b91c8, type: 3}
   player: {fileID: 5522886019619821055, guid: c8d984670a54f80438e769f6875b8092, type: 3}
+  timebar: {fileID: 1632418980853255987}
 --- !u!114 &-7625432177342621375
 MonoBehaviour:
   m_ObjectHideFlags: 0

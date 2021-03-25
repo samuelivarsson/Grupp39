@@ -25,8 +25,9 @@ public class Package : MonoBehaviour
     bool canPickUp;
     Transform latestPlayer;
     private bool canPackage;
+    bool cantape;
+    [SerializeField] Image timebar;
 
-    
 
     void Awake()
     {
@@ -36,6 +37,13 @@ public class Package : MonoBehaviour
         pic1 = gameObject.transform.GetChild(0);
         pic2 = gameObject.transform.GetChild(1);
         pic3 = gameObject.transform.GetChild(2);
+       
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        timebar.enabled = false;
     }
 
     // Update is called once per frame
@@ -71,9 +79,10 @@ public class Package : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftShift) && canPickUp)
         {
             GetComponent<Renderer>().material.color = Color.green;
+            timebar.enabled = true;
+            cantape = true;
         }
 
-      
     }
 
     private void CheckLiftAndDrop()
@@ -147,5 +156,10 @@ public class Package : MonoBehaviour
     public void setLifted(bool _canPackage)
     {
         canPackage = _canPackage;
+    }
+
+    public bool getCanTape()
+    {
+        return cantape;
     }
 }
