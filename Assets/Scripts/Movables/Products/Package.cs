@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Photon.Realtime;
 
 public class Package : MonoBehaviour
@@ -20,11 +21,12 @@ public class Package : MonoBehaviour
     Transform pic2;
     Transform pic3;
     bool isLifted;
-    
 
     bool canPickUp;
     Transform latestPlayer;
     private bool canPackage;
+
+    
 
     void Awake()
     {
@@ -71,7 +73,7 @@ public class Package : MonoBehaviour
             GetComponent<Renderer>().material.color = Color.green;
         }
 
-
+      
     }
 
     private void CheckLiftAndDrop()
@@ -92,10 +94,7 @@ public class Package : MonoBehaviour
         gameObject.transform.localPosition = hand.transform.localPosition;
         isLifted = true;
         PlayerController playerController = latestPlayer.GetComponent<PlayerController>();
-        if(playerController.transform.parent.tag == "Package")
-        {
-            playerController.setIsLifting(true);
-        }
+        playerController.setIsLifting(true);
         PV.RPC("OnLift", RpcTarget.OthersBuffered, latestPlayer.GetComponent<PhotonView>().ViewID);
     }
 
