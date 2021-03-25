@@ -89,6 +89,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxTime: 10
   timeLeft: 0
+  package: {fileID: 644405785046989766}
 --- !u!1 &2439032743813474722
 GameObject:
   m_ObjectHideFlags: 0
@@ -469,6 +470,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   score: {fileID: 7005250142847623193, guid: 2ae1fd2cb9818d04b983cde78a1b91c8, type: 3}
   player: {fileID: 5522886019619821055, guid: c8d984670a54f80438e769f6875b8092, type: 3}
+  cantape: 0
   timebar: {fileID: 1632418980853255987}
 --- !u!114 &-7625432177342621375
 MonoBehaviour:

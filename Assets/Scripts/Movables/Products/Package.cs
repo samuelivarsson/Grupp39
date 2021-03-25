@@ -25,8 +25,9 @@ public class Package : MonoBehaviour
     bool canPickUp;
     Transform latestPlayer;
     private bool canPackage;
-    bool cantape;
+    public bool cantape = false;
     [SerializeField] Image timebar;
+    TapeTimer tapeTimer;
 
 
     void Awake()
@@ -81,6 +82,7 @@ public class Package : MonoBehaviour
             GetComponent<Renderer>().material.color = Color.green;
             timebar.enabled = true;
             cantape = true;
+            
         }
 
     }

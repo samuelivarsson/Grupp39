@@ -9,7 +9,8 @@ public class TapeTimer : MonoBehaviour
     Image timerBar;
     [SerializeField] float maxTime = 5f;
     [SerializeField] float timeLeft;
-    Package package;
+    [SerializeField] Package package;
+    
 
 
 
@@ -19,14 +20,17 @@ public class TapeTimer : MonoBehaviour
         timerBar = GetComponent<Image>();
         timeLeft = maxTime;
         
+        
             
     }
 
     // Update is called once per frame
-    void Update()
+     public void Update()
     {
-        //if (package.getCanTape())
-       // {
+        
+        if (package.cantape)
+        {
+            Debug.Log("mos");
             if (timeLeft > 0)
             {
                 timeLeft -= Time.deltaTime;
@@ -36,7 +40,9 @@ public class TapeTimer : MonoBehaviour
             {
                 timeLeft -= (float)0.01;
             }
-      //  }
-       
+        }
+      
     }
+
+    
 }
