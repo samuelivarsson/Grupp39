@@ -37,7 +37,8 @@ public class TaskTimer : MonoBehaviour
 
         if(timeLeft < -1)
         {
-            taskWindow.SetActive(false);
+            //taskWindow.SetActive(false);
+            Destroy(taskWindow);
         }
     }
 }
