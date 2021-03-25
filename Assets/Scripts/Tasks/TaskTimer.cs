@@ -11,7 +11,6 @@ public class TaskTimer : MonoBehaviour
     [SerializeField] float timeLeft;
     [SerializeField] GameObject timesUpText;
     [SerializeField] GameObject taskWindow;
-    
 
 
     // Start is called before the first frame update

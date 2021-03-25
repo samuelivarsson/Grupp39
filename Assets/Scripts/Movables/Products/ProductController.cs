@@ -137,14 +137,4 @@ public class ProductController : MonoBehaviour
 
         return currentNearest;
     }
-
-    public void setIsLifted(bool _isLifted)
-    {
-        isLifted = _isLifted;
-    }
-
-    public bool getIsLifted()
-    {
-        return isLifted;
-    }
 }
