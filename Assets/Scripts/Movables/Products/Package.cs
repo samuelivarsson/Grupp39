@@ -28,6 +28,9 @@ public class Package : MonoBehaviour
     public bool cantape = false;
     [SerializeField] Image timebar;
     TapeTimer tapeTimer;
+    bool bpic1 = false;
+    bool bpic2 = false;
+    bool bpic3 = false;
 
 
     void Awake()
@@ -51,37 +54,68 @@ public class Package : MonoBehaviour
     void Update()
     {
         CheckLiftAndDrop();
-        
-        if (canPackage)
-        {
-            
-            if (Input.GetKeyDown(KeyCode.LeftControl) && latestPlayer.GetComponentInChildren<ProductController>() && gameObject.transform.childCount<6)
-            {
-               ProductController prodController = latestPlayer.GetComponentInChildren<ProductController>();
-               prodController.setIsLifted(false);
-               Transform prod = prodController.transform;
-               latestPlayer.GetComponentInChildren<ProductController>().transform.parent = gameObject.transform;
-               prod.localScale = new Vector3(0.4f, 0.4f, 0.4f);
-                if (gameObject.transform.childCount <= 3)
-                {
-                   prod.localPosition = pic1.transform.localPosition;
-                }
-                if (gameObject.transform.childCount == 4)
-                {
-                    prod.localPosition = pic2.transform.localPosition;
-                }
-                if (gameObject.transform.childCount == 5)
-                {
-                    prod.localPosition = pic3.transform.localPosition;
-                }
-            }
-            
-        }
+        CheckPacking(); 
+
         if (Input.GetKeyDown(KeyCode.LeftShift) && canPickUp)
         {
             timebar.enabled = true;
             cantape = true;
         }
+    }
+
+    private void CheckPacking()
+    {
+        if (canPackage)
+        {
+
+            if (Input.GetKeyDown(KeyCode.LeftControl) && latestPlayer.GetComponentInChildren<ProductController>() && gameObject.transform.childCount < 6)
+            {
+                ProductController prodController = latestPlayer.GetComponentInChildren<ProductController>();
+                prodController.setIsLifted(false);
+                Transform prod = prodController.transform;
+                latestPlayer.GetComponentInChildren<ProductController>().transform.parent = gameObject.transform;
+                prod.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+                if (gameObject.transform.childCount <= 3)
+                {
+                    prod.localPosition = pic1.transform.localPosition;
+                    bpic1 = true;
+                }
+                if (gameObject.transform.childCount == 4)
+                {
+                    prod.localPosition = pic2.transform.localPosition;
+                    bpic2 = true;
+                }
+                if (gameObject.transform.childCount == 5)
+                {
+                    prod.localPosition = pic3.transform.localPosition;
+                    bpic3 = true;
+                }
+                PV.RPC("OnPacketing", RpcTarget.OthersBuffered, prodController.GetComponent<PhotonView>().ViewID);
+            }
+            
+
+        }
+    }
+
+    [PunRPC]
+    void OnPacketing(int viewID)
+    {
+        GameObject producController = PhotonView.Find(viewID).gameObject;
+        producController.transform.parent = gameObject.transform;
+        producController.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+        if (bpic1)
+        {
+            producController.transform.localPosition = pic1.transform.localPosition;
+        }
+        if (bpic2)
+        {
+            producController.transform.localPosition = pic2.transform.localPosition;
+        }
+        if (bpic3)
+        {
+            producController.transform.localPosition = pic3.transform.localPosition;
+        }
+      
     }
 
     private void CheckLiftAndDrop()
