@@ -20,7 +20,7 @@ public class ProductCollideCheck : MonoBehaviour
          if (other.gameObject != productController.gameObject && other.gameObject.tag == "Package")
         {               
             package = other.GetComponent<Package>();
-            package.setLifted(true);            
+            package.SetCanPackage(true);            
         }
     }
 
@@ -29,7 +29,7 @@ public class ProductCollideCheck : MonoBehaviour
          if (other.gameObject != productController.gameObject && other.gameObject.tag == "Package")
         {
             package = other.GetComponent<Package>();
-            package.setLifted(false);
+            package.SetCanPackage(false);
         }
 
     }
@@ -38,7 +38,7 @@ public class ProductCollideCheck : MonoBehaviour
     { if (other.gameObject != productController.gameObject && other.gameObject.tag == "Package")
         {
             package = other.GetComponent<Package>();
-            package.setLifted(true);
+            package.SetCanPackage(true);
 
 
         }

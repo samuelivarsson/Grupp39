@@ -9,20 +9,27 @@ public class ProductController : MonoBehaviour
 
     Rigidbody rb;
     PhotonView PV;
-    [SerializeField] ScoreController scoreController;
-    [SerializeField] Transform player;
-    GameObject[] players;
+    Transform player;
+    PlayerController playerController;
     Transform hand;
-    bool isLifted;
+    bool isLifted = false;
+    bool isPackaged = false;
 
-    bool canPickUp;
-    Transform latestPlayer;
+    bool canPickUp = false;
+    Vector3 tileOffset = new Vector3(1.5f, 0.25f, 1.5f);
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         PV = GetComponent<PhotonView>();
+        playerController = PlayerManager.myPlayerController;
+        player = PlayerManager.myPlayerController.transform;
         hand = player.GetChild(0);
+    }
+
+    void Start()
+    {
+        
     }
 
     // Update is called once per frame
@@ -33,82 +40,117 @@ public class ProductController : MonoBehaviour
 
     private void CheckLiftAndDrop () 
     {
-        if (gameObject.transform.parent.tag != "Package") 
+        GameObject latestTile = playerController.GetLatestTile();
+        if (Input.GetKeyDown(KeyCode.Space) && isLifted && playerController.GetIsLifting() && latestTile && (latestTile.tag == "PlaceableTile" || latestTile.tag == "DropZone") && !isPackaged)
         {
-            if (Input.GetKeyDown(KeyCode.Space) && isLifted)
-            {
-                Drop();
-            }
-            if (Input.GetKeyDown(KeyCode.Space) && !isLifted && canPickUp)
-            {
-                Lift();
-            }
+            Drop(latestTile);
+        }
+        if (Input.GetKeyDown(KeyCode.Space) && !isLifted && canPickUp && !playerController.GetIsLifting() && !isPackaged)
+        {
+            Lift();
         }
     }
 
     public void Lift()
     {
-        gameObject.transform.parent = latestPlayer;
+        gameObject.transform.parent = player;
         gameObject.transform.localPosition = hand.transform.localPosition;
+        float eulerY = ClosestAngle(gameObject.transform.localRotation.eulerAngles.y);
+        gameObject.transform.localRotation = Quaternion.Euler(0, eulerY, 0);
         isLifted = true;
-        PlayerController playerController = latestPlayer.GetComponent<PlayerController>();
-        playerController.setIsLifting(true);
-        PV.RPC("OnLift", RpcTarget.OthersBuffered, latestPlayer.GetComponent<PhotonView>().ViewID);
+        playerController.SetIsLifting(true);
+        PV.RPC("OnLift", RpcTarget.OthersBuffered, player.GetComponent<PhotonView>().ViewID, eulerY);
     }
 
     [PunRPC]
-    void OnLift(int viewID)
+    void OnLift(int viewID, float eulerY)
     {
         GameObject player = PhotonView.Find(viewID).gameObject;
         gameObject.transform.parent = player.transform;
         gameObject.transform.localPosition = hand.transform.localPosition;
+        gameObject.transform.localRotation = Quaternion.Euler(0, eulerY, 0);
+        isLifted = true;
     }
 
-    public void Drop()
+    public void Drop(GameObject latestTile)
     {
-        gameObject.transform.parent = null;
         isLifted = false;
         canPickUp = false;
-        PlayerController playerController = latestPlayer.GetComponent<PlayerController>();
-        playerController.setIsLifting(false);
-        PV.RPC("OnDrop", RpcTarget.OthersBuffered);
+        playerController.SetIsLifting(false);
+
+        if (latestTile.CompareTag("DropZone") && gameObject.CompareTag("Package"))
+        {
+            Package package = GetComponent<Package>();
+            package.Deliver();
+            PV.RPC("OnDeliver", RpcTarget.OthersBuffered);
+            return;
+        }
+
+        // Add parent and fix position & rotation
+        gameObject.transform.parent = latestTile.transform;
+        gameObject.transform.localPosition = tileOffset;
+        float eulerY = ClosestAngle(gameObject.transform.rotation.eulerAngles.y);
+        gameObject.transform.rotation = Quaternion.Euler(0, eulerY, 0);
+        PV.RPC("OnDrop", RpcTarget.OthersBuffered, latestTile.name, eulerY);
     }
 
     [PunRPC]
-    void OnDrop()
+    void OnDrop(string tileName, float eulerY)
     {
-        gameObject.transform.parent = null;
+        GameObject tile = GameObject.Find(tileName);
+        gameObject.transform.parent = tile.transform;
+        gameObject.transform.localPosition = tileOffset;
+        gameObject.transform.rotation = Quaternion.Euler(0, eulerY, 0);
+        isLifted = false;
+        canPickUp = false;
     }
     
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("DropDown"))
-        {
-            //droppedDeliveries.Add(gameObject);
-            //gatheredPoints++;
-            Destroy(gameObject);
-            scoreController.IncrementScore(1);
-            //Debug.Log("Points:"+ gatheredPoints);
-        }
-    }
-    
-    public void setCanPickUp(bool _canPickUp)
+    public void SetCanPickUp(bool _canPickUp)
     {
         canPickUp = _canPickUp;
     }
 
-    public void setLatestPlayer(Transform player)
+    public bool GetCanPickUp()
     {
-        latestPlayer = player;
+        return canPickUp;
     }
 
-    public void setIsLifted(bool _isLifted)
+    private float ClosestAngle(float a)
+    {
+        float[] w = {0, 90, 180, 270};
+        float currentNearest = w[0];
+        float currentDifference = Mathf.Abs(currentNearest - a);
+
+        for (int i = 1; i < w.Length; i++)
+        {
+            float diff = Mathf.Abs(w[i] - a);
+            if (diff < currentDifference)
+            {
+                currentDifference = diff;
+                currentNearest = w[i];
+            }
+        }
+
+        return currentNearest;
+    }
+
+    public void SetIsLifted(bool _isLifted)
     {
         isLifted = _isLifted;
     }
 
-    public bool getIsLifted()
+    public bool GetIsLifted()
     {
         return isLifted;
+    }
+
+    public void SetIsPackaged(bool _isPackaged)
+    {
+        isPackaged = _isPackaged;
+    }
+
+    public bool GetIsPackaged()
+    {
+        return isPackaged;
     }
 }

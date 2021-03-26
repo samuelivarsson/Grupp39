@@ -108,9 +108,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc6b6170377b8304e950352d26d9ba46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scoreController: {fileID: 7005250142847623193, guid: 2ae1fd2cb9818d04b983cde78a1b91c8,
-    type: 3}
-  player: {fileID: 5522886019619821055, guid: c8d984670a54f80438e769f6875b8092, type: 3}
 --- !u!114 &5324589393070720018
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -10,7 +10,7 @@ public class Products : MonoBehaviourPunCallbacks
     [SerializeField] int balance;
     string balanceKey;
     bool canPickUp;
-    Transform latestPlayer;
+    Transform player;
 
     PhotonView PV;
  
@@ -18,6 +18,7 @@ public class Products : MonoBehaviourPunCallbacks
     {
         PV = GetComponent<PhotonView>();
         balanceKey = "balance" + PV.ViewID;
+        player = PlayerManager.myPlayerController.transform;
     }
 
     void Update()
@@ -35,8 +36,8 @@ public class Products : MonoBehaviourPunCallbacks
 
     void CreateController()
     {
-        PlayerController pc = latestPlayer.GetComponent<PlayerController>();
-        if (pc.isLifting)
+        PlayerController pc = player.GetComponent<PlayerController>();
+        if (pc.GetIsLifting())
         {
             Debug.Log("You are already lifting something!");
         }
@@ -44,11 +45,11 @@ public class Products : MonoBehaviourPunCallbacks
         {
             Debug.Log("Balance is 0!");
         }
-        if (!pc.isLifting && balance > 0)
+        if (!pc.GetIsLifting() && balance > 0)
         {
             GameObject productControllerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Product", "ProductController"), Vector3.zero,  Quaternion.identity);
             ProductController productController = productControllerObj.GetComponent<ProductController>();
-            productController.setLatestPlayer(latestPlayer);
+            //productController.setLatestPlayer(latestPlayer);
             productController.Lift();
 
             Hashtable hash = new Hashtable();
@@ -66,13 +67,8 @@ public class Products : MonoBehaviourPunCallbacks
         }
     }
 
-    public void setCanPickUp(bool _canPickUp)
+    public void SetCanPickUp(bool _canPickUp)
     {
         canPickUp = _canPickUp;
-    }
-
-    public void setLatestPlayer(Transform player)
-    {
-        latestPlayer = player;
     }
 }
