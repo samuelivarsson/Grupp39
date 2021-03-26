@@ -8,7 +8,8 @@ public class PlayerController : MonoBehaviour
     Rigidbody rb;
     [SerializeField] float movementSpeed, smoothTime;
     private float horizontalInput, verticalInput;
-    public bool isLifting;
+    private bool isLifting;
+    GameObject latestTile;
 
     Vector3 smoothMoveVelocity;
     Vector3 moveDir;
@@ -32,10 +33,10 @@ public class PlayerController : MonoBehaviour
     {
         if (!PV.IsMine) return;
 
-        move();
+        Move();
     }
 
-    private void move()
+    private void Move()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
@@ -49,17 +50,26 @@ public class PlayerController : MonoBehaviour
         if (!PV.IsMine) return;
 
         if (moveAmount != Vector3.zero) rb.MovePosition(rb.position + moveAmount * Time.fixedDeltaTime);
-        if (moveDir != Vector3.zero) transform.rotation = Quaternion.LookRotation(moveDir);
+        if (moveDir != Vector3.zero) rb.MoveRotation(Quaternion.LookRotation(moveDir));
     }
 
-    public void setIsLifting(bool _isLifting)
+    public void SetIsLifting(bool _isLifting)
     {
         isLifting = _isLifting;
     }
 
-    //public Transform playerIsLifting(bool _isLifting) 
-    //{
-    //    isLifting = _isLifting;
-    //    return this.transform;
-    //}
+    public bool GetIsLifting()
+    {
+        return isLifting;
+    }
+
+    public void SetLatestTile(GameObject _latestTile)
+    {
+        latestTile = _latestTile;
+    }
+
+    public GameObject GetLatestTile()
+    {
+        return latestTile;
+    }
 }
