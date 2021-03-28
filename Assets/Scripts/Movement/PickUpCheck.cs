@@ -9,6 +9,7 @@ public class PickUpCheck : MonoBehaviour
     Products product;
     PlayerController playerController;
     PhotonView PV;
+    ProductController package;
 
     void Awake()
     {
@@ -21,7 +22,7 @@ public class PickUpCheck : MonoBehaviour
         if(other.gameObject != playerController.gameObject && PV.IsMine && other.gameObject.tag == "ProductController")
         {
             productController = other.GetComponent<ProductController>();
-            productController.setCanPickUp(true);
+            productController.SetCanPickUp(true);
             //productController.setLatestPlayer(playerController.gameObject.transform);
         }
         else if(other.gameObject != playerController.gameObject && PV.IsMine && other.gameObject.tag == "Product")
@@ -29,6 +30,11 @@ public class PickUpCheck : MonoBehaviour
             product = other.GetComponent<Products>();
             product.SetCanPickUp(true);
             //product.SetLatestPlayer(playerController.gameObject.transform);
+        }
+        else if (other.gameObject != playerController.gameObject && other.gameObject.tag == "Package")
+        {         
+            package = other.GetComponent<ProductController>();
+            package.SetCanPickUp(true);
         }
     }
 
@@ -37,14 +43,18 @@ public class PickUpCheck : MonoBehaviour
         if(other.gameObject != playerController.gameObject && PV.IsMine && other.gameObject.tag == "ProductController")
         {
             productController = other.GetComponent<ProductController>();
-            productController.setCanPickUp(false);
+            productController.SetCanPickUp(false);
         }
         else if(other.gameObject != playerController.gameObject && PV.IsMine && other.gameObject.tag == "Product")
         {
             product = other.GetComponent<Products>();
             product.SetCanPickUp(false);
         }
-        
+        else if (other.gameObject != playerController.gameObject && other.gameObject.tag == "Package")
+        {
+            package = other.GetComponent<ProductController>();
+            package.SetCanPickUp(false);
+        }
     }
     
     void OnTriggerStay(Collider other)
@@ -52,7 +62,7 @@ public class PickUpCheck : MonoBehaviour
         if(other.gameObject != playerController.gameObject && PV.IsMine && other.gameObject.tag == "ProductController")
         {
             productController = other.GetComponent<ProductController>();
-            productController.setCanPickUp(true);
+            productController.SetCanPickUp(true);
             //productController.setLatestPlayer(playerController.gameObject.transform);
             
         }
@@ -61,6 +71,12 @@ public class PickUpCheck : MonoBehaviour
             product = other.GetComponent<Products>();
             product.SetCanPickUp(true);
             //product.SetLatestPlayer(playerController.gameObject.transform);
+        }
+        else if (other.gameObject != playerController.gameObject && other.gameObject.tag == "Package")
+        {
+            package = other.GetComponent<ProductController>();          
+            package.SetCanPickUp(true);          
+
         }
     }
 }

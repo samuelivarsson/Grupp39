@@ -1,8 +1,5 @@
 ﻿using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Photon.Realtime;
 
 public class ProductController : MonoBehaviour
 {
@@ -15,9 +12,10 @@ public class ProductController : MonoBehaviour
     Transform player;
     PlayerController playerController;
     Transform hand;
-    bool isLifted;
+    bool isLifted = false;
+    bool isPackaged = false;
 
-    bool canPickUp;
+    bool canPickUp = false;
     Vector3 tileOffset = new Vector3(1.5f, 0.25f, 1.5f);
 
     void Awake()
@@ -29,6 +27,11 @@ public class ProductController : MonoBehaviour
         hand = player.GetChild(0);
     }
 
+    void Start()
+    {
+        
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -38,11 +41,11 @@ public class ProductController : MonoBehaviour
     private void CheckLiftAndDrop () 
     {
         GameObject latestTile = playerController.GetLatestTile();
-        if (Input.GetKeyDown(KeyCode.Space) && isLifted && playerController.GetIsLifting() && latestTile && (latestTile.tag == "PlaceableTile" || latestTile.tag == "DropZone"))
+        if (Input.GetKeyDown(KeyCode.Space) && isLifted && playerController.GetIsLifting() && latestTile && (latestTile.tag == "PlaceableTile" || latestTile.tag == "DropZone") && !isPackaged)
         {
             Drop(latestTile);
         }
-        if (Input.GetKeyDown(KeyCode.Space) && !isLifted && canPickUp && !playerController.GetIsLifting())
+        if (Input.GetKeyDown(KeyCode.Space) && !isLifted && canPickUp && !playerController.GetIsLifting() && !isPackaged)
         {
             Lift();
         }
@@ -52,7 +55,7 @@ public class ProductController : MonoBehaviour
     {
         gameObject.transform.parent = player;
         gameObject.transform.localPosition = hand.transform.localPosition;
-        float eulerY = closestAngle(gameObject.transform.localRotation.eulerAngles.y);
+        float eulerY = ClosestAngle(gameObject.transform.localRotation.eulerAngles.y);
         gameObject.transform.localRotation = Quaternion.Euler(0, eulerY, 0);
         isLifted = true;
         playerController.SetIsLifting(true);
@@ -75,9 +78,10 @@ public class ProductController : MonoBehaviour
         canPickUp = false;
         playerController.SetIsLifting(false);
 
-        if (latestTile.CompareTag("DropZone"))
+        if (latestTile.CompareTag("DropZone") && gameObject.CompareTag("Package"))
         {
-            Deliver();
+            Package package = GetComponent<Package>();
+            package.Deliver();
             PV.RPC("OnDeliver", RpcTarget.OthersBuffered);
             return;
         }
@@ -85,7 +89,7 @@ public class ProductController : MonoBehaviour
         // Add parent and fix position & rotation
         gameObject.transform.parent = latestTile.transform;
         gameObject.transform.localPosition = tileOffset;
-        float eulerY = closestAngle(gameObject.transform.rotation.eulerAngles.y);
+        float eulerY = ClosestAngle(gameObject.transform.rotation.eulerAngles.y);
         gameObject.transform.rotation = Quaternion.Euler(0, eulerY, 0);
         PV.RPC("OnDrop", RpcTarget.OthersBuffered, latestTile.name, eulerY);
     }
@@ -100,26 +104,18 @@ public class ProductController : MonoBehaviour
         isLifted = false;
         canPickUp = false;
     }
-
-    void Deliver()
-    {
-        //droppedDeliveries.Add(gameObject);
-        Destroy(gameObject);
-        ScoreController.Instance.IncrementScore(1);
-    }
-
-    [PunRPC]
-    void OnDeliver()
-    {
-        Destroy(gameObject);
-    }
     
-    public void setCanPickUp(bool _canPickUp)
+    public void SetCanPickUp(bool _canPickUp)
     {
         canPickUp = _canPickUp;
     }
 
-    private float closestAngle(float a)
+    public bool GetCanPickUp()
+    {
+        return canPickUp;
+    }
+
+    private float ClosestAngle(float a)
     {
         float[] w = {0, 90, 180, 270};
         float currentNearest = w[0];
@@ -136,5 +132,25 @@ public class ProductController : MonoBehaviour
         }
 
         return currentNearest;
+    }
+
+    public void SetIsLifted(bool _isLifted)
+    {
+        isLifted = _isLifted;
+    }
+
+    public bool GetIsLifted()
+    {
+        return isLifted;
+    }
+
+    public void SetIsPackaged(bool _isPackaged)
+    {
+        isPackaged = _isPackaged;
+    }
+
+    public bool GetIsPackaged()
+    {
+        return isPackaged;
     }
 }
