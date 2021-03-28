@@ -80,9 +80,7 @@ public class ProductController : MonoBehaviour
 
         if (latestTile.CompareTag("DropZone") && gameObject.CompareTag("Package"))
         {
-            Package package = GetComponent<Package>();
-            package.Deliver();
-            PV.RPC("OnDeliver", RpcTarget.OthersBuffered);
+            TaskComparison(latestTile);
             return;
         }
 
@@ -92,6 +90,34 @@ public class ProductController : MonoBehaviour
         float eulerY = ClosestAngle(gameObject.transform.rotation.eulerAngles.y);
         gameObject.transform.rotation = Quaternion.Euler(0, eulerY, 0);
         PV.RPC("OnDrop", RpcTarget.OthersBuffered, latestTile.name, eulerY);
+    }
+
+    public void TaskComparison(GameObject latestTile)
+    {
+        if (latestTile.name == "DropZone1")
+        {
+            Package package = GetComponent<Package>();
+            package.Deliver();
+            PV.RPC("OnDeliver", RpcTarget.OthersBuffered);
+        }
+        else if (latestTile.name == "DropZone2")
+        {
+            Package package = GetComponent<Package>();
+            package.Deliver();
+            PV.RPC("OnDeliver", RpcTarget.OthersBuffered);
+        }
+        else  if (latestTile.name == "DropZone3")
+        {
+            Package package = GetComponent<Package>();
+            package.Deliver();
+            PV.RPC("OnDeliver", RpcTarget.OthersBuffered);
+        }
+        else  if (latestTile.name == "DropZone4")
+        {
+            Package package = GetComponent<Package>();
+            package.Deliver();
+            PV.RPC("OnDeliver", RpcTarget.OthersBuffered);
+        }
     }
 
     [PunRPC]
