@@ -106,14 +106,20 @@ public class PackageController : MonoBehaviour
         if (bpic1)
         {
             producController.transform.localPosition = pic1.transform.localPosition;
+            bpic1 = true;
+            productCount++;
         }
         if (bpic2)
         {
             producController.transform.localPosition = pic2.transform.localPosition;
+            bpic2 = true;
+            productCount++;
         }
         if (bpic3)
         {
             producController.transform.localPosition = pic3.transform.localPosition;
+            bpic3 = true;
+            productCount++;
         }
       
     }
