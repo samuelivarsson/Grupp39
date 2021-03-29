@@ -1,4 +1,4 @@
-﻿using Photon.Pun;
+﻿    using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -63,8 +63,10 @@ public class Package : MonoBehaviour
 
     private void CheckPacking()
     {
+        Debug.Log(canPackage);
         if (canPackage)
         {
+            Debug.Log("I am here!");
             if (Input.GetKeyDown(KeyCode.LeftControl) && player.GetComponentInChildren<ProductController>() && productCount < 3)
             {
                 ProductController prodController = player.GetComponentInChildren<ProductController>();
@@ -118,11 +120,42 @@ public class Package : MonoBehaviour
       
     }
 
-    public void Deliver()
+    public void Deliver(int score)
     {
         //droppedDeliveries.Add(gameObject);
         Destroy(gameObject);
-        ScoreController.Instance.IncrementScore(productCount);
+        ScoreController.Instance.IncrementScore(score);
+    }
+
+    public bool CompareProductsWithTask(TaskController task)
+    {
+        var orderedProducts = task.GetOrderedProducts();
+        var deliveredProducts = GetAllDeliveredProducts(gameObject.transform);
+
+        foreach(string product in deliveredProducts)
+        {
+            if(!orderedProducts.Contains(product))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public List<string> GetAllDeliveredProducts(Transform package)
+    {
+        List<string> deliveredProducts = new List<string>();
+        
+        foreach(Transform child in package)
+        {
+            if (child.tag == "ProductController")
+            {
+                deliveredProducts.Add(child.GetComponent<ProductController>().GetProductType());
+            }
+        }
+
+        return deliveredProducts;
     }
 
     [PunRPC]

@@ -11,9 +11,7 @@ public class TaskController : MonoBehaviour
     PhotonView PV;
 
     // The objects in the order
-    private List<GameObject> orderedProducts;
-    //[SerializeField] RenderTexture product;
-    //[SerializeField] RawImage rawImage;
+    private List<string> orderedProducts = new List<string>();
 
     void Awake()
     {
@@ -22,11 +20,16 @@ public class TaskController : MonoBehaviour
         gameObject.transform.SetParent(canvasManager.transform);
         GetComponent<RectTransform>().anchoredPosition3D = new Vector3(-160, -110 - 250 * (taskNr-1), 0);
         GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+        orderedProducts.Add("BlueBox");
     }
 
     // Update is called once per frame
     void Update()
     {
-        //rawImage.texture = product;
+    }
+
+    public List<string> GetOrderedProducts()
+    {
+        return orderedProducts;
     }
 }
