@@ -42,11 +42,11 @@ public class ProductController : MonoBehaviour
     private void CheckLiftAndDrop () 
     {
         GameObject latestTile = playerController.GetLatestTile();
-        if (Input.GetKeyDown(KeyCode.Space) && isLifted && playerController.GetIsLifting() && latestTile && (latestTile.CompareTag("PlaceableTile") || latestTile.CompareTag("DropZone")) && !isPackaged)
+        if (Input.GetKeyDown(KeyCode.Space) && isLifted && playerController.IsLifting(PV.ViewID) && latestTile && (latestTile.CompareTag("PlaceableTile") || latestTile.CompareTag("DropZone")) && !isPackaged)
         {
             Drop(latestTile);
         }
-        if (Input.GetKeyDown(KeyCode.Space) && !isLifted && canPickUp && !playerController.GetIsLifting() && !isPackaged)
+        if (Input.GetKeyDown(KeyCode.Space) && !isLifted && canPickUp && playerController.IsLifting(-1) && !isPackaged)
         {
             Lift();
         }
@@ -59,7 +59,7 @@ public class ProductController : MonoBehaviour
         float eulerY = ClosestAngle(gameObject.transform.localRotation.eulerAngles.y);
         gameObject.transform.localRotation = Quaternion.Euler(0, eulerY, 0);
         isLifted = true;
-        playerController.SetIsLifting(true);
+        playerController.SetLiftingID(PV.ViewID);
         PV.RPC("OnLift", RpcTarget.OthersBuffered, player.GetComponent<PhotonView>().ViewID, eulerY);
     }
 
@@ -77,7 +77,7 @@ public class ProductController : MonoBehaviour
     {
         isLifted = false;
         canPickUp = false;
-        playerController.SetIsLifting(false);
+        playerController.SetLiftingID(-1);
 
         if (latestTile.CompareTag("DropZone") && gameObject.CompareTag("PackageController"))
         {

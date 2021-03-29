@@ -8,12 +8,14 @@ public class PlayerController : MonoBehaviour
     Rigidbody rb;
     [SerializeField] float movementSpeed, smoothTime;
     private float horizontalInput, verticalInput;
-    private bool isLifting;
+    private int liftingID;
     GameObject latestTile;
 
     Vector3 smoothMoveVelocity;
     Vector3 moveDir;
     Vector3 moveAmount;
+
+    KeyCode crouchButton = KeyCode.LeftShift;
 
     PhotonView PV;
 
@@ -21,7 +23,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         PV = GetComponent<PhotonView>();
-        isLifting = false;
+        liftingID = -1;
     }
 
     void Start()
@@ -34,6 +36,10 @@ public class PlayerController : MonoBehaviour
         if (!PV.IsMine) return;
 
         Move();
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+
+        }
     }
 
     private void Move()
@@ -45,6 +51,11 @@ public class PlayerController : MonoBehaviour
         moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * movementSpeed, ref smoothMoveVelocity, smoothTime);
     }
 
+    void Crouch()
+    {
+
+    }
+
     private void FixedUpdate()
     {
         if (!PV.IsMine) return;
@@ -53,14 +64,19 @@ public class PlayerController : MonoBehaviour
         if (moveDir != Vector3.zero) rb.MoveRotation(Quaternion.LookRotation(moveDir));
     }
 
-    public void SetIsLifting(bool _isLifting)
+    public void SetLiftingID(int _liftingID)
     {
-        isLifting = _isLifting;
+        liftingID = _liftingID;
     }
 
-    public bool GetIsLifting()
+    public int GetLiftingID()
     {
-        return isLifting;
+        return liftingID;
+    }
+
+    public bool IsLifting(int _liftingID)
+    {
+        return liftingID == _liftingID;
     }
 
     public void SetLatestTile(GameObject _latestTile)

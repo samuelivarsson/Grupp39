@@ -42,7 +42,7 @@ public class ProductManager : MonoBehaviourPunCallbacks
         ProductController productController;
         GameObject packageControllerObj;
 
-        if (pc.GetIsLifting())
+        if (pc.GetLiftingID() != -1)
         {
             Debug.Log("You are already lifting something!");
             return;

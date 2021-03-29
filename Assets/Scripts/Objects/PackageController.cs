@@ -68,7 +68,7 @@ public class PackageController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.LeftControl) && player.GetComponentInChildren<ProductController>() && productCount < 3)
             {
                 ProductController prodController = player.GetComponentInChildren<ProductController>();
-                playerController.SetIsLifting(false);
+                playerController.SetLiftingID(-1);
                 prodController.SetIsLifted(false);
                 prodController.SetIsPackaged(true);
                 Transform prod = prodController.transform;
