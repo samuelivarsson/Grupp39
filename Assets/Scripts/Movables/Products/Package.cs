@@ -63,10 +63,8 @@ public class Package : MonoBehaviour
 
     private void CheckPacking()
     {
-        Debug.Log(canPackage);
         if (canPackage)
         {
-            Debug.Log("I am here!");
             if (Input.GetKeyDown(KeyCode.LeftControl) && player.GetComponentInChildren<ProductController>() && productCount < 3)
             {
                 ProductController prodController = player.GetComponentInChildren<ProductController>();

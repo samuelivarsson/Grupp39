@@ -24,7 +24,6 @@ public class TapeTimer : MonoBehaviour
     {
         if (package.cantape)
         {
-            Debug.Log("mos");
             if (timeLeft > 0)
             {
                 timeLeft -= Time.deltaTime;
