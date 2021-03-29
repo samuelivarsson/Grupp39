@@ -17,7 +17,7 @@ public class ProductCollideCheck : MonoBehaviour
     void OntriggerEnter(Collider other)
     {
        
-         if (other.gameObject != productController.gameObject && other.gameObject.tag == "Package")
+        if (other.gameObject != productController.gameObject && other.gameObject.tag == "Package")
         {               
             package = other.GetComponent<Package>();
             package.SetCanPackage(true);            
@@ -26,21 +26,20 @@ public class ProductCollideCheck : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
-         if (other.gameObject != productController.gameObject && other.gameObject.tag == "Package")
+        if (other.gameObject != productController.gameObject && other.gameObject.tag == "Package")
         {
-            package = other.GetComponent<Package>();
-            package.SetCanPackage(false);
+                package = other.GetComponent<Package>();
+                package.SetCanPackage(false);
         }
 
     }
 
     void OnTriggerStay(Collider other)
-    { if (other.gameObject != productController.gameObject && other.gameObject.tag == "Package")
+    { 
+        if (other.gameObject != productController.gameObject && other.gameObject.tag == "Package")
         {
             package = other.GetComponent<Package>();
             package.SetCanPackage(true);
-
-
         }
     }
 }

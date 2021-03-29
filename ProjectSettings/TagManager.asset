@@ -12,7 +12,6 @@ TagManager:
   - PlayerCollider
   - ProductController
   - Product
-  - Package
   - Task4
   - PlaceableTile
   - NonPlaceableTile
