@@ -14,7 +14,7 @@ public class ProductController : MonoBehaviour
     Transform hand;
     bool isLifted = false;
     bool isPackaged = false;
-    [SerializeField] string type;
+    string type;
 
     bool canPickUp = false;
     Vector3 tileOffset = new Vector3(1.5f, 0.25f, 1.5f);
@@ -95,34 +95,11 @@ public class ProductController : MonoBehaviour
 
     public void OrderDelivery(GameObject latestTile)
     {
-        if (latestTile.name == "DropZone1")
-        {
-            PackageController package = GetComponent<PackageController>();
-            TaskController task = GameObject.FindGameObjectWithTag("Task1").GetComponent<TaskController>();
-            Delivery(package, task);
-            PV.RPC("OnDeliver", RpcTarget.OthersBuffered);
-        }
-        else if (latestTile.name == "DropZone2")
-        {
-            PackageController package = GetComponent<PackageController>(); 
-            TaskController task = GameObject.FindGameObjectWithTag("Task2").GetComponent<TaskController>();
-            Delivery(package, task);
-            PV.RPC("OnDeliver", RpcTarget.OthersBuffered);
-        }
-        else  if (latestTile.name == "DropZone3")
-        {
-            PackageController package = GetComponent<PackageController>();
-            TaskController task = GameObject.FindGameObjectWithTag("Task3").GetComponent<TaskController>();
-            Delivery(package, task);
-            PV.RPC("OnDeliver", RpcTarget.OthersBuffered);
-        }
-        else  if (latestTile.name == "DropZone4")
-        {
-            PackageController package = GetComponent<PackageController>();
-            TaskController task = GameObject.FindGameObjectWithTag("Task4").GetComponent<TaskController>();
-            Delivery(package, task);
-            PV.RPC("OnDeliver", RpcTarget.OthersBuffered);
-        }
+        string num = latestTile.name.Substring(latestTile.name.Length - 1);
+        PackageController package = GetComponent<PackageController>();
+        TaskController task = GameObject.FindGameObjectWithTag("Task"+num).GetComponent<TaskController>();
+        Delivery(package, task);
+        PV.RPC("OnDeliver", RpcTarget.OthersBuffered);
     }
 
     private void Delivery(PackageController package, TaskController task)
@@ -202,5 +179,10 @@ public class ProductController : MonoBehaviour
     public string GetProductType()
     {
         return type;
+    }
+
+    public void SetType(string _type)
+    {
+        type = _type;
     }
 }
