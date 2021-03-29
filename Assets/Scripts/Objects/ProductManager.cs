@@ -8,6 +8,8 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 public class ProductManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] int balance;
+    [SerializeField] string type;
+
     string balanceKey;
     bool canPickUp;
     Transform player;
@@ -39,7 +41,7 @@ public class ProductManager : MonoBehaviourPunCallbacks
         PlayerController pc = player.GetComponent<PlayerController>();
         ProductController productController;
         GameObject packageControllerObj;
-        
+
         if (pc.GetIsLifting())
         {
             Debug.Log("You are already lifting something!");
@@ -58,8 +60,9 @@ public class ProductManager : MonoBehaviourPunCallbacks
             return;
         }
 
-        packageControllerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "ProductController"), Vector3.zero,  Quaternion.identity);
+        packageControllerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "Products", "Controllers", "ProductController"+type), Vector3.zero,  Quaternion.identity);
         productController = packageControllerObj.GetComponent<ProductController>();
+        productController.SetType(type);
         productController.Lift();
 
         Hashtable hash = new Hashtable();

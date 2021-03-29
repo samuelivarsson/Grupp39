@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -9106563551454695915}
   - component: {fileID: 3631734112957662894}
   m_Layer: 0
-  m_Name: ProductManager
+  m_Name: ProductManagerYellow
   m_TagString: ProductManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -61,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b9f0fa105ff86e241a3fcb3ced8c06f3, type: 2}
+  - {fileID: 2100000, guid: 373a9ac2bf570c24abaccb2fc5be9936, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -108,6 +108,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   balance: 5
+  type: Yellow
 --- !u!114 &3631734112957662894
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -16,6 +16,10 @@ TagManager:
   - PlaceableTile
   - NonPlaceableTile
   - DropZone
+  - Package
+  - ProductManager
+  - PackageManager
+  - PackageController
   layers:
   - Default
   - TransparentFX
