@@ -5,9 +5,9 @@ using UnityEngine;
 public class ProductCollideCheck : MonoBehaviour
 {
     ProductController productController;
-    Products product;
+    ProductManager product;
    
-    Package package;
+    PackageController package;
 
     void Awake()
     {
@@ -17,18 +17,18 @@ public class ProductCollideCheck : MonoBehaviour
     void OntriggerEnter(Collider other)
     {
        
-        if (other.gameObject != productController.gameObject && other.gameObject.tag == "Package")
+        if (other.gameObject != productController.gameObject && other.gameObject.CompareTag("PackageController"))
         {               
-            package = other.GetComponent<Package>();
+            package = other.GetComponent<PackageController>();
             package.SetCanPackage(true);            
         }
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (other.gameObject != productController.gameObject && other.gameObject.tag == "Package")
+        if (other.gameObject != productController.gameObject && other.gameObject.CompareTag("PackageController"))
         {
-                package = other.GetComponent<Package>();
+                package = other.GetComponent<PackageController>();
                 package.SetCanPackage(false);
         }
 
@@ -36,9 +36,9 @@ public class ProductCollideCheck : MonoBehaviour
 
     void OnTriggerStay(Collider other)
     { 
-        if (other.gameObject != productController.gameObject && other.gameObject.tag == "Package")
+        if (other.gameObject != productController.gameObject && other.gameObject.CompareTag("PackageController"))
         {
-            package = other.GetComponent<Package>();
+            package = other.GetComponent<PackageController>();
             package.SetCanPackage(true);
         }
     }

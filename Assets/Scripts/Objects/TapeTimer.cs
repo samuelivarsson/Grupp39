@@ -9,7 +9,7 @@ public class TapeTimer : MonoBehaviour
     Image timerBar;
     [SerializeField] float maxTime = 5f;
     [SerializeField] float timeLeft;
-    [SerializeField] Package package;
+    [SerializeField] PackageController package;
    
 
     // Start is called before the first frame update

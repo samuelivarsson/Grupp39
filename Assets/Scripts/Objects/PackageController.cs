@@ -1,11 +1,11 @@
-﻿    using Photon.Pun;
+﻿using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Realtime;
 
-public class Package : MonoBehaviour
+public class PackageController : MonoBehaviour
 {
     bool spaceKeyWasPressed;
 
@@ -147,7 +147,7 @@ public class Package : MonoBehaviour
         
         foreach(Transform child in package)
         {
-            if (child.tag == "ProductController")
+            if (child.CompareTag("ProductController"))
             {
                 deliveredProducts.Add(child.GetComponent<ProductController>().GetProductType());
             }

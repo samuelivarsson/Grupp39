@@ -5,7 +5,7 @@ using Photon.Pun;
 using System.IO;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
-public class Products : MonoBehaviourPunCallbacks
+public class ProductManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] int balance;
     string balanceKey;
@@ -37,26 +37,35 @@ public class Products : MonoBehaviourPunCallbacks
     void CreateController()
     {
         PlayerController pc = player.GetComponent<PlayerController>();
+        ProductController productController;
+        GameObject packageControllerObj;
+        
         if (pc.GetIsLifting())
         {
             Debug.Log("You are already lifting something!");
+            return;
         }
         if (balance == 0)
         {
             Debug.Log("Balance is 0!");
+            return;
         }
-        if (!pc.GetIsLifting() && balance > 0)
+        if (balance == -1)
         {
-            GameObject productControllerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Product", "ProductController"), Vector3.zero,  Quaternion.identity);
-            ProductController productController = productControllerObj.GetComponent<ProductController>();
-            //productController.setLatestPlayer(latestPlayer);
+            packageControllerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "PackageController"), Vector3.zero,  Quaternion.identity);
+            productController = packageControllerObj.GetComponent<ProductController>();
             productController.Lift();
-
-            Hashtable hash = new Hashtable();
-            balance--;
-            hash.Add(balanceKey, balance);
-            PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
+            return;
         }
+
+        packageControllerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "ProductController"), Vector3.zero,  Quaternion.identity);
+        productController = packageControllerObj.GetComponent<ProductController>();
+        productController.Lift();
+
+        Hashtable hash = new Hashtable();
+        balance--;
+        hash.Add(balanceKey, balance);
+        PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
     }
 
     private void CheckLiftAndDrop()

@@ -15,8 +15,8 @@ GameObject:
   - component: {fileID: -9106563551454695915}
   - component: {fileID: 3631734112957662894}
   m_Layer: 0
-  m_Name: Products
-  m_TagString: Product
+  m_Name: ProductManager
+  m_TagString: ProductManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

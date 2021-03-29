@@ -42,7 +42,7 @@ public class ProductController : MonoBehaviour
     private void CheckLiftAndDrop () 
     {
         GameObject latestTile = playerController.GetLatestTile();
-        if (Input.GetKeyDown(KeyCode.Space) && isLifted && playerController.GetIsLifting() && latestTile && (latestTile.tag == "PlaceableTile" || latestTile.tag == "DropZone") && !isPackaged)
+        if (Input.GetKeyDown(KeyCode.Space) && isLifted && playerController.GetIsLifting() && latestTile && (latestTile.CompareTag("PlaceableTile") || latestTile.CompareTag("DropZone")) && !isPackaged)
         {
             Drop(latestTile);
         }
@@ -79,7 +79,7 @@ public class ProductController : MonoBehaviour
         canPickUp = false;
         playerController.SetIsLifting(false);
 
-        if (latestTile.CompareTag("DropZone") && gameObject.CompareTag("Package"))
+        if (latestTile.CompareTag("DropZone") && gameObject.CompareTag("PackageController"))
         {
             OrderDelivery(latestTile);
             return;
@@ -97,35 +97,35 @@ public class ProductController : MonoBehaviour
     {
         if (latestTile.name == "DropZone1")
         {
-            Package package = GetComponent<Package>();
+            PackageController package = GetComponent<PackageController>();
             TaskController task = GameObject.FindGameObjectWithTag("Task1").GetComponent<TaskController>();
             Delivery(package, task);
             PV.RPC("OnDeliver", RpcTarget.OthersBuffered);
         }
         else if (latestTile.name == "DropZone2")
         {
-            Package package = GetComponent<Package>(); 
+            PackageController package = GetComponent<PackageController>(); 
             TaskController task = GameObject.FindGameObjectWithTag("Task2").GetComponent<TaskController>();
             Delivery(package, task);
             PV.RPC("OnDeliver", RpcTarget.OthersBuffered);
         }
         else  if (latestTile.name == "DropZone3")
         {
-            Package package = GetComponent<Package>();
+            PackageController package = GetComponent<PackageController>();
             TaskController task = GameObject.FindGameObjectWithTag("Task3").GetComponent<TaskController>();
             Delivery(package, task);
             PV.RPC("OnDeliver", RpcTarget.OthersBuffered);
         }
         else  if (latestTile.name == "DropZone4")
         {
-            Package package = GetComponent<Package>();
+            PackageController package = GetComponent<PackageController>();
             TaskController task = GameObject.FindGameObjectWithTag("Task4").GetComponent<TaskController>();
             Delivery(package, task);
             PV.RPC("OnDeliver", RpcTarget.OthersBuffered);
         }
     }
 
-    private void Delivery(Package package, TaskController task)
+    private void Delivery(PackageController package, TaskController task)
     {
         if (package.CompareProductsWithTask(task))
         {

@@ -309,8 +309,8 @@ GameObject:
   - component: {fileID: 644405785046989766}
   - component: {fileID: -7625432177342621375}
   m_Layer: 0
-  m_Name: Package
-  m_TagString: Package
+  m_Name: PackageController
+  m_TagString: PackageController
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
