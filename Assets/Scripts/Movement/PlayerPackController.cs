@@ -125,6 +125,17 @@ public class PlayerPackController : MonoBehaviour
     {
         packageController.timebar.enabled = true;
         packageController.isTaped = true;
+        PV.RPC("OnTape", RpcTarget.OthersBuffered, packageController.GetComponent<PhotonView>().ViewID);
+    }
+
+    [PunRPC]
+    void OnTape(int packageViewID)
+    {
+        GameObject packageControllerObj = PhotonView.Find(packageViewID).gameObject;
+        PackageController packageController = packageControllerObj.GetComponent<PackageController>();
+
+        packageController.timebar.enabled = true;
+        packageController.isTaped = true;
     }
 
     bool CanPack(int _canPackID)
