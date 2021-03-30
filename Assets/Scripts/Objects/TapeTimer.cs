@@ -9,8 +9,12 @@ public class TapeTimer : MonoBehaviour
     Image timerBar;
     [SerializeField] float maxTime = 5f;
     [SerializeField] float timeLeft;
-    [SerializeField] PackageController package;
+    PackageController packageController;
    
+    void Awake()
+    {
+        packageController = GetComponentInParent<PackageController>();
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -22,7 +26,7 @@ public class TapeTimer : MonoBehaviour
     // Update is called once per frame
      public void Update()
     {
-        if (package.cantape)
+        if (packageController.isTaped)
         {
             if (timeLeft > 0)
             {
@@ -32,7 +36,7 @@ public class TapeTimer : MonoBehaviour
             else
             {
                 timeLeft -= (float)0.01;
-                package.GetComponent<Renderer>().material.color = Color.green;
+                packageController.GetComponent<Renderer>().material.color = Color.green;
             }
         }
     }

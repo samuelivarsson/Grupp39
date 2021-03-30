@@ -89,7 +89,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxTime: 5
   timeLeft: 0
-  package: {fileID: 644405785046989766}
 --- !u!1 &2439032743813474722
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,7 +304,6 @@ GameObject:
   - component: {fileID: 7271022216631183799}
   - component: {fileID: 7271022216631183798}
   - component: {fileID: 7271022216631183797}
-  - component: {fileID: 5593979538462035448}
   - component: {fileID: 644405785046989766}
   - component: {fileID: -7625432177342621375}
   m_Layer: 0
@@ -394,18 +392,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5593979538462035448
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7271022216631183796}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc6b6170377b8304e950352d26d9ba46, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &644405785046989766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -418,7 +404,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c45f768b756a60d4a85d54ce88db5077, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cantape: 0
   timebar: {fileID: 1632418980853255987}
 --- !u!114 &-7625432177342621375
 MonoBehaviour:

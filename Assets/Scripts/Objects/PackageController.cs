@@ -5,42 +5,32 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon.Realtime;
 
-public class PackageController : MonoBehaviour
+public class PackageController : MonoBehaviour, Liftable
 {
-    bool spaceKeyWasPressed;
+    public bool isLifted {get; set;} = false;
+    public bool isPackaged {get; set;} = false;
+    public bool isTaped {get; set;} = false;
 
-    Rigidbody rb;
     PhotonView PV;
+    public Transform pic1 {get; set;}
+    public Transform pic2 {get; set;}
+    public Transform pic3 {get; set;}
 
-    Transform player;
-    PlayerController playerController;
-    Transform hand;
-    Transform pic1;
-    Transform pic2;
-    Transform pic3;
-
-    ProductController productController;
-
-    private bool canPackage;
-    public bool cantape = false;
-    [SerializeField] Image timebar;
+    [SerializeField] public Image timebar;
     TapeTimer tapeTimer;
-    bool bpic1 = false;
-    bool bpic2 = false;
-    bool bpic3 = false;
-    int productCount = 0;
+    public bool bpic1 {get; set;} = false;
+    public bool bpic2 {get; set;} = false;
+    public bool bpic3 {get; set;} = false;
+    public int productCount {get; set;} = 0;
+
+    public static Vector3 tileOffset = new Vector3(1.5f, 0.35f, 1.5f);
 
     void Awake()
     {
-        rb = GetComponent<Rigidbody>();
         PV = GetComponent<PhotonView>();
         pic1 = gameObject.transform.GetChild(0);
         pic2 = gameObject.transform.GetChild(1);
         pic3 = gameObject.transform.GetChild(2);
-        player = PlayerManager.myPlayerController.transform;
-        hand = player.GetChild(0);
-        playerController = player.GetComponent<PlayerController>();
-        productController = GetComponent<ProductController>();
     }
 
     // Start is called before the first frame update
@@ -49,79 +39,26 @@ public class PackageController : MonoBehaviour
         timebar.enabled = false;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void OrderDelivery(GameObject latestTile)
     {
-        CheckPacking(); 
-
-        if (Input.GetKeyDown(KeyCode.LeftShift) && productController.GetCanPickUp())
-        {
-            timebar.enabled = true;
-            cantape = true;
-        }
+        string num = latestTile.name.Substring(latestTile.name.Length - 1);
+        PackageController package = GetComponent<PackageController>();
+        TaskController task = GameObject.FindGameObjectWithTag("Task"+num).GetComponent<TaskController>();
+        Delivery(package, task);
     }
 
-    private void CheckPacking()
+    private void Delivery(PackageController package, TaskController task)
     {
-        if (canPackage)
+        if (package.CompareProductsWithTask(task))
         {
-            if (Input.GetKeyDown(KeyCode.LeftControl) && player.GetComponentInChildren<ProductController>() && productCount < 3)
-            {
-                ProductController prodController = player.GetComponentInChildren<ProductController>();
-                playerController.SetLiftingID(-1);
-                prodController.SetIsLifted(false);
-                prodController.SetIsPackaged(true);
-                Transform prod = prodController.transform;
-                player.GetComponentInChildren<ProductController>().transform.parent = gameObject.transform;
-                prod.localScale = new Vector3(0.4f, 0.4f, 0.4f);
-                if (!bpic1)
-                {
-                    prod.localPosition = pic1.transform.localPosition;
-                    bpic1 = true;
-                    productCount++;
-                }
-                else if (!bpic2)
-                {
-                    prod.localPosition = pic2.transform.localPosition;
-                    bpic2 = true;
-                    productCount++;
-                }
-                else if (!bpic3)
-                {
-                    prod.localPosition = pic3.transform.localPosition;
-                    bpic3 = true;
-                    productCount++;
-                }
-                PV.RPC("OnPacketing", RpcTarget.OthersBuffered, prodController.GetComponent<PhotonView>().ViewID);
-            }
+            package.Deliver(1);
+            Debug.Log("The package contained all products!");
         }
-    }
-
-    [PunRPC]
-    void OnPacketing(int viewID)
-    {
-        GameObject producController = PhotonView.Find(viewID).gameObject;
-        producController.transform.parent = gameObject.transform;
-        producController.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
-        if (bpic1)
+        else
         {
-            producController.transform.localPosition = pic1.transform.localPosition;
-            bpic1 = true;
-            productCount++;
+            package.Deliver(-1);
+            Debug.Log("The package did not contain all products!");
         }
-        if (bpic2)
-        {
-            producController.transform.localPosition = pic2.transform.localPosition;
-            bpic2 = true;
-            productCount++;
-        }
-        if (bpic3)
-        {
-            producController.transform.localPosition = pic3.transform.localPosition;
-            bpic3 = true;
-            productCount++;
-        }
-      
     }
 
     public void Deliver(int score)
@@ -129,6 +66,13 @@ public class PackageController : MonoBehaviour
         //droppedDeliveries.Add(gameObject);
         Destroy(gameObject);
         ScoreController.Instance.IncrementScore(score);
+        PV.RPC("OnDelivery", RpcTarget.OthersBuffered);
+    }
+
+    [PunRPC]
+    void OnDeliver()
+    {
+        Destroy(gameObject);
     }
 
     public bool CompareProductsWithTask(TaskController task)
@@ -155,26 +99,10 @@ public class PackageController : MonoBehaviour
         {
             if (child.CompareTag("ProductController"))
             {
-                deliveredProducts.Add(child.GetComponent<ProductController>().GetProductType());
+                deliveredProducts.Add(child.GetComponent<ProductController>().type);
             }
         }
 
         return deliveredProducts;
-    }
-
-    [PunRPC]
-    void OnDeliver()
-    {
-        Destroy(gameObject);
-    }
-
-    public void SetCanPackage(bool _canPackage)
-    {
-        canPackage = _canPackage;
-    }
-
-    public bool getCanTape()
-    {
-        return cantape;
     }
 }

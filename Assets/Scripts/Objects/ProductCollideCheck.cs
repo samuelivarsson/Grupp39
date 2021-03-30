@@ -1,45 +1,43 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class ProductCollideCheck : MonoBehaviour
 {
     ProductController productController;
-    ProductManager product;
-   
-    PackageController package;
+    PlayerPackController playerPackController;
 
     void Awake()
     {
         productController = GetComponentInParent<ProductController>();
+        playerPackController = PlayerManager.myPlayerPackController;
     }
 
     void OntriggerEnter(Collider other)
     {
        
-        if (other.gameObject != productController.gameObject && other.gameObject.CompareTag("PackageController"))
+        if (other.gameObject != productController.gameObject && other.gameObject.CompareTag("PackageController") && productController.isLifted)
         {               
-            package = other.GetComponent<PackageController>();
-            package.SetCanPackage(true);            
+            playerPackController.canPackID = other.GetComponent<PhotonView>().ViewID;
+            playerPackController.latestCollision = other.gameObject;
         }
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (other.gameObject != productController.gameObject && other.gameObject.CompareTag("PackageController"))
+        if (other.gameObject != productController.gameObject && other.gameObject.CompareTag("PackageController") && productController.isLifted)
         {
-                package = other.GetComponent<PackageController>();
-                package.SetCanPackage(false);
+            playerPackController.canPackID = -1;     
         }
 
     }
 
     void OnTriggerStay(Collider other)
     { 
-        if (other.gameObject != productController.gameObject && other.gameObject.CompareTag("PackageController"))
+        if (other.gameObject != productController.gameObject && other.gameObject.CompareTag("PackageController") && productController.isLifted)
         {
-            package = other.GetComponent<PackageController>();
-            package.SetCanPackage(true);
+            playerPackController.canPackID = other.GetComponent<PhotonView>().ViewID;     
         }
     }
 }

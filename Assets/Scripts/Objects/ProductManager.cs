@@ -11,8 +11,7 @@ public class ProductManager : MonoBehaviourPunCallbacks
     [SerializeField] string type;
 
     string balanceKey;
-    bool canPickUp;
-    Transform player;
+    PlayerLiftController playerLiftController;
 
     PhotonView PV;
  
@@ -20,12 +19,7 @@ public class ProductManager : MonoBehaviourPunCallbacks
     {
         PV = GetComponent<PhotonView>();
         balanceKey = "balance" + PV.ViewID;
-        player = PlayerManager.myPlayerController.transform;
-    }
-
-    void Update()
-    {
-        CheckLiftAndDrop();
+        playerLiftController = PlayerManager.myPlayerLiftController;
     }
 
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
@@ -36,13 +30,12 @@ public class ProductManager : MonoBehaviourPunCallbacks
         }
     }
 
-    void CreateController()
+    public void CreateController()
     {
-        PlayerController pc = player.GetComponent<PlayerController>();
+        GameObject obj;
         ProductController productController;
-        GameObject packageControllerObj;
 
-        if (pc.GetLiftingID() != -1)
+        if (playerLiftController.liftingID != -1)
         {
             Debug.Log("You are already lifting something!");
             return;
@@ -54,33 +47,21 @@ public class ProductManager : MonoBehaviourPunCallbacks
         }
         if (balance == -1)
         {
-            packageControllerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "PackageController"), Vector3.zero,  Quaternion.identity);
-            productController = packageControllerObj.GetComponent<ProductController>();
-            productController.Lift();
+            obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "PackageController"), Vector3.zero,  Quaternion.identity);
+            playerLiftController.latestCollision = obj;
+            playerLiftController.canLiftID = obj.GetComponent<PhotonView>().ViewID;
             return;
         }
 
-        packageControllerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "Products", "Controllers", "ProductController"+type), Vector3.zero,  Quaternion.identity);
-        productController = packageControllerObj.GetComponent<ProductController>();
-        productController.SetType(type);
-        productController.Lift();
+        obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "Products", "Controllers", "ProductController"+type), Vector3.zero,  Quaternion.identity);
+        playerLiftController.latestCollision = obj;
+        playerLiftController.canLiftID = obj.GetComponent<PhotonView>().ViewID;
+        productController = obj.GetComponent<ProductController>();
+        productController.type = type;
 
         Hashtable hash = new Hashtable();
         balance--;
         hash.Add(balanceKey, balance);
         PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
-    }
-
-    private void CheckLiftAndDrop()
-    {
-        if (canPickUp && Input.GetKeyDown(KeyCode.Space))
-        {
-            CreateController();
-        }
-    }
-
-    public void SetCanPickUp(bool _canPickUp)
-    {
-        canPickUp = _canPickUp;
     }
 }
