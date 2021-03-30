@@ -18,6 +18,7 @@ TagManager:
   - ProductManager
   - PackageManager
   - PackageController
+  - Table
   layers:
   - Default
   - TransparentFX
