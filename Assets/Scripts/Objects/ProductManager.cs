@@ -30,7 +30,7 @@ public class ProductManager : MonoBehaviourPunCallbacks
         }
     }
 
-    public void CreateController()
+    public bool CreateController()
     {
         GameObject obj;
         ProductController productController;
@@ -38,19 +38,19 @@ public class ProductManager : MonoBehaviourPunCallbacks
         if (playerLiftController.liftingID != -1)
         {
             Debug.Log("You are already lifting something!");
-            return;
+            return false;
         }
         if (balance == 0)
         {
             Debug.Log("Balance is 0!");
-            return;
+            return false;
         }
         if (balance == -1)
         {
             obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "PackageController"), Vector3.zero,  Quaternion.identity);
             playerLiftController.latestCollision = obj;
             playerLiftController.canLiftID = obj.GetComponent<PhotonView>().ViewID;
-            return;
+            return true;
         }
 
         obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "Products", "Controllers", "ProductController"+type), Vector3.zero,  Quaternion.identity);
@@ -63,5 +63,7 @@ public class ProductManager : MonoBehaviourPunCallbacks
         balance--;
         hash.Add(balanceKey, balance);
         PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
+
+        return true;
     }
 }

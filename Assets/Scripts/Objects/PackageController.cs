@@ -66,7 +66,7 @@ public class PackageController : MonoBehaviour, Liftable
         //droppedDeliveries.Add(gameObject);
         Destroy(gameObject);
         ScoreController.Instance.IncrementScore(score);
-        PV.RPC("OnDelivery", RpcTarget.OthersBuffered);
+        PV.RPC("OnDeliver", RpcTarget.OthersBuffered);
     }
 
     [PunRPC]

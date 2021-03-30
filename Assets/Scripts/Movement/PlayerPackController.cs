@@ -92,8 +92,12 @@ public class PlayerPackController : MonoBehaviour
     void OnPack(int productViewID, int packageViewID)
     {
         GameObject productControllerObj = PhotonView.Find(productViewID).gameObject;
+        ProductController productController = productControllerObj.GetComponent<ProductController>();
         GameObject packageControllerObj = PhotonView.Find(packageViewID).gameObject;
         PackageController packageController = packageControllerObj.GetComponent<PackageController>();
+
+        productController.isLifted = false;
+        productController.isPackaged = true;
 
         productControllerObj.transform.parent = packageControllerObj.transform;
         productControllerObj.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
@@ -103,13 +107,13 @@ public class PlayerPackController : MonoBehaviour
             packageController.bpic1 = true;
             packageController.productCount++;
         }
-        if (!packageController.bpic2)
+        else if (!packageController.bpic2)
         {
             productControllerObj.transform.localPosition = packageController.pic2.transform.localPosition;
             packageController.bpic2 = true;
             packageController.productCount++;
         }
-        if (!packageController.bpic3)
+        else if (!packageController.bpic3)
         {
             productControllerObj.transform.localPosition = packageController.pic3.transform.localPosition;
             packageController.bpic3 = true;

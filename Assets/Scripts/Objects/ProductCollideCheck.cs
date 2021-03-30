@@ -14,11 +14,12 @@ public class ProductCollideCheck : MonoBehaviour
         playerPackController = PlayerManager.myPlayerPackController;
     }
 
-    void OntriggerEnter(Collider other)
+    void OnTriggerEnter(Collider other)
     {
-       
+        if (other.CompareTag("ProductController") && other.GetComponent<ProductController>().isPackaged) return;
+
         if (other.gameObject != productController.gameObject && other.gameObject.CompareTag("PackageController") && productController.isLifted)
-        {               
+        {
             playerPackController.canPackID = other.GetComponent<PhotonView>().ViewID;
             playerPackController.latestCollision = other.gameObject;
         }
@@ -26,6 +27,8 @@ public class ProductCollideCheck : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
+        if (other.CompareTag("ProductController") && other.GetComponent<ProductController>().isPackaged) return;
+
         if (other.gameObject != productController.gameObject && other.gameObject.CompareTag("PackageController") && productController.isLifted)
         {
             playerPackController.canPackID = -1;     
@@ -35,6 +38,8 @@ public class ProductCollideCheck : MonoBehaviour
 
     void OnTriggerStay(Collider other)
     { 
+        if (other.CompareTag("ProductController") && other.GetComponent<ProductController>().isPackaged) return;
+
         if (other.gameObject != productController.gameObject && other.gameObject.CompareTag("PackageController") && productController.isLifted)
         {
             playerPackController.canPackID = other.GetComponent<PhotonView>().ViewID;     

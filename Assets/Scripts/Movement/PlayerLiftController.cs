@@ -40,8 +40,7 @@ public class PlayerLiftController : MonoBehaviour
         if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && (latestCollision.CompareTag("ProductManager") || latestCollision.CompareTag("PackageManager")))
         {
             ProductManager productManager = latestCollision.GetComponent<ProductManager>();
-            productManager.CreateController();
-            Lift();
+            if (productManager.CreateController()) Lift();
             return;
         }
         if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && IsLifting(-1) && !controller.isPackaged && !controller.isLifted)
