@@ -5,73 +5,67 @@ using Photon.Pun;
 
 public class PickUpCheck : MonoBehaviour
 {
-    ProductController productController;
-    ProductManager productManager;
-    PlayerController playerController;
     PhotonView PV;
-    ProductController packageController;
+    PlayerLiftController playerLiftController;
+    PlayerPackController playerPackController;
 
     void Awake()
     {
-        playerController = GetComponentInParent<PlayerController>();
-        PV = playerController.GetComponent<PhotonView>();
+        PV = GetComponentInParent<PhotonView>();
+        playerLiftController = GetComponentInParent<PlayerLiftController>();
+        playerPackController = GetComponentInParent<PlayerPackController>();
     }
 
-    void OntriggerEnter(Collider other)
+    void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject != playerController.gameObject && PV.IsMine && other.gameObject.CompareTag("ProductController"))
+        if (other.CompareTag("ProductController") && other.GetComponent<ProductController>().isPackaged) return;
+
+        if (other.gameObject != playerLiftController.gameObject && PV.IsMine)
         {
-            productController = other.GetComponent<ProductController>();
-            productController.SetCanPickUp(true);
-        }
-        else if(other.gameObject != playerController.gameObject && PV.IsMine && (other.gameObject.CompareTag("ProductManager") || other.gameObject.CompareTag("PackageManager")))
-        {
-            productManager = other.GetComponent<ProductManager>();
-            productManager.SetCanPickUp(true);
-        }
-        else if (other.gameObject != playerController.gameObject && other.gameObject.CompareTag("PackageController"))
-        {         
-            packageController = other.GetComponent<ProductController>();
-            packageController.SetCanPickUp(true);
+            if (other.gameObject.CompareTag("ProductController") || other.gameObject.CompareTag("ProductManager") || other.gameObject.CompareTag("PackageController") || other.gameObject.CompareTag("PackageManager"))
+            {
+                playerLiftController.canLiftID = other.gameObject.GetComponent<PhotonView>().ViewID;
+                playerLiftController.latestCollision = other.gameObject;
+                if (other.gameObject.CompareTag("PackageController"))
+                {
+                    playerPackController.canTapeID = other.gameObject.GetComponent<PhotonView>().ViewID;
+                    playerPackController.latestCollision = other.gameObject;
+                }
+            }
         }
     }
 
     void OnTriggerExit(Collider other)
     {
-        if(other.gameObject != playerController.gameObject && PV.IsMine && other.gameObject.CompareTag("ProductController"))
+        if (other.CompareTag("ProductController") && other.GetComponent<ProductController>().isPackaged) return;
+
+        if (other.gameObject != playerLiftController.gameObject && PV.IsMine)
         {
-            productController = other.GetComponent<ProductController>();
-            productController.SetCanPickUp(false);
-        }
-        else if(other.gameObject != playerController.gameObject && PV.IsMine && (other.gameObject.CompareTag("ProductManager") || other.gameObject.CompareTag("PackageManager")))
-        {
-            productManager = other.GetComponent<ProductManager>();
-            productManager.SetCanPickUp(false);
-        }
-        else if (other.gameObject != playerController.gameObject && other.gameObject.CompareTag("PackageController"))
-        {
-            packageController = other.GetComponent<ProductController>();
-            packageController.SetCanPickUp(false);
+            if (other.gameObject.CompareTag("ProductController") || other.gameObject.CompareTag("ProductManager") || other.gameObject.CompareTag("PackageController") || other.gameObject.CompareTag("PackageManager"))
+            {
+                playerLiftController.canLiftID = -1;
+                if (other.gameObject.CompareTag("PackageController"))
+                {
+                    playerPackController.canTapeID = -1;
+                }
+            }
         }
     }
     
     void OnTriggerStay(Collider other)
     {
-        if(other.gameObject != playerController.gameObject && PV.IsMine && other.gameObject.CompareTag("ProductController"))
+        if (other.CompareTag("ProductController") && other.GetComponent<ProductController>().isPackaged) return;
+
+        if (other.gameObject != playerLiftController.gameObject && PV.IsMine)
         {
-            productController = other.GetComponent<ProductController>();
-            productController.SetCanPickUp(true);
-            
-        }
-        else if(other.gameObject != playerController.gameObject && PV.IsMine && (other.gameObject.CompareTag("ProductManager") || other.gameObject.CompareTag("PackageManager")))
-        {
-            productManager = other.GetComponent<ProductManager>();
-            productManager.SetCanPickUp(true);
-        }
-        else if (other.gameObject != playerController.gameObject && other.gameObject.CompareTag("PackageController"))
-        {
-            packageController = other.GetComponent<ProductController>();
-            packageController.SetCanPickUp(true);
+            if (other.gameObject.CompareTag("ProductController") || other.gameObject.CompareTag("ProductManager") || other.gameObject.CompareTag("PackageController") || other.gameObject.CompareTag("PackageManager"))
+            {
+                playerLiftController.canLiftID = other.gameObject.GetComponent<PhotonView>().ViewID;
+                if (other.gameObject.CompareTag("PackageController"))
+                {
+                    playerPackController.canTapeID = other.gameObject.GetComponent<PhotonView>().ViewID;
+                }
+            }
         }
     }
 }

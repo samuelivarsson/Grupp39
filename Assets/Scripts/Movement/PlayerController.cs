@@ -5,23 +5,24 @@ using Photon.Pun;
 
 public class PlayerController : MonoBehaviour
 {
+    PhotonView PV;
     Rigidbody rb;
     [SerializeField] float movementSpeed, smoothTime;
     private float horizontalInput, verticalInput;
-    private bool isLifting;
-    GameObject latestTile;
 
     Vector3 smoothMoveVelocity;
     Vector3 moveDir;
     Vector3 moveAmount;
 
-    PhotonView PV;
+    public static KeyCode useButton = KeyCode.Space;
+    public static KeyCode tapeButton = KeyCode.E;
+    public static KeyCode packButton = KeyCode.LeftShift;
+    public static KeyCode crouchButton = KeyCode.LeftControl;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         PV = GetComponent<PhotonView>();
-        isLifting = false;
     }
 
     void Start()
@@ -36,15 +37,6 @@ public class PlayerController : MonoBehaviour
         Move();
     }
 
-    private void Move()
-    {
-        horizontalInput = Input.GetAxisRaw("Horizontal");
-        verticalInput = Input.GetAxisRaw("Vertical");
-
-        moveDir = new Vector3(horizontalInput, 0, verticalInput).normalized;
-        moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * movementSpeed, ref smoothMoveVelocity, smoothTime);
-    }
-
     private void FixedUpdate()
     {
         if (!PV.IsMine) return;
@@ -53,23 +45,12 @@ public class PlayerController : MonoBehaviour
         if (moveDir != Vector3.zero) rb.MoveRotation(Quaternion.LookRotation(moveDir));
     }
 
-    public void SetIsLifting(bool _isLifting)
+    private void Move()
     {
-        isLifting = _isLifting;
-    }
+        horizontalInput = Input.GetAxisRaw("Horizontal");
+        verticalInput = Input.GetAxisRaw("Vertical");
 
-    public bool GetIsLifting()
-    {
-        return isLifting;
-    }
-
-    public void SetLatestTile(GameObject _latestTile)
-    {
-        latestTile = _latestTile;
-    }
-
-    public GameObject GetLatestTile()
-    {
-        return latestTile;
+        moveDir = new Vector3(horizontalInput, 0, verticalInput).normalized;
+        moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * movementSpeed, ref smoothMoveVelocity, smoothTime);
     }
 }

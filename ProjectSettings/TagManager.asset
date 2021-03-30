@@ -11,11 +11,13 @@ TagManager:
   - Task3
   - PlayerCollider
   - ProductController
-  - Product
   - Task4
   - PlaceableTile
   - NonPlaceableTile
   - DropZone
+  - ProductManager
+  - PackageManager
+  - PackageController
   layers:
   - Default
   - TransparentFX

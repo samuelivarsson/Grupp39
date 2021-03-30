@@ -6,9 +6,11 @@ using System.IO;
 
 public class PlayerManager : MonoBehaviour
 {
+    public static PlayerLiftController myPlayerLiftController;
+    public static PlayerPackController myPlayerPackController;
+
     PhotonView PV;
     Vector3 startPos = new Vector3(10.5f, 1.5f, 12.5f);
-    public static PlayerController myPlayerController;
  
     void Awake()
     {
@@ -27,6 +29,7 @@ public class PlayerManager : MonoBehaviour
     void CreateController()
     {
         GameObject playerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Player", "PlayerController"), startPos, Quaternion.identity);
-        myPlayerController = playerObj.GetComponent<PlayerController>();
+        myPlayerLiftController = playerObj.GetComponent<PlayerLiftController>();
+        myPlayerPackController = playerObj.GetComponent<PlayerPackController>();
     }
 }

@@ -72,7 +72,7 @@ GameObject:
   - component: {fileID: 3290315257116680634}
   - component: {fileID: 5324589393070720018}
   m_Layer: 0
-  m_Name: ProductController
+  m_Name: ProductControllerYellow
   m_TagString: ProductController
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -119,7 +119,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c91ea5393f73a814888ae7c250232e43, type: 2}
+  - {fileID: 2100000, guid: 2ee0fb6e9b3eb6b4e9744679944058bd, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -165,7 +165,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc6b6170377b8304e950352d26d9ba46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: BlueBox
 --- !u!114 &5324589393070720018
 MonoBehaviour:
   m_ObjectHideFlags: 0

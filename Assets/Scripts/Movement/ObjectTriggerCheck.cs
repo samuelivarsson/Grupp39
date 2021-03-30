@@ -4,20 +4,14 @@ using UnityEngine;
 
 public class ObjectTriggerCheck : MonoBehaviour
 {
-    PlayerController playerController;
     Material standardTile;
     Material standardDropZone;
-
-    void Awake()
-    {
-        playerController = gameObject.GetComponentInParent<PlayerController>();
-    }
 
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("PlaceableTile") || other.CompareTag("NonPlaceableTile") || other.CompareTag("DropZone"))
         {
-            playerController.SetLatestTile(other.gameObject);
+            PlayerManager.myPlayerLiftController.latestTile = other.gameObject;
             Renderer renderer = other.GetComponent<Renderer>();
             if (other.CompareTag("PlaceableTile"))
             {
