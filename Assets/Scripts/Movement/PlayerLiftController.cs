@@ -48,7 +48,7 @@ public class PlayerLiftController : MonoBehaviour
             Lift();
             return;
         }
-        if (Input.GetKeyDown(PlayerController.useButton) && IsLifting(latestObjViewID) && latestTile && (latestTile.CompareTag("PlaceableTile") || latestTile.CompareTag("DropZone")))
+        if (Input.GetKeyDown(PlayerController.useButton) && IsLifting(latestObjViewID) && latestTile && (latestTile.CompareTag("PlaceableTile") || latestTile.CompareTag("DropZone") || latestTile.CompareTag("TapeTile")))
         {
             Drop();
         }
@@ -85,11 +85,22 @@ public class PlayerLiftController : MonoBehaviour
         controller.isLifted = false;
         canLiftID = -1;
         liftingID = -1;
-
+        Debug.Log("Drop");
         if (latestTile.CompareTag("DropZone") && latestObject.CompareTag("PackageController"))
         {
             latestObject.GetComponent<PackageController>().OrderDelivery(latestTile);
             return;
+        }
+
+        if (latestTile.CompareTag("TapeTile") && latestObject.CompareTag("PackageController"))
+        {
+            latestObject.transform.parent = latestTile.transform;
+            latestObject.transform.localPosition = ProductController.tileOffsetTape;
+            float eulerYt = ClosestAngle(gameObject.transform.rotation.eulerAngles.y);
+            latestObject.transform.rotation = Quaternion.Euler(0, eulerYt, 0);
+            PV.RPC("OnDrop", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID, latestTile.name, eulerYt);
+            return;
+
         }
 
         // Add parent and fix position & rotation

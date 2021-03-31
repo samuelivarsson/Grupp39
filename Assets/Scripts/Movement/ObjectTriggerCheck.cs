@@ -9,7 +9,7 @@ public class ObjectTriggerCheck : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("PlaceableTile") || other.CompareTag("NonPlaceableTile") || other.CompareTag("DropZone"))
+        if (other.CompareTag("PlaceableTile") || other.CompareTag("NonPlaceableTile") || other.CompareTag("DropZone") || other.CompareTag("TapeTile"))
         {
             PlayerManager.myPlayerLiftController.latestTile = other.gameObject;
             Renderer renderer = other.GetComponent<Renderer>();
