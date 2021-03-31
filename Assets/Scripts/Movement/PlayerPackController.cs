@@ -6,6 +6,7 @@ using Photon.Pun;
 public class PlayerPackController : MonoBehaviour
 {
     PhotonView PV;
+    PlayerLiftController playerLiftController;
 
     // Latest package collided with
     public GameObject latestCollision {get; set;}
@@ -17,6 +18,7 @@ public class PlayerPackController : MonoBehaviour
     void Awake()
     {
         PV = GetComponent<PhotonView>();
+        playerLiftController = GetComponentInParent<PlayerLiftController>();
     }
 
     // Update is called once per frame
@@ -50,7 +52,7 @@ public class PlayerPackController : MonoBehaviour
 
         int latestColViewID = latestCollision.GetComponent<PhotonView>().ViewID;
         PackageController packageController = latestCollision.GetComponent<PackageController>();
-        if (Input.GetKeyDown(PlayerController.tapeButton) && CanTape(latestColViewID) && !packageController.isTaped)
+        if (Input.GetKeyDown(PlayerController.tapeButton) && CanTape(latestColViewID) && !packageController.isTaped && playerLiftController.tape == true)
         {
             Tape(packageController);
         }
@@ -125,6 +127,7 @@ public class PlayerPackController : MonoBehaviour
     {
         packageController.timebar.enabled = true;
         packageController.isTaped = true;
+        playerLiftController.tape = false;
         PV.RPC("OnTape", RpcTarget.OthersBuffered, packageController.GetComponent<PhotonView>().ViewID);
     }
 

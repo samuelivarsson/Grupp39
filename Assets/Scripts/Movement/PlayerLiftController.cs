@@ -7,6 +7,7 @@ public class PlayerLiftController : MonoBehaviour
 {
     public int liftingID {get; set;}
     public int canLiftID {get; set;}
+    public bool tape;
     public GameObject latestTile {get; set;}
 
     public GameObject latestCollision {get; set;}
@@ -21,6 +22,7 @@ public class PlayerLiftController : MonoBehaviour
         liftingID = -1;
         canLiftID = -1;
         hand = gameObject.transform.GetChild(0);
+        tape = false;
     }
 
     void Update()
@@ -94,6 +96,7 @@ public class PlayerLiftController : MonoBehaviour
 
         if (latestTile.CompareTag("TapeTile") && latestObject.CompareTag("PackageController"))
         {
+            tape = true;
             latestObject.transform.parent = latestTile.transform;
             latestObject.transform.localPosition = ProductController.tileOffsetTape;
             float eulerYt = ClosestAngle(gameObject.transform.rotation.eulerAngles.y);
