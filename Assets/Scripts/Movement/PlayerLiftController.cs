@@ -91,10 +91,11 @@ public class PlayerLiftController : MonoBehaviour
         controller.isLifted = false;
         canLiftID = -1;
         liftingID = -1;
-        Debug.Log("Drop");
         if (latestTile.CompareTag("DropZone") && latestObject.CompareTag("PackageController"))
         {
             latestObject.GetComponent<PackageController>().OrderDelivery(latestTile);
+            latestCollision = null;
+            latestObject = null;
             return;
         }
                 

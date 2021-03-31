@@ -7,6 +7,7 @@ public class PlayerPackController : MonoBehaviour
 {
     PhotonView PV;
     PlayerLiftController playerLiftController;
+    PlayerController playerController;
 
     // Latest package collided with
     public GameObject latestCollision {get; set;}
@@ -14,11 +15,14 @@ public class PlayerPackController : MonoBehaviour
     GameObject latestPackage;
     public int canPackID {get; set;}
     public int canTapeID {get; set;}
+    public bool isTaping { get; set; } = false;
+
 
     void Awake()
     {
         PV = GetComponent<PhotonView>();
         playerLiftController = GetComponentInParent<PlayerLiftController>();
+        playerController = GetComponentInParent<PlayerController>();
     }
 
     // Update is called once per frame
@@ -128,6 +132,7 @@ public class PlayerPackController : MonoBehaviour
         packageController.timebar.enabled = true;
         packageController.isTaped = true;
         playerLiftController.tape = false;
+        isTaping = true;
         PV.RPC("OnTape", RpcTarget.OthersBuffered, packageController.GetComponent<PhotonView>().ViewID);
     }
 

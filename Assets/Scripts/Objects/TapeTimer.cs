@@ -10,10 +10,14 @@ public class TapeTimer : MonoBehaviour
     [SerializeField] float maxTime = 5f;
     [SerializeField] float timeLeft;
     PackageController packageController;
+    PlayerPackController playerPackController;
+    
    
     void Awake()
     {
         packageController = GetComponentInParent<PackageController>();
+        playerPackController = PlayerManager.myPlayerPackController;
+        
     }
 
     // Start is called before the first frame update
@@ -37,6 +41,7 @@ public class TapeTimer : MonoBehaviour
             {
                 timeLeft -= (float)0.01;
                 packageController.GetComponent<Renderer>().material.color = Color.green;
+                playerPackController.isTaping = false;
             }
         }
     }
