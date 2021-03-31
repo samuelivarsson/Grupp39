@@ -142,6 +142,7 @@ public class PlayerPackController : MonoBehaviour
         GameObject packageControllerObj = PhotonView.Find(packageViewID).gameObject;
         PackageController packageController = packageControllerObj.GetComponent<PackageController>();
 
+        isTaping = true;
         packageController.timebar.enabled = true;
         packageController.isTaped = true;
     }
