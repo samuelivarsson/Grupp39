@@ -63,7 +63,7 @@ public class PlayerLiftController : MonoBehaviour
             Drop();
             return;
         }
-        if (Input.GetKeyDown(PlayerController.useButton) && IsLifting(latestObjViewID) && latestTile &&  latestTile.CompareTag("TapeTile"))
+        if (Input.GetKeyDown(PlayerController.useButton) && IsLifting(latestObjViewID) && latestTile && latestTile.CompareTag("TapeTile"))
         {
             DropOnTapeTable();
             return;
@@ -74,19 +74,26 @@ public class PlayerLiftController : MonoBehaviour
         }
     }
 
-    void Lift()
+    void _Lift(GameObject obj, float eulerY)
     {
-        latestObject = latestCollision;
-        latestObject.transform.parent = gameObject.transform;
-        latestObject.transform.localPosition = hand.transform.localPosition;
-        float eulerY = ClosestAngle(latestObject.transform.localRotation.eulerAngles.y);
-        latestObject.transform.localRotation = Quaternion.Euler(0, eulerY, 0);
+        // Make child and change position & rotation
+        obj.transform.parent = gameObject.transform;
+        obj.transform.localPosition = hand.transform.localPosition;
+        obj.transform.localRotation = Quaternion.Euler(0, eulerY, 0);
 
-        Liftable controller = GetController(latestObject);
+        // Set booleans and liftingID
+        liftingID = obj.GetComponent<PhotonView>().ViewID;
+        Liftable controller = GetController(obj);
         controller.isLifted = true;
         LiftablePackage packageController = controller as LiftablePackage;
         if (packageController != null) packageController.canTape = false;
-        liftingID = latestObject.GetComponent<PhotonView>().ViewID;
+    }
+
+    void Lift()
+    {
+        latestObject = latestCollision;
+        float eulerY = ClosestAngle(latestObject.transform.rotation.eulerAngles.y - gameObject.transform.rotation.eulerAngles.y);
+        _Lift(latestObject, eulerY);
         PV.RPC("OnLift", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID, eulerY);
     }
 
@@ -94,23 +101,33 @@ public class PlayerLiftController : MonoBehaviour
     void OnLift(int viewID, float eulerY)
     {
         GameObject obj = PhotonView.Find(viewID).gameObject;
-        obj.transform.parent = gameObject.transform;
-        obj.transform.localPosition = hand.transform.localPosition;
-        obj.transform.localRotation = Quaternion.Euler(0, eulerY, 0);
-        Liftable controller = GetController(obj);
-        controller.isLifted = true;
-        LiftablePackage packageController = controller as LiftablePackage;
-        if (packageController != null) packageController.canTape = false;
+        _Lift(obj, eulerY);
     }
 
-    public void Drop()
+    void _Drop(GameObject obj, float eulerY, GameObject tile, Vector3 offset)
     {
-        if (latestObject == null) return;
-        
-        Liftable controller = GetController(latestObject);
-        controller.isLifted = false;
+        // Make child and fix position & rotation
+        obj.transform.parent = tile.transform;
+        obj.transform.localPosition = offset;
+        obj.transform.rotation = Quaternion.Euler(0, eulerY, 0);
+
+        // Set booleans
         canLiftID = -1;
         liftingID = -1;
+        Liftable controller = GetController(obj);
+        controller.isLifted = false;
+        LiftablePackage packageController = controller as LiftablePackage;
+        if (packageController != null && tile.CompareTag("TapeTile")) packageController.canTape = true;
+    }
+
+    void Drop()
+    {
+        if (latestObject == null) return;
+
+        float eulerY = ClosestAngle(latestObject.transform.rotation.eulerAngles.y);
+        Vector3 offset = GetTileOffset(latestObject);
+        _Drop(latestObject, eulerY, latestTile, offset);
+
         if (latestTile.CompareTag("DropZone") && latestObject.CompareTag("PackageController"))
         {
             latestObject.GetComponent<PackageController>().OrderDelivery(latestTile);
@@ -118,101 +135,60 @@ public class PlayerLiftController : MonoBehaviour
             latestObject = null;
             return;
         }
-                
-        // Add parent and fix position & rotation
-        latestObject.transform.parent = latestTile.transform;
-        latestObject.transform.localPosition = ProductController.tileOffset;
-        float eulerY = ClosestAngle(gameObject.transform.rotation.eulerAngles.y);
-        latestObject.transform.rotation = Quaternion.Euler(0, eulerY, 0);
-        PV.RPC("OnDrop", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID, latestTile.name, eulerY);
+
+        PV.RPC("OnDrop", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID, eulerY, latestTile.name, offset);
     }
 
     [PunRPC]
-    void OnDrop(int viewID, string tileName, float eulerY)
+    void OnDrop(int viewID, float eulerY, string tileName, Vector3 offset)
     {
         GameObject obj = PhotonView.Find(viewID).gameObject;
         GameObject tile = GameObject.Find(tileName);
-        obj.transform.parent = tile.transform;
-        obj.transform.localPosition = ProductController.tileOffset;
-        obj.transform.rotation = Quaternion.Euler(0, eulerY, 0);
-
-        Liftable controller = GetController(obj);
-        controller.isLifted = false;
+        _Drop(obj, eulerY, tile, offset);
     }
 
-    public void DropOnTable()
+    void DropOnTable()
     {
-        Liftable controller = GetController(latestObject);
-        controller.isLifted = false;
-        canLiftID = -1;
-        liftingID = -1;
-        latestObject.transform.parent = latestTile.transform;
+        if (latestObject == null) return;
+
+        float eulerY = ClosestAngle(latestObject.transform.rotation.eulerAngles.y);
+        Vector3 offset = GetCabinetOffset(latestObject);
+        _Drop(latestObject, eulerY, latestTile, offset);
+        PV.RPC("OnDropOnTable", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID, eulerY, latestTile.name, offset);
+    }
+
+    [PunRPC]
+    void OnDropOnTable(int viewID, float eulerY, string tileName, Vector3 offset)
+    {
+        GameObject obj = PhotonView.Find(viewID).gameObject;
+        GameObject tile = GameObject.Find(tileName);
+        _Drop(obj, eulerY, tile, offset);
+    }
+
+    void DropOnTapeTable()
+    {
+        if (latestObject == null) return;
+
         if (latestObject.CompareTag("PackageController"))
         {
-            latestObject.transform.localPosition = PackageController.cabinetOffset;
+            float eulerY = ClosestAngle(latestObject.transform.rotation.eulerAngles.y);
+            Vector3 offset = PackageController.cabinetOffset;
+            _Drop(latestObject, eulerY, latestTile, offset);
+            PV.RPC("OnDropOnTapeTable", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID, eulerY, latestTile.name, offset);
         }
-        if(latestObject.CompareTag("ProductController"))
-        {
-            latestObject.transform.localPosition = ProductController.cabinetOffset;
-        }
-        float eulerYt = ClosestAngle(gameObject.transform.rotation.eulerAngles.y);
-        latestObject.transform.rotation = Quaternion.Euler(0, eulerYt, 0);
-        PV.RPC("OnDropOnTable", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID, latestTile.name, eulerYt);
     }
 
     [PunRPC]
-    void OnDropOnTable(int viewID, string tileName, float eulerY)
+    void OnDropOnTapeTable(int viewID, float eulerY, string tileName, Vector3 offset)
     {
         GameObject obj = PhotonView.Find(viewID).gameObject;
         GameObject tile = GameObject.Find(tileName);
-        obj.transform.parent = tile.transform;
-        obj.transform.localPosition = ProductController.cabinetOffset;
-        obj.transform.rotation = Quaternion.Euler(0, eulerY, 0);
-
-        Liftable controller = GetController(obj);
-        controller.isLifted = false;
+        _Drop(obj, eulerY, tile, offset);
     }
 
-    public void DropOnTapeTable()
+    public static float ClosestAngle(float a)
     {
-        
-        if (latestObject.CompareTag("PackageController"))
-        {
-            Liftable controller = GetController(latestObject);
-            controller.isLifted = false;
-            LiftablePackage packageController = controller as LiftablePackage;
-            if (packageController != null) packageController.canTape = true;
-            canLiftID = -1;
-            liftingID = -1;
-
-            latestObject.transform.parent = latestTile.transform;
-            latestObject.transform.localPosition = PackageController.cabinetOffset;
-            float eulerYt = ClosestAngle(gameObject.transform.rotation.eulerAngles.y);
-            latestObject.transform.rotation = Quaternion.Euler(0, eulerYt, 0);
-            PV.RPC("OnDropOnTapeTable", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID, latestTile.name, eulerYt);
-        }
-
-    }
-
-    [PunRPC]
-    void OnDropOnTapeTable(int viewID, string tileName, float eulerY)
-    {
-        GameObject obj = PhotonView.Find(viewID).gameObject;
-        GameObject tile = GameObject.Find(tileName);
-        obj.transform.parent = tile.transform;
-        obj.transform.localPosition = PackageController.cabinetOffset;
-        obj.transform.rotation = Quaternion.Euler(0, eulerY, 0);
-
-        Liftable controller = GetController(obj);
-        controller.isLifted = false;
-        LiftablePackage packageController = controller as LiftablePackage;
-        if (packageController != null) packageController.canTape = true;
-
-    }
-
-    private float ClosestAngle(float a)
-    {
-        float[] w = {0, 90, 180, 270};
+        float[] w = {-360, -270, -180, -90, 0, 90, 180, 270, 360};
         float currentNearest = w[0];
         float currentDifference = Mathf.Abs(currentNearest - a);
 
@@ -242,6 +218,22 @@ public class PlayerLiftController : MonoBehaviour
         ICreateController result;
         if (obj.CompareTag("ProductManager")) result = obj.GetComponent<ProductManager>();
         else result = obj.GetComponent<PackageManager>();
+        return result;
+    }
+
+    Vector3 GetTileOffset(GameObject obj)
+    {
+        Vector3 result;
+        if (obj.CompareTag("ProductController")) result = ProductController.tileOffset;
+        else result = PackageController.tileOffset;
+        return result;
+    }
+
+    Vector3 GetCabinetOffset(GameObject obj)
+    {
+        Vector3 result;
+        if (obj.CompareTag("ProductController")) result = ProductController.cabinetOffset;
+        else result = PackageController.cabinetOffset;
         return result;
     }
 
