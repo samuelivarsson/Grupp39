@@ -5,7 +5,7 @@ using Photon.Pun;
 using System.IO;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
-public class ProductManager : MonoBehaviourPunCallbacks
+public class ProductManager : MonoBehaviourPunCallbacks, ICreateController
 {
     [SerializeField] int balance;
     [SerializeField] string type;
@@ -32,9 +32,6 @@ public class ProductManager : MonoBehaviourPunCallbacks
 
     public bool CreateController()
     {
-        GameObject obj;
-        ProductController productController;
-
         if (playerLiftController.liftingID != -1)
         {
             Debug.Log("You are already lifting something!");
@@ -45,18 +42,10 @@ public class ProductManager : MonoBehaviourPunCallbacks
             Debug.Log("Balance is 0!");
             return false;
         }
-        if (balance == -1)
-        {
-            obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "PackageController"), Vector3.zero,  Quaternion.identity);
-            playerLiftController.latestCollision = obj;
-            playerLiftController.canLiftID = obj.GetComponent<PhotonView>().ViewID;
-            return true;
-        }
-
-        obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "Products", "Controllers", "ProductController"+type), Vector3.zero,  Quaternion.identity);
+        GameObject obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "Products", "Controllers", "ProductController"+type), Vector3.zero,  Quaternion.identity);
         playerLiftController.latestCollision = obj;
         playerLiftController.canLiftID = obj.GetComponent<PhotonView>().ViewID;
-        productController = obj.GetComponent<ProductController>();
+        ProductController productController = obj.GetComponent<ProductController>();
         productController.type = type;
 
         Hashtable hash = new Hashtable();

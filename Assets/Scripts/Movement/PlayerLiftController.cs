@@ -5,15 +5,23 @@ using Photon.Pun;
 
 public class PlayerLiftController : MonoBehaviour
 {
+    // The PhotonView.viewID of the object the player is carrying, set to -1 if the player isn't carrying anything
     public int liftingID {get; set;} = -1;
+    // The PhotonView.viewID of the object the player's PickUpCheck hitbox is triggering with, set to -1 when the player's PickUpCheck hitbox "exits" the object
     public int canLiftID {get; set;} = -1;
     
+    // Latest tile the player's ObjectTrigger triggered with
     public GameObject latestTile {get; set;}
 
+    // Latest object the player's PickUpCheck hitbox triggered with
     public GameObject latestCollision {get; set;}
+    // Latest object the player lifted
     GameObject latestObject;
+
+    // A static offset where the player's "hand" is, used as object's localPosition when lifting
     Transform hand;
 
+    // This player's PhotonView.
     PhotonView PV;
 
     void Awake()
@@ -41,8 +49,8 @@ public class PlayerLiftController : MonoBehaviour
         if (productController != null) isPackaged = productController.isPackaged;
         if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && (latestCollision.CompareTag("ProductManager") || latestCollision.CompareTag("PackageManager")))
         {
-            ProductManager productManager = latestCollision.GetComponent<ProductManager>();
-            if (productManager.CreateController()) Lift();
+            ICreateController manager = GetManager(latestCollision);
+            if (manager.CreateController()) Lift();
             return;
         }
         if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && IsLifting(-1) && !isPackaged && !controller.isLifted)
@@ -226,6 +234,14 @@ public class PlayerLiftController : MonoBehaviour
         Liftable result;
         if (obj.CompareTag("ProductController")) result = obj.GetComponent<ProductController>();
         else result = obj.GetComponent<PackageController>();
+        return result;
+    }
+
+    ICreateController GetManager(GameObject obj)
+    {
+        ICreateController result;
+        if (obj.CompareTag("ProductManager")) result = obj.GetComponent<ProductManager>();
+        else result = obj.GetComponent<PackageManager>();
         return result;
     }
 
