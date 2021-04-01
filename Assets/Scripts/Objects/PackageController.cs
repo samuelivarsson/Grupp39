@@ -5,10 +5,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon.Realtime;
 
-public class PackageController : MonoBehaviour, Liftable
+public class PackageController : MonoBehaviour, LiftablePackage
 {
     public bool isLifted {get; set;} = false;
-    public bool isPackaged {get; set;} = false;
     public bool isTaped {get; set;} = false;
 
     PhotonView PV;
