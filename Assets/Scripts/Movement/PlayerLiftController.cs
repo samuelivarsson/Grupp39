@@ -93,6 +93,8 @@ public class PlayerLiftController : MonoBehaviour
 
     public void Drop()
     {
+        if (latestObject == null) return;
+        
         Liftable controller = GetController(latestObject);
         controller.isLifted = false;
         canLiftID = -1;
@@ -221,7 +223,7 @@ public class PlayerLiftController : MonoBehaviour
         return result;
     }
 
-    bool IsLifting(int _liftingID)
+    public bool IsLifting(int _liftingID)
     {
         return liftingID == _liftingID;
     }

@@ -21,6 +21,7 @@ TagManager:
   - Table
   - TapeTile
   - TableTile
+  - PlayerController
   layers:
   - Default
   - TransparentFX
