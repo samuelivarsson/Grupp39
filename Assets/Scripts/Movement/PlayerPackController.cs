@@ -6,6 +6,8 @@ using Photon.Pun;
 public class PlayerPackController : MonoBehaviour
 {
     PhotonView PV;
+    PlayerLiftController playerLiftController;
+    PlayerController playerController;
 
     // Latest package collided with
     public GameObject latestCollision {get; set;}
@@ -13,10 +15,14 @@ public class PlayerPackController : MonoBehaviour
     GameObject latestPackage;
     public int canPackID {get; set;}
     public int canTapeID {get; set;}
+    public bool isTaping { get; set; } = false;
+
 
     void Awake()
     {
         PV = GetComponent<PhotonView>();
+        playerLiftController = GetComponentInParent<PlayerLiftController>();
+        playerController = GetComponentInParent<PlayerController>();
     }
 
     // Update is called once per frame
@@ -49,11 +55,14 @@ public class PlayerPackController : MonoBehaviour
         if (!latestCollision) return;
 
         int latestColViewID = latestCollision.GetComponent<PhotonView>().ViewID;
-        PackageController packageController = latestCollision.GetComponent<PackageController>();
-        if (Input.GetKeyDown(PlayerController.tapeButton) && CanTape(latestColViewID) && !packageController.isTaped)
+        PackageController packageController = latestCollision.GetComponent<PackageController>();    
+        if (Input.GetKeyDown(PlayerController.tapeButton) && CanTape(latestColViewID) && !packageController.isTaped && packageController.canTape)
         {
             Tape(packageController);
         }
+       
+
+        
     }
 
     void Pack(ProductController productController)
@@ -123,6 +132,19 @@ public class PlayerPackController : MonoBehaviour
 
     void Tape(PackageController packageController)
     {
+        packageController.timebar.enabled = true;
+        packageController.isTaped = true;
+        packageController.canTape = false;
+        isTaping = true;
+        PV.RPC("OnTape", RpcTarget.OthersBuffered, packageController.GetComponent<PhotonView>().ViewID);
+    }
+
+    [PunRPC]
+    void OnTape(int packageViewID)
+    {
+        GameObject packageControllerObj = PhotonView.Find(packageViewID).gameObject;
+        PackageController packageController = packageControllerObj.GetComponent<PackageController>();
+        isTaping = true;
         packageController.timebar.enabled = true;
         packageController.isTaped = true;
     }

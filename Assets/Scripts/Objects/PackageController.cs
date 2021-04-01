@@ -22,8 +22,10 @@ public class PackageController : MonoBehaviour, Liftable
     public bool bpic2 {get; set;} = false;
     public bool bpic3 {get; set;} = false;
     public int productCount {get; set;} = 0;
+    public bool canTape { get; set; } = false;
 
     public static Vector3 tileOffset = new Vector3(1.5f, 0.35f, 1.5f);
+    public static Vector3 cabinetOffset = new Vector3(1.5f, 0.6f, 1.5f);
 
     void Awake()
     {

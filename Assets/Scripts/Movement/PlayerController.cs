@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     Rigidbody rb;
     [SerializeField] float movementSpeed, smoothTime;
     private float horizontalInput, verticalInput;
+    PlayerPackController playerPackController;
 
     Vector3 smoothMoveVelocity;
     Vector3 moveDir;
@@ -23,6 +24,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         PV = GetComponent<PhotonView>();
+        playerPackController = PlayerManager.myPlayerPackController;
     }
 
     void Start()
@@ -33,8 +35,11 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         if (!PV.IsMine) return;
-
-        Move();
+        
+        if (!gameObject.GetComponent<PlayerPackController>().isTaping)
+        {
+            Move();
+        }
     }
 
     private void FixedUpdate()
