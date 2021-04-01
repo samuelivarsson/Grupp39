@@ -20,6 +20,7 @@ TagManager:
   - PackageController
   - Table
   - TapeTile
+  - TableTile
   layers:
   - Default
   - TransparentFX

@@ -56,7 +56,12 @@ public class PlayerLiftController : MonoBehaviour
         }
         if (Input.GetKeyDown(PlayerController.useButton) && IsLifting(latestObjViewID) && latestTile &&  latestTile.CompareTag("TapeTile"))
         {
-            DropTable();
+            DropOnTapeTable();
+        }
+        if (Input.GetKeyDown(PlayerController.useButton) && IsLifting(latestObjViewID) && latestTile && latestTile.CompareTag("TableTile"))
+        {
+            Debug.Log("hej");
+            DropOnTable();
         }
     }
 
@@ -107,7 +112,7 @@ public class PlayerLiftController : MonoBehaviour
         PV.RPC("OnDrop", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID, latestTile.name, eulerY);
     }
 
-    public void DropTable()
+    public void DropOnTapeTable()
     {
         
         if (latestObject.CompareTag("PackageController"))
@@ -126,6 +131,27 @@ public class PlayerLiftController : MonoBehaviour
 
     }
 
+    public void DropOnTable()
+    {
+        Liftable controller = GetController(latestObject);
+        controller.isLifted = false;
+        canLiftID = -1;
+        liftingID = -1;
+        latestObject.transform.parent = latestTile.transform;
+        if (latestObject.CompareTag("PackageController"))
+        {
+            latestObject.transform.localPosition = ProductController.tileOffsetTape;
+        }
+        if(latestObject.CompareTag("ProductController"))
+        {
+            latestObject.transform.localPosition = ProductController.tileOffsetProducts;
+        }
+        float eulerYt = ClosestAngle(gameObject.transform.rotation.eulerAngles.y);
+        latestObject.transform.rotation = Quaternion.Euler(0, eulerYt, 0);
+        //PV.RPC("OnDropTable", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID, latestTile.name, eulerYt);
+    }
+
+
     [PunRPC]
     void OnDrop(int viewID, string tileName, float eulerY)
     {
@@ -140,7 +166,7 @@ public class PlayerLiftController : MonoBehaviour
     }
 
     [PunRPC]
-    void OnDropTable(int viewID, string tileName, float eulerY)
+    void OnDropOnTapeTable(int viewID, string tileName, float eulerY)
     {
         GameObject obj = PhotonView.Find(viewID).gameObject;
         GameObject tile = GameObject.Find(tileName);
