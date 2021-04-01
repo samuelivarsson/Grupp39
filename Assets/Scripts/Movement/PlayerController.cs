@@ -13,6 +13,9 @@ public class PlayerController : MonoBehaviour
     Vector3 smoothMoveVelocity;
     Vector3 moveDir;
     Vector3 moveAmount;
+    Quaternion rotation = Quaternion.identity;
+
+    PlayerClimbController playerClimbController;
 
     public static KeyCode useButton = KeyCode.Space;
     public static KeyCode tapeButton = KeyCode.E;
@@ -23,34 +26,45 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         PV = GetComponent<PhotonView>();
+        playerClimbController = gameObject.GetComponent<PlayerClimbController>();
     }
 
     void Start()
     {
         if (!PV.IsMine) Destroy(rb);
+
+        rb.centerOfMass = Vector3.zero;
     }
 
     void Update()
     {
         if (!PV.IsMine) return;
 
-        Move();
+        MoveAndRotate();
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
         if (!PV.IsMine) return;
-
-        if (moveAmount != Vector3.zero) rb.MovePosition(rb.position + moveAmount * Time.fixedDeltaTime);
-        if (moveDir != Vector3.zero) rb.MoveRotation(Quaternion.LookRotation(moveDir));
+        
+        rb.velocity = new Vector3(moveAmount.x, rb.velocity.y, moveAmount.z);
+        rb.MoveRotation(rotation);
     }
 
-    private void Move()
+    void MoveAndRotate()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
-
         moveDir = new Vector3(horizontalInput, 0, verticalInput).normalized;
-        moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * movementSpeed, ref smoothMoveVelocity, smoothTime);
+
+        // Move
+        moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * movementSpeed, ref smoothMoveVelocity, smoothTime);    
+
+        if (playerClimbController.isCrouching) return;
+
+        // Rotate
+        if (moveDir == Vector3.zero) return;
+        var targetRotation = Quaternion.LookRotation(moveDir);
+        rotation = Quaternion.Slerp(rb.rotation, targetRotation, Time.fixedDeltaTime * 15);
     }
 }

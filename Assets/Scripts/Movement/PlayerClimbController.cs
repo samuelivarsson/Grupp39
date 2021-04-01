@@ -5,16 +5,21 @@ using Photon.Pun;
 
 public class PlayerClimbController : MonoBehaviour
 {
-    public int liftingID {get; set;}
-    public int canLiftID {get; set;}
-    public int crouchingID {get; set;}
-    public int canCrouchID {get; set;}
+    public int canClimbID {get; set;} = -1;
+    public bool isCrouching {get; set;} = false;
+    public bool isClimbing {get; set;} = false;     //när jag klättrat upp på någon
+    public bool isClimbed {get; set;} = false;      //när nån klättrat upp på mig
 
     public GameObject latestTile {get; set;}
 
-    public GameObject latestCollision {get; set;}
-    GameObject latestObject;
+    Vector3 posPreClimb;                            //positionen man hade innan man klättrade upp på någon
+    public GameObject latestCollision {get; set;} 
     
+    GameObject playerClimbed;                       //spelaren man klättrar upp på
+
+    Transform head;                                 //positionen på spelaren man ställer sig
+    
+    PlayerLiftController playerLiftController;
     PhotonView PV;
     Rigidbody RB;
 
@@ -26,84 +31,123 @@ public class PlayerClimbController : MonoBehaviour
     {
         PV = GetComponent<PhotonView>();
         RB = GetComponent<Rigidbody>();
-        crouchingID = -1;
-        liftingID = -1; 
+        playerLiftController = GetComponent<PlayerLiftController>();
+        head = gameObject.transform.GetChild(1);
     }
 
     void Update()
     {
         if (!PV.IsMine) return;
 
-        CheckCrouchAndClimb();
+        CheckCrouchAndStand();
+        CheckClimb();
     }
 
-    void CheckCrouchAndClimb() 
-    {
-        PlayerLiftController liftController = GetComponent<PlayerLiftController>();
-
-        if(Input.GetKeyDown(PlayerController.crouchButton) && IsCrouching(PV.ViewID))
-        {
-            Stand();
-            return;
-        }
-        if(Input.GetKeyDown(PlayerController.crouchButton) && IsCrouching(-1) && !IsLifting(PV.ViewID)) //uh croucha inte när du lyfter saker, idk hur jag kollar det nuförtiden
+    void CheckCrouchAndStand() 
+    {        
+        if (Input.GetKeyDown(PlayerController.crouchButton) && !isCrouching && playerLiftController.IsLifting(-1) && !isClimbing)
         {
             Crouch();
+            return;
         }
-        
+        if (Input.GetKeyDown(PlayerController.crouchButton) && isCrouching && !isClimbed)
+        {
+            Stand();
+        }
+    }
+    
+    void CheckClimb()
+    {
+        if (!latestCollision) return;
+
+        if (Input.GetKeyDown(PlayerController.useButton) && !isClimbing && CanClimb(latestCollision.GetComponent<PhotonView>().ViewID))
+        {
+            Climb();
+            return;
+        }
+        if (Input.GetKeyDown(PlayerController.crouchButton) && isClimbing)
+        {
+            ClimbDown();
+        }
     }
 
     void Crouch()
     {
         gameObject.transform.localScale -= heightChange;
         gameObject.transform.localPosition -= yPosChange;
-        RB.constraints = RigidbodyConstraints.FreezePosition;
-        crouchingID = PV.ViewID;
-        PV.RPC("OnCrouch", RpcTarget.OthersBuffered, PV.ViewID);
+        isCrouching = true;
+        RB.constraints = RigidbodyConstraints.FreezeAll;
+        PV.RPC("OnCrouch", RpcTarget.OthersBuffered);
     }
 
     [PunRPC]
-    void OnCrouch(int viewID)
+    void OnCrouch()
     {
-        GameObject obj = PhotonView.Find(viewID).gameObject;
-        obj.transform.localScale -= heightChange;
-        obj.transform.localPosition -= yPosChange;
+        gameObject.transform.localScale -= heightChange;
+        gameObject.transform.localPosition -= yPosChange;
+        isCrouching = true;
     }
 
     void Stand() 
     {
         gameObject.transform.localScale += heightChange;
         gameObject.transform.localPosition += yPosChange;
-        RB.constraints = RigidbodyConstraints.None;
+        isCrouching = false;
         RB.constraints = RigidbodyConstraints.FreezeRotation;
-        crouchingID = -1;
-        PV.RPC("OnStand", RpcTarget.OthersBuffered, PV.ViewID);
+        PV.RPC("OnStand", RpcTarget.OthersBuffered);
     }
 
     [PunRPC]
-    void OnStand(int viewID)
+    void OnStand()
+    {
+        gameObject.transform.localScale += heightChange;
+        gameObject.transform.localPosition += yPosChange;
+        isCrouching = false;
+    }
+
+    void Climb()
+    {
+        playerClimbed = latestCollision;
+        posPreClimb = gameObject.transform.position;
+        gameObject.transform.parent = playerClimbed.transform;
+        gameObject.transform.localPosition = head.localPosition;
+        isClimbing = true;
+        playerClimbed.GetComponent<PlayerClimbController>().isClimbed = true;
+        RB.constraints = RigidbodyConstraints.FreezeAll;
+        PV.RPC("OnClimb", RpcTarget.OthersBuffered, playerClimbed.GetComponent<PhotonView>().ViewID);
+    }
+    
+    [PunRPC]
+    void OnClimb(int viewID)
     {
         GameObject obj = PhotonView.Find(viewID).gameObject;
-        obj.transform.localScale += heightChange;
-        obj.transform.localPosition += yPosChange;
+        gameObject.transform.parent = obj.transform;
+        PlayerClimbController otherClimbController = obj.GetComponent<PlayerClimbController>(); 
+        otherClimbController.isClimbed = true;
+        isClimbing = true;
     }
 
-    Liftable GetController(GameObject obj)
+    void ClimbDown()
     {
-        Liftable result;
-        if (obj.CompareTag("ProductController")) result = obj.GetComponent<ProductController>();
-        else result = obj.GetComponent<PackageController>();
-        return result;
+        gameObject.transform.parent = null;
+        gameObject.transform.position = posPreClimb;
+        isClimbing = false;
+        playerClimbed.GetComponent<PlayerClimbController>().isClimbed = false;
+        RB.constraints = RigidbodyConstraints.FreezeRotation;
+        PV.RPC("OnClimbDown", RpcTarget.OthersBuffered, playerClimbed.GetComponent<PhotonView>().ViewID, posPreClimb);
     }
 
-    bool IsCrouching(int _crouchingID)
+    [PunRPC]
+    void OnClimbDown(int viewID, Vector3 _posPreClimb)
     {
-        return crouchingID == _crouchingID;
+        GameObject obj = PhotonView.Find(viewID).gameObject;
+        gameObject.transform.parent = null;
+        isClimbing = false;
+        obj.GetComponent<PlayerClimbController>().isClimbed = false;
     }
 
-    bool IsLifting(int _liftingID)
+    bool CanClimb(int _canClimbID)
     {
-        return liftingID == _liftingID;
+        return canClimbID == _canClimbID;
     }
-
 }

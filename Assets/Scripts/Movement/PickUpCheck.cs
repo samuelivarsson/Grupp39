@@ -8,12 +8,14 @@ public class PickUpCheck : MonoBehaviour
     PhotonView PV;
     PlayerLiftController playerLiftController;
     PlayerPackController playerPackController;
+    PlayerClimbController playerClimbController;
 
     void Awake()
     {
         PV = GetComponentInParent<PhotonView>();
         playerLiftController = GetComponentInParent<PlayerLiftController>();
         playerPackController = GetComponentInParent<PlayerPackController>();
+        playerClimbController = GetComponentInParent<PlayerClimbController>();
     }
 
     void OnTriggerEnter(Collider other)
@@ -31,7 +33,14 @@ public class PickUpCheck : MonoBehaviour
                     playerPackController.canTapeID = other.gameObject.GetComponent<PhotonView>().ViewID;
                     playerPackController.latestCollision = other.gameObject;
                 }
+                return;
             }
+        }
+
+        if (other.CompareTag("PlayerController") && other.GetComponent<PlayerClimbController>().isCrouching)
+        {
+            playerClimbController.canClimbID = other.gameObject.GetComponent<PhotonView>().ViewID;
+            playerClimbController.latestCollision = other.gameObject;
         }
     }
 
@@ -48,7 +57,13 @@ public class PickUpCheck : MonoBehaviour
                 {
                     playerPackController.canTapeID = -1;
                 }
+                return;
             }
+        }
+
+        if (other.CompareTag("PlayerController"))
+        {
+            playerClimbController.canClimbID = -1;
         }
     }
     
@@ -65,7 +80,13 @@ public class PickUpCheck : MonoBehaviour
                 {
                     playerPackController.canTapeID = other.gameObject.GetComponent<PhotonView>().ViewID;
                 }
+                return;
             }
+        }
+
+        if (other.CompareTag("PlayerController") && other.GetComponent<PlayerClimbController>().isCrouching)
+        {
+            playerClimbController.canClimbID = other.gameObject.GetComponent<PhotonView>().ViewID;
         }
     }
 }

@@ -18,6 +18,7 @@ TagManager:
   - ProductManager
   - PackageManager
   - PackageController
+  - PlayerController
   layers:
   - Default
   - TransparentFX
