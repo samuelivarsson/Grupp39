@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         if (!PV.IsMine) return;
-
+        
         if (!gameObject.GetComponent<PlayerPackController>().isTaping)
         {
             Move();

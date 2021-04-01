@@ -55,11 +55,14 @@ public class PlayerPackController : MonoBehaviour
         if (!latestCollision) return;
 
         int latestColViewID = latestCollision.GetComponent<PhotonView>().ViewID;
-        PackageController packageController = latestCollision.GetComponent<PackageController>();
-        if (Input.GetKeyDown(PlayerController.tapeButton) && CanTape(latestColViewID) && !packageController.isTaped && playerLiftController.tape == true)
+        PackageController packageController = latestCollision.GetComponent<PackageController>();    
+        if (Input.GetKeyDown(PlayerController.tapeButton) && CanTape(latestColViewID) && !packageController.isTaped && packageController.canTape)
         {
             Tape(packageController);
         }
+       
+
+        
     }
 
     void Pack(ProductController productController)
@@ -131,7 +134,7 @@ public class PlayerPackController : MonoBehaviour
     {
         packageController.timebar.enabled = true;
         packageController.isTaped = true;
-        playerLiftController.tape = false;
+        packageController.canTape = false;
         isTaping = true;
         PV.RPC("OnTape", RpcTarget.OthersBuffered, packageController.GetComponent<PhotonView>().ViewID);
     }
@@ -141,7 +144,6 @@ public class PlayerPackController : MonoBehaviour
     {
         GameObject packageControllerObj = PhotonView.Find(packageViewID).gameObject;
         PackageController packageController = packageControllerObj.GetComponent<PackageController>();
-
         isTaping = true;
         packageController.timebar.enabled = true;
         packageController.isTaped = true;
