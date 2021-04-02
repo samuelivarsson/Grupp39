@@ -41,7 +41,8 @@ public class TapeTimer : MonoBehaviour
             else
             {
                 timeLeft -= (float)0.01;
-                packageController.GetComponent<Renderer>().material.color = Color.green;                
+                packageController.transform.GetChild(5).transform.GetChild(0).gameObject.SetActive(false);
+                packageController.transform.GetChild(5).transform.GetChild(1).gameObject.SetActive(true);
                 playerPackController.isTaping = false;
                 doneTaping = true;
             }

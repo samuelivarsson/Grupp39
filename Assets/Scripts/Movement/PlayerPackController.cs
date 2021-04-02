@@ -15,6 +15,7 @@ public class PlayerPackController : MonoBehaviour
     public int canTapeID {get; set;}
     public bool isTaping { get; set; } = false;
 
+    static Vector3 packScale = new Vector3(0.3f, 0.3f, 0.3f);
 
     void Awake()
     {
@@ -62,7 +63,7 @@ public class PlayerPackController : MonoBehaviour
     {
         // Make child and set scale & rotation
         prd.transform.parent = pkg.transform;
-        prd.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+        prd.transform.localScale = packScale;
         prd.transform.rotation = Quaternion.Euler(0, eulerY, 0);
 
         // Set position based on what's open and increment productCount
