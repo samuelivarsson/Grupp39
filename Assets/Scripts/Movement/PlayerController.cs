@@ -7,15 +7,18 @@ public class PlayerController : MonoBehaviour
 {
     PhotonView PV;
     Rigidbody rb;
-    [SerializeField] float movementSpeed, smoothTime;
-    private float horizontalInput, verticalInput;
+    [SerializeField] float smoothTime;
+    float horizontalInput, verticalInput;
 
     Vector3 smoothMoveVelocity;
     Vector3 moveDir;
     Vector3 moveAmount;
     Quaternion rotation = Quaternion.identity;
 
+    PlayerLiftController playerLiftController;
+    PlayerPackController playerPackController;
     PlayerClimbController playerClimbController;
+    Character character;
 
     public static KeyCode useButton = KeyCode.Space;
     public static KeyCode tapeButton = KeyCode.E;
@@ -26,12 +29,15 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         PV = GetComponent<PhotonView>();
-        playerClimbController = gameObject.GetComponent<PlayerClimbController>();
+        playerLiftController = GetComponent<PlayerLiftController>();
+        playerPackController = GetComponent<PlayerPackController>();
+        playerClimbController = GetComponent<PlayerClimbController>();
+        character = GetComponent<Character>();
     }
 
     void Start()
     {
-        if (!PV.IsMine) Destroy(rb);
+        if (!PV.IsMine) rb.isKinematic = true;
 
         rb.centerOfMass = Vector3.zero;
     }
@@ -40,10 +46,13 @@ public class PlayerController : MonoBehaviour
     {
         if (!PV.IsMine) return;
         
-        if (!gameObject.GetComponent<PlayerPackController>().isTaping)
+        if (playerPackController.isTaping) return;
+        if (playerLiftController.liftingID != -1)
         {
-            MoveAndRotate();
+            PackageController packageController = playerLiftController.latestObject.GetComponent<PackageController>();
+            if (packageController != null && packageController.tooHeavy) return;
         }
+        MoveAndRotate();
     }
 
     void FixedUpdate()
@@ -61,7 +70,7 @@ public class PlayerController : MonoBehaviour
         moveDir = new Vector3(horizontalInput, 0, verticalInput).normalized;
 
         // Move
-        moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * movementSpeed, ref smoothMoveVelocity, smoothTime);    
+        moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * character.movementSpeed, ref smoothMoveVelocity, smoothTime);    
 
         if (playerClimbController.isCrouching) return;
 

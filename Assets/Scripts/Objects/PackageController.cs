@@ -7,6 +7,9 @@ using Photon.Realtime;
 
 public class PackageController : MonoBehaviour, LiftablePackage
 {
+    public List<int> lifters {get; set;} = new List<int>(4);
+    public bool tooHeavy {get; set;} = false;
+
     public bool isLifted {get; set;} = false;
     public bool isTaped {get; set;} = false;
 
@@ -38,6 +41,60 @@ public class PackageController : MonoBehaviour, LiftablePackage
     void Start()
     {
         timebar.enabled = false;
+    }
+
+    void _AddLifter(PlayerLiftController playerLiftController)
+    {
+        int viewID = playerLiftController.GetComponent<PhotonView>().ViewID;
+        if (!lifters.Contains(viewID)) lifters.Add(viewID);
+        tooHeavy = CheckTooHeavy();
+        if (lifters.Count < 2) return;
+        PlayerLiftController lifter = PhotonView.Find(lifters[0]).GetComponent<PlayerLiftController>();
+        FixedJoint fixedJoint = lifter.anchors[lifters.Count-2].gameObject.AddComponent<FixedJoint>();
+        fixedJoint.anchor = Vector3.zero;
+        fixedJoint.autoConfigureConnectedAnchor = false;
+        fixedJoint.connectedAnchor = playerLiftController.hand.localPosition;
+        fixedJoint.connectedBody = playerLiftController.GetComponent<Rigidbody>();
+    }
+
+    public void AddLifter(PlayerLiftController playerLiftController)
+    {
+        _AddLifter(playerLiftController);
+        print("Added lifter: " + lifters.Count + " + " + lifters.ToArray().ToString());
+        PV.RPC("OnAddLifter", RpcTarget.OthersBuffered, playerLiftController.GetComponent<PhotonView>().ViewID);
+    }
+
+    [PunRPC]
+    void OnAddLifter(int viewID)
+    {
+        GameObject obj = PhotonView.Find(viewID).gameObject;
+        _AddLifter(obj.GetComponent<PlayerLiftController>());
+    }
+
+    void _RemoveLifter(PlayerLiftController playerLiftController)
+    {
+        int viewID = playerLiftController.GetComponent<PhotonView>().ViewID;
+        if (!lifters.Remove(viewID)) print("wrong!");
+        if (lifters.Count > 0)
+        {
+            PlayerLiftController lifter = PhotonView.Find(lifters[0]).GetComponent<PlayerLiftController>();
+            Destroy(lifter.anchors[lifters.Count-1].GetComponent<SpringJoint>());
+        }
+        tooHeavy = CheckTooHeavy();
+    }
+
+    public void RemoveLifter(PlayerLiftController playerLiftController)
+    {
+        _RemoveLifter(playerLiftController);
+        print("Removed lifter: " + lifters.Count + " + " + lifters.ToArray().ToString());
+        PV.RPC("OnRemoveLifter", RpcTarget.OthersBuffered, playerLiftController.GetComponent<PhotonView>().ViewID);
+    }
+
+    [PunRPC]
+    void OnRemoveLifter(int viewID)
+    {
+        GameObject obj = PhotonView.Find(viewID).gameObject;
+        _RemoveLifter(obj.GetComponent<PlayerLiftController>());
     }
 
     public void OrderDelivery(GameObject latestTile)
@@ -105,5 +162,16 @@ public class PackageController : MonoBehaviour, LiftablePackage
         }
 
         return deliveredProducts;
+    }
+
+    public bool CheckTooHeavy()
+    {
+        int totalStrength = 0;
+        foreach (int viewID in lifters)
+        {
+            PlayerLiftController playerLiftController = PhotonView.Find(viewID).GetComponent<PlayerLiftController>();
+            totalStrength += playerLiftController.GetComponent<Character>().strength;
+        }
+        return totalStrength < productCount;
     }
 }

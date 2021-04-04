@@ -442,8 +442,9 @@ GameObject:
   - component: {fileID: 3848067117214663837}
   - component: {fileID: 7598238535276844409}
   - component: {fileID: -3197547829802672769}
+  - component: {fileID: 3449153551953948645}
   m_Layer: 0
-  m_Name: PlayerController
+  m_Name: WeakPlayerController
   m_TagString: PlayerController
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -458,7 +459,7 @@ Transform:
   m_GameObject: {fileID: 5522886019619821049}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 10, y: 1.5, z: 12}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.3, y: 0.5, z: 0.3}
   m_Children:
   - {fileID: 2366715985566790916}
   - {fileID: 7324590765400436510}
@@ -596,7 +597,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8158da5b7dcf8aa4fa4f4a6388cb80d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 4
   smoothTime: 0.05
 --- !u!114 &3848067117214663837
 MonoBehaviour:
@@ -634,6 +634,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c513414a70f123045a66e648ca2f42a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3449153551953948645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5522886019619821049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7eb51095e2faa488288b51e1f393d261, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  strength: 1
+  movementSpeed: 4
 --- !u!1 &5808591240691194952
 GameObject:
   m_ObjectHideFlags: 0

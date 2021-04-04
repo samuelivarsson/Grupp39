@@ -23,7 +23,7 @@ public class PlayerManager : MonoBehaviour
 
     void CreateController()
     {
-        GameObject playerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Player", "PlayerController"), startPos, Quaternion.identity);
+        GameObject playerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Player", "NormalPlayerController"), startPos, Quaternion.identity);
         myPlayerLiftController = playerObj.GetComponent<PlayerLiftController>();
         myPlayerPackController = playerObj.GetComponent<PlayerPackController>();
     }

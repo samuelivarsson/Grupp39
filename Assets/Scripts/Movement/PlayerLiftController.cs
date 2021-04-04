@@ -16,18 +16,28 @@ public class PlayerLiftController : MonoBehaviour
     // Latest object the player's PickUpCheck hitbox triggered with
     public GameObject latestCollision {get; set;}
     // Latest object the player lifted
-    GameObject latestObject;
+    public GameObject latestObject {get; set;}
 
     // A static offset where the player's "hand" is, used as object's localPosition when lifting
-    Transform hand;
+    public Transform hand {get; set;}
+
+    // Array of transforms of anchor points, used for spring joints
+    public Transform[] anchors {get; set;} = new Transform[3];
 
     // This player's PhotonView.
     PhotonView PV;
+
+    // This player's character traits.
+    Character character;
 
     void Awake()
     {
         PV = GetComponent<PhotonView>();
         hand = gameObject.transform.GetChild(0);
+        character = GetComponent<Character>();
+        anchors[0] = gameObject.transform.GetChild(1);
+        anchors[1] = gameObject.transform.GetChild(2);
+        anchors[2] = gameObject.transform.GetChild(3);
     }
 
     void Update()
@@ -44,16 +54,23 @@ public class PlayerLiftController : MonoBehaviour
         int latestColViewID = latestCollision.GetComponent<PhotonView>().ViewID;
         int latestObjViewID = latestObject ? latestObject.GetComponent<PhotonView>().ViewID : -1;
         Liftable controller = GetController(latestCollision);
-        bool isPackaged = false;
-        LiftableProduct productController = controller as LiftableProduct;
-        if (productController != null) isPackaged = productController.isPackaged;
         if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && (latestCollision.CompareTag("ProductManager") || latestCollision.CompareTag("PackageManager")))
         {
             ICreateController manager = GetManager(latestCollision);
             if (manager.CreateController()) Lift();
             return;
         }
-        if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && IsLifting(-1) && !isPackaged && !controller.isLifted)
+        if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && IsLifting(-1) && CanHelp(controller))
+        {
+            HelpLift();
+            return;
+        }
+        if (Input.GetKeyDown(PlayerController.useButton) && IsLifting(latestObjViewID) && IsHelper(controller))
+        {
+            DropHelp();
+            return;
+        }
+        if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && IsLifting(-1) && !IsPackaged(controller) && !controller.isLifted)
         {
             Lift();
             return;
@@ -81,12 +98,19 @@ public class PlayerLiftController : MonoBehaviour
         obj.transform.localPosition = hand.transform.localPosition;
         obj.transform.localRotation = Quaternion.Euler(0, eulerY, 0);
 
+        // If package -> add lifter
+        PackageController packageController = obj.GetComponent<PackageController>();
+        if (packageController != null) packageController.AddLifter(this);
+
         // Set booleans and liftingID
         liftingID = obj.GetComponent<PhotonView>().ViewID;
         Liftable controller = GetController(obj);
         controller.isLifted = true;
-        LiftablePackage packageController = controller as LiftablePackage;
-        if (packageController != null) packageController.canTape = false;
+        LiftablePackage pkgController = controller as LiftablePackage;
+        if (pkgController != null)
+        {
+            pkgController.canTape = false;
+        }
     }
 
     void Lift()
@@ -104,6 +128,30 @@ public class PlayerLiftController : MonoBehaviour
         _Lift(obj, eulerY);
     }
 
+    void _HelpLift(GameObject obj)
+    {
+        PackageController packageController = obj.GetComponent<PackageController>();
+        packageController.AddLifter(this);
+
+        // Set booleans and liftingID
+        liftingID = obj.GetComponent<PhotonView>().ViewID;
+    }
+
+    void HelpLift()
+    {
+        latestObject = latestCollision;
+        _HelpLift(latestObject);
+        PV.RPC("OnHelpLift", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID);
+    }
+
+    [PunRPC]
+    void OnHelpLift(int viewID)
+    {
+        GameObject obj = PhotonView.Find(viewID).gameObject;
+        latestObject = obj;
+        _HelpLift(obj);
+    }
+
     void _Drop(GameObject obj, float eulerY, GameObject tile, Vector3 offset)
     {
         // Make child and fix position & rotation
@@ -111,13 +159,20 @@ public class PlayerLiftController : MonoBehaviour
         obj.transform.localPosition = offset;
         obj.transform.rotation = Quaternion.Euler(0, eulerY, 0);
 
+        // If package -> add lifter
+        PackageController packageController = obj.GetComponent<PackageController>();
+        if (packageController != null) packageController.RemoveLifter(this);
+
         // Set booleans
         canLiftID = -1;
         liftingID = -1;
         Liftable controller = GetController(obj);
         controller.isLifted = false;
-        LiftablePackage packageController = controller as LiftablePackage;
-        if (packageController != null && tile.CompareTag("TapeTile")) packageController.canTape = true;
+        LiftablePackage pkgController = controller as LiftablePackage;
+        if (pkgController != null && tile.CompareTag("TapeTile"))
+        {
+            pkgController.canTape = true;
+        }
     }
 
     void Drop()
@@ -186,6 +241,30 @@ public class PlayerLiftController : MonoBehaviour
         _Drop(obj, eulerY, tile, offset);
     }
 
+    void _DropHelp(GameObject obj)
+    {
+        PackageController packageController = obj.GetComponent<PackageController>();
+        packageController.RemoveLifter(this);
+
+        // Set booleans and liftingID
+        liftingID = -1;
+    }
+
+    void DropHelp()
+    {
+        latestObject = latestCollision;
+        _DropHelp(latestObject);
+        PV.RPC("OnDropHelp", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID);
+    }
+
+    [PunRPC]
+    void OnDropHelp(int viewID)
+    {
+        GameObject obj = PhotonView.Find(viewID).gameObject;
+        latestObject = obj;
+        _DropHelp(obj);
+    }
+
     public static float ClosestAngle(float a)
     {
         float[] w = {-360, -270, -180, -90, 0, 90, 180, 270, 360};
@@ -245,5 +324,29 @@ public class PlayerLiftController : MonoBehaviour
     bool CanLift(int _canLiftID)
     {
         return canLiftID == _canLiftID;
+    }
+
+    bool IsPackaged(Liftable controller)
+    {
+        bool isPackaged = false;
+        LiftableProduct productController = controller as LiftableProduct;
+        if (productController != null) isPackaged = productController.isPackaged;
+        return isPackaged;
+    }
+
+    bool CanHelp(Liftable controller)
+    {
+        bool canHelp = false;
+        LiftablePackage packageController = controller as LiftablePackage;
+        if (packageController != null) canHelp = packageController.tooHeavy && packageController.lifters.Count > 0;
+        return canHelp;
+    }
+
+    bool IsHelper(Liftable controller)
+    {
+        bool isHelper = false;
+        LiftablePackage packageController = controller as LiftablePackage;
+        if (packageController != null) isHelper = packageController.lifters.Count > 1;
+        return isHelper;
     }
 }
