@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Realtime;
+using System;
 
 public class PackageController : MonoBehaviour, LiftablePackage
 {
@@ -44,20 +45,22 @@ public class PackageController : MonoBehaviour, LiftablePackage
     {
         string num = latestTile.name.Substring(latestTile.name.Length - 1);
         PackageController package = GetComponent<PackageController>();
-        TaskController task = GameObject.FindGameObjectWithTag("Task"+num).GetComponent<TaskController>();
+        GameObject task = GameObject.FindGameObjectWithTag("Task"+num);
         Delivery(package, task);
     }
 
-    private void Delivery(PackageController package, TaskController task)
+    private void Delivery(PackageController package, GameObject task)
     {
-        if (package.CompareProductsWithTask(task))
+        TaskController taskController = task.GetComponent<TaskController>();
+
+        if (package.CompareProductsWithTask(taskController) && package.isTaped)
         {
             package.Deliver(1);
             Debug.Log("The package contained all products!");
+            Destroy(task);
         }
         else
         {
-            package.Deliver(-1);
             Debug.Log("The package did not contain all products!");
         }
     }
@@ -81,12 +84,13 @@ public class PackageController : MonoBehaviour, LiftablePackage
         var orderedProducts = task.GetOrderedProducts();
         var deliveredProducts = GetAllDeliveredProducts(gameObject.transform);
 
-        foreach(string product in deliveredProducts)
+        foreach (string product in deliveredProducts)
         {
             if(!orderedProducts.Contains(product))
             {
                 return false;
             }
+            orderedProducts.Remove(product);
         }
 
         return true;

@@ -7,7 +7,7 @@ public class TaskTimer : MonoBehaviour
 {
 
     Image timerBar;
-    [SerializeField] float maxTime = 5f;
+    public float maxTime = 5f;
     [SerializeField] float timeLeft;
     [SerializeField] GameObject timesUpText;
     [SerializeField] GameObject taskWindow;
