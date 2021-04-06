@@ -41,7 +41,7 @@ public class PlayerPackController : MonoBehaviour
         if (productController == null) return;
         
         PackageController packageController = latestCollision.GetComponent<PackageController>();
-        if (Input.GetKeyDown(PlayerController.packButton) && CanPack(latestColViewID) && !productController.isPackaged && packageController.productCount < 3)
+        if (Input.GetKeyDown(PlayerController.packButton) && CanPack(latestColViewID) && !productController.isPackaged && packageController.productCount < 3 && !packageController.isTaped)
         {
             Pack(productController);
         }
