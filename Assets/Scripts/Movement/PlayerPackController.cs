@@ -53,7 +53,7 @@ public class PlayerPackController : MonoBehaviour
 
         int latestColViewID = latestCollision.GetComponent<PhotonView>().ViewID;
         PackageController packageController = latestCollision.GetComponent<PackageController>();    
-        if (Input.GetKeyDown(PlayerController.tapeButton) && CanTape(latestColViewID) && !packageController.isTaped && packageController.canTape)
+        if (Input.GetKeyDown(PlayerController.tapeButton) && CanTape(latestColViewID) && !packageController.isTaped && packageController.canTape && packageController.productCount > 0)
         {
             Tape(packageController);
         }
