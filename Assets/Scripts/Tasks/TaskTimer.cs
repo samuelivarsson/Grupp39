@@ -39,6 +39,7 @@ public class TaskTimer : MonoBehaviour
         {
             //taskWindow.SetActive(false);
             Destroy(taskWindow);
+            HealthBarController.Instance.DecreaseHealth();
         }
     }
 }
