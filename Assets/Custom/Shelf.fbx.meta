@@ -7,6 +7,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Invisibru
+    second: {fileID: 2100000, guid: 154f3b37e8423ab4f9d00d6831cde362, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Metal
     second: {fileID: 2100000, guid: b1c838f7409ed0a47b9729b406518ae0, type: 2}
   - first:
