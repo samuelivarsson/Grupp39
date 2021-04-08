@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8588928611442105567}
   - component: {fileID: 961668958989214852}
   m_Layer: 5
-  m_Name: Heart3
+  m_Name: Health3
   m_TagString: Health3
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -220,7 +220,7 @@ GameObject:
   - component: {fileID: 7136357203160309540}
   - component: {fileID: 4988900399833918660}
   m_Layer: 5
-  m_Name: Heart2
+  m_Name: Health2
   m_TagString: Health2
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -291,7 +291,7 @@ GameObject:
   - component: {fileID: 4500556458574862066}
   - component: {fileID: 8181829818013050029}
   m_Layer: 5
-  m_Name: Heart1
+  m_Name: Health1
   m_TagString: Health1
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
