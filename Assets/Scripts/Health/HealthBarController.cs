@@ -7,7 +7,7 @@ public class HealthBarController : MonoBehaviour
 {
     GameObject canvasManager;
 
-    Vector3 startPos = new Vector3(900, -25, 0);
+    Vector3 startPos = new Vector3(960, 540, 0);
 
     public static HealthBarController Instance;
 
