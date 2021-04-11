@@ -598,6 +598,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   smoothTime: 0.05
+  rotateSpeed: 15
 --- !u!114 &3848067117214663837
 MonoBehaviour:
   m_ObjectHideFlags: 0
