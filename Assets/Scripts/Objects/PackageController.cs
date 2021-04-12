@@ -84,6 +84,11 @@ public class PackageController : MonoBehaviour, LiftablePackage
         var orderedProducts = task.GetOrderedProducts();
         var deliveredProducts = GetAllDeliveredProducts(gameObject.transform);
 
+        if (deliveredProducts.Count <= 0)
+        {
+            return false;
+        }
+
         foreach (string product in deliveredProducts)
         {
             if(!orderedProducts.Contains(product))

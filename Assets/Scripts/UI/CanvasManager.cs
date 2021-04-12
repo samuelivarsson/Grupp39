@@ -34,6 +34,7 @@ public class CanvasManager : MonoBehaviour
         {
             GameObject scoreObj = PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "UI", "ScoreController"), Vector3.zero,  Quaternion.identity);
             GameObject taskObj = PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "UI", "Tasks", "TaskManager"), Vector3.zero,  Quaternion.identity);
+            GameObject healthObj = PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "UI", "HealthController"), Vector3.zero, Quaternion.identity);
         }
     }
 }
