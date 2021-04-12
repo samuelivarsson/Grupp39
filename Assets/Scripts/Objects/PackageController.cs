@@ -52,50 +52,42 @@ public class PackageController : MonoBehaviour, LiftablePackage
         SetTooHeavyAndIsMultiLifting(null);
     }
 
-    public void AddHelper(PlayerLiftController newPlayerLC)
+    public void AddHelper(PlayerLiftController newPLC)
     {
         if (lifters.Count == 0) return;
 
-        int viewID = newPlayerLC.GetComponent<PhotonView>().ViewID;
-        if (!lifters.Contains(viewID)) lifters.Add(viewID);
-
-        if (lifters.Count == 2)
+        PhotonView newPV = newPLC.GetComponent<PhotonView>();
+        if (newPV.IsMine)
         {
-            GameObject parentPlayer = GetComponentInParent<PlayerLiftController>().gameObject;
-            PhotonView parentPV = parentPlayer.GetComponent<PhotonView>();
-            Rigidbody parentRB = parentPlayer.GetComponent<Rigidbody>();
-            if (parentPV.IsMine) parentPV.TransferOwnership(PV.Owner);
-            if (PV.IsMine)
+            gameObject.transform.parent = newPLC.gameObject.transform;
+            newPLC.GetComponent<PhotonRigidbodyView>().enabled = false;
+            newPLC.GetComponent<PhotonTransformView>().enabled = false;
+            foreach (int viewID in lifters)
             {
-                gameObject.transform.parent = null;
-                rb.isKinematic = false;
-                parentRB.isKinematic = false;
-                ConfigurableJoint confJoint = gameObject.AddComponent<ConfigurableJoint>();
-                SetConfJoint(confJoint, parentRB, parentPlayer.GetComponent<PlayerLiftController>());
+                GameObject p = PhotonView.Find(viewID).gameObject;
+                p.transform.parent = newPLC.gameObject.transform;
+                p.GetComponent<PhotonRigidbodyView>().enabled = false;
+                p.GetComponent<PhotonTransformView>().enabled = false;
+                newPV.GetComponent<PlayerController>().player2 = p;
             }
-            else
-            {
-                rb.isKinematic = true;
-                parentRB.isKinematic = true;
-            }
-        }
-
-        PhotonView newPlayerPV = newPlayerLC.GetComponent<PhotonView>();
-        Rigidbody newPlayerRB = newPlayerLC.GetComponent<Rigidbody>();
-        if (newPlayerPV.IsMine) newPlayerPV.TransferOwnership(PV.Owner);
-        if (PV.IsMine)
-        {
-            rb.isKinematic = false;
-            
-            newPlayerRB.isKinematic = false;
-            ConfigurableJoint confJoint = gameObject.AddComponent<ConfigurableJoint>();
-            SetConfJoint(confJoint, newPlayerRB, newPlayerLC);
         }
         else
         {
-            rb.isKinematic = true;
-            newPlayerRB.isKinematic = true;
+            newPLC.gameObject.transform.parent = PlayerManager.myPlayerLiftController.gameObject.transform;
+            PlayerManager.myPlayerLiftController.GetComponent<PlayerController>().player2 = newPLC.gameObject;
+            foreach (int viewID in lifters)
+            {
+                GameObject p = PhotonView.Find(viewID).gameObject;
+                p.GetComponent<PhotonRigidbodyView>().enabled = false;
+                p.GetComponent<PhotonTransformView>().enabled = false;
+            }
         }
+        newPLC.GetComponent<PhotonRigidbodyView>().enabled = false;
+        newPLC.GetComponent<PhotonTransformView>().enabled = false;
+
+        int newViewID = newPV.ViewID;
+        if (!lifters.Contains(newViewID)) lifters.Add(newViewID);
+
         SetTooHeavyAndIsMultiLifting(null);
     }
 
@@ -120,7 +112,6 @@ public class PackageController : MonoBehaviour, LiftablePackage
             }
         }
         if (playerPV.IsMine && playerPV.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber) playerPV.TransferOwnership(playerPV.CreatorActorNr);
-        //if (!playerLiftController.GetComponent<PhotonView>().IsMine) Destroy(playerLiftController.GetComponent<Rigidbody>());
         if (lifters.Count < 2)
         {
             rb.isKinematic = true;
@@ -132,6 +123,48 @@ public class PackageController : MonoBehaviour, LiftablePackage
         }
         SetTooHeavyAndIsMultiLifting(playerLiftController);
     }
+
+    void SetTooHeavyAndIsMultiLifting(PlayerLiftController removedPlayer)
+    {
+        if (removedPlayer != null)
+        {
+            PlayerController removedPC = removedPlayer.GetComponent<PlayerController>();
+            removedPC.tooHeavy = false;
+            removedPC.isHelper = false;
+            removedPC.isMultiLifting = false;
+        }
+        int totalStrength = 0;
+        foreach (int viewID in lifters)
+        {
+            PlayerLiftController playerLiftController = PhotonView.Find(viewID).GetComponent<PlayerLiftController>();
+            totalStrength += playerLiftController.GetComponent<Character>().strength;
+        }
+        tooHeavy = totalStrength < productCount;
+        foreach (int viewID in lifters)
+        {
+            PlayerController playerController = PhotonView.Find(viewID).GetComponent<PlayerController>();
+            playerController.tooHeavy = tooHeavy;
+            playerController.isHelper = !PV.IsMine;
+            playerController.isMultiLifting = lifters.Count > 1;
+            print("News:");
+            print("Too Heavy = " + playerController.tooHeavy);
+            print("Is Helper = " + playerController.isHelper);
+            print("Is Multi Lifting = " + playerController.isMultiLifting);
+        }
+    }
+
+    float MinMoveSpeed(List<int> list)
+    {
+        float min = PhotonView.Find(list[0]).GetComponent<Character>().movementSpeed;
+        for (int i = 1; i < list.Count; i++)
+        {
+            float current = PhotonView.Find(list[i]).GetComponent<Character>().movementSpeed;
+            if (current < min) min = current;
+        }
+        return min;
+    }
+
+    // Delivery
 
     public void OrderDelivery(GameObject latestTile)
     {
@@ -198,84 +231,5 @@ public class PackageController : MonoBehaviour, LiftablePackage
         }
 
         return deliveredProducts;
-    }
-
-    void SetTooHeavyAndIsMultiLifting(PlayerLiftController removedPlayer)
-    {
-        if (removedPlayer != null)
-        {
-            PlayerController removedPC = removedPlayer.GetComponent<PlayerController>();
-            removedPC.tooHeavy = false;
-            removedPC.isHelper = false;
-            removedPC.isMultiLifting = false;
-        }
-        int totalStrength = 0;
-        foreach (int viewID in lifters)
-        {
-            PlayerLiftController playerLiftController = PhotonView.Find(viewID).GetComponent<PlayerLiftController>();
-            totalStrength += playerLiftController.GetComponent<Character>().strength;
-        }
-        tooHeavy = totalStrength < productCount;
-        foreach (int viewID in lifters)
-        {
-            PlayerController playerController = PhotonView.Find(viewID).GetComponent<PlayerController>();
-            playerController.tooHeavy = tooHeavy;
-            playerController.isHelper = !PV.IsMine;
-            playerController.isMultiLifting = lifters.Count > 1;
-            print("News:");
-            print("Too Heavy = " + playerController.tooHeavy);
-            print("Is Helper = " + playerController.isHelper);
-            print("Is Multi Lifting = " + playerController.isMultiLifting);
-        }
-    }
-
-    float MinMoveSpeed(List<int> list)
-    {
-        float min = PhotonView.Find(list[0]).GetComponent<Character>().movementSpeed;
-        for (int i = 1; i < list.Count; i++)
-        {
-            float current = PhotonView.Find(list[i]).GetComponent<Character>().movementSpeed;
-            if (current < min) min = current;
-        }
-        return min;
-    }
-
-    void SetConfJoint(ConfigurableJoint confJoint, Rigidbody conBody, PlayerLiftController player)
-    {
-        confJoint.connectedBody = conBody;
-        confJoint.anchor = CalculateLocalAnchors(player);
-        confJoint.autoConfigureConnectedAnchor = false;
-        confJoint.connectedAnchor = Vector3.zero;
-        confJoint.xMotion = ConfigurableJointMotion.Locked;
-        confJoint.yMotion = ConfigurableJointMotion.Locked;
-        confJoint.zMotion = ConfigurableJointMotion.Locked;
-        confJoint.angularXMotion = ConfigurableJointMotion.Locked;
-        confJoint.angularYMotion = ConfigurableJointMotion.Free;
-        confJoint.angularZMotion = ConfigurableJointMotion.Limited;
-        SoftJointLimit sjl = new SoftJointLimit();
-        sjl.limit = 20;
-        // confJoint.lowAngularXLimit = sjl;
-        // confJoint.highAngularXLimit = sjl;
-        confJoint.angularZLimit = sjl;
-    }
-
-    Vector3 CalculateLocalAnchors(PlayerLiftController player)
-    {
-        float offset1 = 0.7f;
-        Vector3[] list = {new Vector3(offset1, 0, 0), new Vector3(-offset1, 0, 0), new Vector3(0, 0, offset1), new Vector3(0, 0, -offset1)};
-
-        Vector3 anchor = list[0];
-        float min = Vector3.Distance(gameObject.transform.position + list[0], player.transform.position);
-        for (int i = 1; i < list.Length; i++)
-        {
-            Vector3 pos = gameObject.transform.position + list[i];
-            float current = Vector3.Distance(pos, player.transform.position);
-            if (current < min) 
-            {
-                min = current;
-                anchor = list[i];
-            }
-        }
-        return anchor;
     }
 }

@@ -36,7 +36,7 @@ public class PlayerLiftController : MonoBehaviour
 
     void Update()
     {
-        if (PV.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber) return;
+        if (!PV.IsMine) return;
 
         CheckLiftAndDrop();
     }
