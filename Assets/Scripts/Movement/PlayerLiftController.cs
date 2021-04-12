@@ -21,9 +21,6 @@ public class PlayerLiftController : MonoBehaviour
     // A static offset where the player's "hand" is, used as object's localPosition when lifting
     public Transform hand {get; set;}
 
-    // Array of transforms of anchor points, used for spring joints
-    public Transform[] anchors {get; set;} = new Transform[3];
-
     // This player's PhotonView.
     PhotonView PV;
 
@@ -35,14 +32,11 @@ public class PlayerLiftController : MonoBehaviour
         PV = GetComponent<PhotonView>();
         hand = gameObject.transform.GetChild(0);
         character = GetComponent<Character>();
-        anchors[0] = gameObject.transform.GetChild(1);
-        anchors[1] = gameObject.transform.GetChild(2);
-        anchors[2] = gameObject.transform.GetChild(3);
     }
 
     void Update()
     {
-        if (!PV.IsMine) return;
+        if (PV.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber) return;
 
         CheckLiftAndDrop();
     }
@@ -131,7 +125,7 @@ public class PlayerLiftController : MonoBehaviour
     void _HelpLift(GameObject obj)
     {
         PackageController packageController = obj.GetComponent<PackageController>();
-        packageController.AddLifter(this);
+        packageController.AddHelper(this);
 
         // Set booleans and liftingID
         liftingID = obj.GetComponent<PhotonView>().ViewID;
@@ -244,7 +238,7 @@ public class PlayerLiftController : MonoBehaviour
     void _DropHelp(GameObject obj)
     {
         PackageController packageController = obj.GetComponent<PackageController>();
-        packageController.RemoveLifter(this);
+        packageController.RemoveHelper(this);
 
         // Set booleans and liftingID
         liftingID = -1;
