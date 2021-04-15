@@ -28,17 +28,23 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        Debug.Log("Connecting to the master server...");
         //Connecting to master server (Set to eu in PhotonServerSettings)
-        PhotonNetwork.ConnectUsingSettings();
-
+        if(!PhotonNetwork.IsConnected) 
+        {
+            Debug.Log("Connecting to the master server...");
+            PhotonNetwork.ConnectUsingSettings();
+        }
     }
 
     public override void OnConnectedToMaster()
     {
-        PhotonNetwork.JoinLobby();
-        Debug.Log("Connected to the " + PhotonNetwork.CloudRegion + " server!");
-        PhotonNetwork.AutomaticallySyncScene = true;
+        print(PhotonNetwork.InLobby);
+        if(!PhotonNetwork.InLobby) 
+        {
+            PhotonNetwork.JoinLobby();
+            Debug.Log("Connected to the " + PhotonNetwork.CloudRegion + " server!");
+            PhotonNetwork.AutomaticallySyncScene = true;
+        }        
     }
 
     public override void OnJoinedLobby()

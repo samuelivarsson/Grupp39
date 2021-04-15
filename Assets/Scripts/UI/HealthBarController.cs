@@ -7,18 +7,22 @@ public class HealthBarController : MonoBehaviour
 {
     GameObject canvasManager;
 
-    Vector3 startPos = new Vector3(960, 540, 0);
+    Vector3 startPos = new Vector3(0, 600, 0);
 
     public static HealthBarController Instance;
-
+    RectTransform rectTransform;
     int heartsLeft = 3;
+    public bool gameOver = false;
 
     void Awake() 
     {
         canvasManager = CanvasManager.Instance.gameObject;
         gameObject.transform.SetParent(canvasManager.transform);
-        GetComponent<RectTransform>().anchoredPosition3D = startPos;
-        GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+        rectTransform = GetComponent<RectTransform>();
+        rectTransform.localScale = new Vector3(1, 1, 1);
+        rectTransform.offsetMin = new Vector2(0,0);
+        rectTransform.offsetMax = new Vector2(0,0);
+        
         if(Instance)
         {
             Destroy(gameObject);
@@ -29,8 +33,16 @@ public class HealthBarController : MonoBehaviour
 
     public void DecreaseHealth()
     {
+        if(heartsLeft == 0) 
+        {
+            return;
+        }
         GameObject health = GameObject.FindGameObjectWithTag("Health" + heartsLeft);
         Destroy(health);
         heartsLeft--;
-    }
+        if(heartsLeft == 0) 
+        {
+            CanvasManager.Instance.OpenGameOverMenu();
+        }    
+    }  
 }
