@@ -44,7 +44,7 @@ public class ObjectTriggerCheck : MonoBehaviour
     private void Highlight(Renderer renderer, Material material)
     {
         Material matTemp = new Material(material);
-        matTemp.SetColor("_Color", Color.red);
+        matTemp.SetColor("_Color", Color.blue);
         renderer.material = matTemp;
     }
 }
