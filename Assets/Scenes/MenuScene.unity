@@ -2235,6 +2235,104 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &831470590
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 831470591}
+  - component: {fileID: 831470593}
+  - component: {fileID: 831470592}
+  m_Layer: 5
+  m_Name: Text
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &831470591
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 831470590}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1493009021}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 600, y: 700}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &831470592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 831470590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 20
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 1
+    m_MaxSize: 40
+    m_Alignment: 0
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: "V\xE4lkommen till LAGER-UTMANINGEN!\r\n\r\nDu och dina v\xE4nner har i
+    uppdrag att tillsammans skicka iv\xE4g best\xE4llda paket. Genom att observera
+    vilka varor som ska paketeras fr\xE5n uppgiftskorten kan ni l\xE4gga i de varorna
+    i paketen, tejpa paketen och sedan skicka iv\xE4g de f\xF6r att f\xE5 po\xE4ng.
+    Varje uppgiftskort har en f\xE4rg. De ordrarna ska levereras till lastbilar med
+    motsvarande f\xE4rg.\r\n\r\nF\xF6r att r\xF6ra dig anv\xE4nder du pilarna.\r\nF\xF6r
+    att plocka upp varor och paket trycker du p\xE5 mellanslagstangenten.\r\nF\xF6r
+    att sl\xE4ppa en vara eller ett paket trycker du p\xE5 mellanslagstangenten.\r\nF\xF6r
+    att l\xE4gga ner en vara i ett paket trycker du p\xE5 shift.\r\nF\xF6r att tejpa
+    l\xE5dan m\xE5ste du placera paketet p\xE5 en av de sm\xE5 borden och sedan trycka
+    p\xE5 E.\r\nPlacera paketet p\xE5 de st\xF6rre rutorna bakom lastbilarna f\xF6r
+    att leverera paketet och f\xE5 po\xE4ng.\r\n\r\nGl\xF6m inte att ta h\xE4nsyn
+    till tiden. Missar ni att leverera r\xE4tt order med r\xE4tt inneh\xE5ll i tid,
+    f\xF6rlorar laget ett av era tre liv. Om era tre liv tar slut har laget f\xF6rlorat.\r\n\r\nVissa
+    varor \xE4r sv\xE5ra att n\xE5, ni kan ta ner de genom att kl\xE4ttra p\xE5 varandra.
+    Detta sker d\xE5 ena spelaren duckar genom att trycka p\xE5 LeftControl. F\xF6rst
+    d\xE5 kan den andra spelaren kl\xE4ttra p\xE5 sin lagkamrat genom att trycka
+    p\xE5 mellanslagstangenten. Spelaren kl\xE4ttrar ner genom att trycka LeftControl.
+    Den spelaren som duckar reser sig upp igen genom att trycka p\xE5 LeftControl.
+    \r\n\r\nVissa varor \xE4r f\xF6r tunga f\xF6r att b\xE4ra ensam. Dessa lyfter
+    du tillsammans med en lagkamrat genom att\u2026"
+--- !u!222 &831470593
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 831470590}
+  m_CullTransparentMesh: 0
 --- !u!1 &943116585
 GameObject:
   m_ObjectHideFlags: 0
@@ -4233,6 +4331,7 @@ RectTransform:
   m_Children:
   - {fileID: 1863854252}
   - {fileID: 664496411}
+  - {fileID: 831470591}
   m_Father: {fileID: 1706754811}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
