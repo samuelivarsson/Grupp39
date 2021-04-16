@@ -4,8 +4,10 @@ using UnityEngine;
 using Photon.Pun;
 using System;
 using UnityEngine.UI;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
+using System.Linq;
 
-public class TaskController : MonoBehaviour
+public class TaskController : MonoBehaviourPunCallbacks
 {
     GameObject canvasManager;
     [SerializeField] int taskNr;
@@ -26,7 +28,6 @@ public class TaskController : MonoBehaviour
         GetComponent<RectTransform>().anchoredPosition3D = new Vector3(-160, -110 - 250 * (taskNr-1), 0);
         GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
         GenerateOrderedProducts();
-        textProducts.text = String.Join("\n", orderedProducts);
     }
 
     // Update is called once per frame
@@ -36,17 +37,35 @@ public class TaskController : MonoBehaviour
 
     private void GenerateOrderedProducts()
     {
-        System.Random rnd = new System.Random();
-        int amount = rnd.Next(3) + 1;
-
-        for(int i = 0; i < amount; i++)
+        if (PhotonNetwork.IsMasterClient)
         {
-            orderedProducts.Add(possibleProducts[rnd.Next(possibleProducts.Count)]);
+
+            System.Random rnd = new System.Random();
+            int amount = rnd.Next(3) + 1;
+
+            for(int i = 0; i < amount; i++)
+            {
+                orderedProducts.Add(possibleProducts[rnd.Next(possibleProducts.Count)]);
+            }
+
+            string text = String.Join("\n", orderedProducts);
+            textProducts.text = text;
+            int timer = 20 + (amount * 20);
+            GetComponentInChildren<TaskTimer>().maxTime = timer;
+
+            PV.RPC("OnGenerateOrderedProducts", RpcTarget.OthersBuffered, text, timer);
         }
-        Debug.Log(String.Join(" ", orderedProducts));
-        Debug.Log(amount);
-        GetComponentInChildren<TaskTimer>().maxTime = 10 + (amount * 10);
-        Debug.Log(GetComponentInChildren<TaskTimer>().maxTime);
+    }
+
+    [PunRPC]
+    void OnGenerateOrderedProducts(string _orderedProducts, int _amount)
+    {
+        print("I am here");
+
+        textProducts.text = _orderedProducts;
+        orderedProducts = _orderedProducts.Split('\n').ToList();
+
+        GetComponentInChildren<TaskTimer>().maxTime = _amount;
     }
 
     public List<string> GetOrderedProducts()
