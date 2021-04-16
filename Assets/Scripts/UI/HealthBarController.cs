@@ -11,7 +11,7 @@ public class HealthBarController : MonoBehaviour
 
     public static HealthBarController Instance;
     RectTransform rectTransform;
-    int heartsLeft = 3;
+    int heartsLeft = 30;
     public bool gameOver = false;
 
     void Awake() 
