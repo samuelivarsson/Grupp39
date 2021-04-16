@@ -21,6 +21,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] GameObject roomListItemPrefab;
     [SerializeField] GameObject playerListItemPrefab;
     [SerializeField] GameObject startGameButton;
+
+    Player[] players;
  
     List<string> characterList = new List<string> {"Long", "Normal", "Strong", "Weak"};
     List<int> spawnPointList = new List<int> {0, 1, 2, 3};
@@ -79,7 +81,8 @@ public class Launcher : MonoBehaviourPunCallbacks
         MenuManager.Instance.OpenMenu("room");
 
 
-        Player[] players = PhotonNetwork.PlayerList;
+        players = PhotonNetwork.PlayerList;
+        
 
         foreach (Transform child in playerListContent)
         {
@@ -91,8 +94,21 @@ public class Launcher : MonoBehaviourPunCallbacks
             Instantiate(playerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(players[i]);
         }
 
+        Hashtable hash = new Hashtable();
+        hash.Add("players", players.Length);
+        PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
         currPlayersInRoom.text = players.Length.ToString();
+
         startGameButton.SetActive(PhotonNetwork.IsMasterClient);
+    }
+
+    public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
+    {
+        if (propertiesThatChanged["players"] != null)
+        {
+            int currPlayers = (int)propertiesThatChanged["players"];
+            currPlayersInRoom.text = currPlayers.ToString();
+        }
     }
 
     public override void OnMasterClientSwitched(Player newMasterClient)
