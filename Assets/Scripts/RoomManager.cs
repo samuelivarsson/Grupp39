@@ -46,14 +46,4 @@ public class RoomManager : MonoBehaviourPunCallbacks
             }
         }
     }
-    
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
 }

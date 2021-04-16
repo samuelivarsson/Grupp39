@@ -22,9 +22,10 @@ TagManager:
   - TapeTile
   - TableTile
   - PlayerController
-  - Health1
-  - Health2
   - Health3
+  - Health2
+  - Health1
+  - HealthController
   layers:
   - Default
   - TransparentFX
