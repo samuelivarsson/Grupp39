@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using System.IO;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -10,7 +11,6 @@ public class PlayerManager : MonoBehaviour
     public static PlayerPackController myPlayerPackController;
 
     PhotonView PV;
-    Vector3 startPos = new Vector3(10.5f, 1.5f, 12.5f);
  
     void Awake()
     {
@@ -23,7 +23,11 @@ public class PlayerManager : MonoBehaviour
 
     void CreateController()
     {
-        GameObject playerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Player", "NormalPlayerController"), startPos, Quaternion.identity);
+        Hashtable hash = PhotonNetwork.LocalPlayer.CustomProperties;
+        string character = (string) hash["character"];
+        int spIndex = (int) hash["spawnPoint"];
+        Transform spawnPoint = SpawnManager.Instance.GetSpawnPoint(spIndex);
+        GameObject playerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Player", character+"PlayerController"), spawnPoint.position, spawnPoint.rotation);
         myPlayerLiftController = playerObj.GetComponent<PlayerLiftController>();
         myPlayerPackController = playerObj.GetComponent<PlayerPackController>();
     }

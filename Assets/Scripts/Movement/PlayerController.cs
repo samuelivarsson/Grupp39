@@ -7,23 +7,19 @@ public class PlayerController : MonoBehaviour
 {
     PhotonView PV;
     Rigidbody rb;
-    [SerializeField] public float smoothTime {get; set;}
-    [SerializeField] float rotateSpeed;
+    [SerializeField] public float smoothTime;
+    [SerializeField] public float rotateSpeed;
     float horizontalInput, verticalInput;
 
     Vector3 smoothMoveVelocity;
     Vector3 moveDir;
     Vector3 moveAmount;
-    Quaternion rotation = Quaternion.identity;
+    Quaternion rotation;
 
-    public bool isMultiLifting {get; set;} = false;
-    public bool tooHeavy {get; set;} = false;
-    public bool isHelper {get; set;} = false;
-    public bool isGrounded {get; set;} = false;
-
-    PlayerLiftController playerLiftController;
-    PlayerPackController playerPackController;
-    PlayerClimbController playerClimbController;
+    PlayerLiftController playerLC;
+    PlayerPackController playerPC;
+    PlayerClimbController playerCC;
+    PlayerMultiLiftController playerMLC;
     Character character;
 
     public static KeyCode useButton = KeyCode.Space;
@@ -38,9 +34,10 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         PV = GetComponent<PhotonView>();
-        playerLiftController = GetComponent<PlayerLiftController>();
-        playerPackController = GetComponent<PlayerPackController>();
-        playerClimbController = GetComponent<PlayerClimbController>();
+        playerLC = GetComponent<PlayerLiftController>();
+        playerPC = GetComponent<PlayerPackController>();
+        playerCC = GetComponent<PlayerClimbController>();
+        playerMLC = GetComponent<PlayerMultiLiftController>();
         character = GetComponent<Character>();
     }
 
@@ -53,80 +50,53 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (PV.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber) return;
+        if (!PV.IsMine) return;
         
-        if (playerPackController.isTaping || (tooHeavy && playerLiftController.liftingID != -1))
+        if (playerPC.isTaping)
         {
             moveAmount = Vector3.zero;
             return;
         }
-        MoveAndRotate();
+        Inputs();
+        Move();
+        Rotate();
     }
 
     void FixedUpdate()
     {
         if (!PV.IsMine) return;
-
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, -Vector3.up, out hit, 1.5f))
-        {
-            float dist = hit.distance - 0.5f;
-            rb.MovePosition(new Vector3(transform.position.x, transform.position.y - dist, transform.position.z));
-        }
-
-        if (PV.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber && isMultiLifting)
-        {
-            rb.velocity = new Vector3(networkMoveAmount.x, rb.velocity.y, networkMoveAmount.z);
-            RotateToPackage();
-            return;
-        }
         
+        if (playerMLC.isMultiLifting) return;
         rb.velocity = new Vector3(moveAmount.x, rb.velocity.y, moveAmount.z);
-        
-        if (isMultiLifting)
-        {
-            RotateToPackage();
-            return;
-        }
-        
         rb.MoveRotation(rotation);
     }
 
-    void MoveAndRotate()
+    void Inputs()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
         moveDir = new Vector3(horizontalInput, 0, verticalInput).normalized;
+    }
 
-        // Move
-        moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * character.movementSpeed, ref smoothMoveVelocity, smoothTime);
-
-        if (!PV.IsMine && PV.CreatorActorNr == PhotonNetwork.LocalPlayer.ActorNumber && moveAmount != networkMoveAmount)
+    void Move()
+    {
+        if (playerMLC.tooHeavy && playerLC.liftingID != -1)
         {
-            networkMoveAmount = moveAmount;
-            PV.RPC("OnMove", RpcTarget.OthersBuffered, moveAmount);
+            moveAmount = Vector3.zero;
+            return;
+        }
+        moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * character.movementSpeed, ref smoothMoveVelocity, smoothTime);
+    }
+
+    void Rotate()
+    {
+        if (playerCC.isCrouching || moveDir == Vector3.zero)
+        {
+            rotation = rb.rotation;
+            return;
         }
 
-        if (playerClimbController.isCrouching) return;
-
-        // Rotate
-        if (moveDir == Vector3.zero) return;
         Quaternion targetRotation = Quaternion.LookRotation(moveDir);
         rotation = Quaternion.Slerp(rb.rotation, targetRotation, Time.fixedDeltaTime * rotateSpeed);
-    }
-
-    void RotateToPackage()
-    {
-        Vector3 packagePos = playerLiftController.latestObject.transform.position;
-        Vector3 target = new Vector3(packagePos.x, 0, packagePos.z);
-        Vector3 current = new Vector3(transform.position.x, 0, transform.position.z);
-        Quaternion qTo = Quaternion.LookRotation(target - current);
-        rb.MoveRotation(qTo);
-    }
-
-    [PunRPC] 
-    void OnMove(Vector3 moveAmount)
-    {
-        networkMoveAmount = moveAmount;
     }
 }
