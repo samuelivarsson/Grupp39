@@ -100,7 +100,7 @@ public class PlayerController : MonoBehaviour
     {
         if (playerCC.isCrouching || moveDir == Vector3.zero)
         {
-            rotation = rb.rotation;
+            rotation = rb.rotation.normalized;
             return;
         }
 
