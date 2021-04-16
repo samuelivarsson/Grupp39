@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Photon.Realtime;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
@@ -20,7 +21,9 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] GameObject playerListItemPrefab;
     [SerializeField] GameObject startGameButton;
  
-    
+    List<string> characterList = new List<string> {"Long", "Normal", "Strong", "Weak"};
+    List<int> spawnPointList = new List<int> {0, 1, 2, 3};
+
     void Awake()
     {
         Instance = this;
@@ -98,8 +101,29 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void StartGame()
     {
-        PhotonNetwork.LoadLevel(1);
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            print("Player " + player.NickName + ":");
+            Hashtable hash = new Hashtable();
+            int randomCharacterIndex = Random.Range(0, characterList.Count-1);
+            string character = characterList[randomCharacterIndex];
+            characterList.RemoveAt(randomCharacterIndex);
+            hash.Add("character", character);
+            int randomSpawnPointIndex = Random.Range(0, spawnPointList.Count-1);
+            int spawnPoint = spawnPointList[randomSpawnPointIndex];
+            spawnPointList.RemoveAt(randomSpawnPointIndex);
+            hash.Add("spawnPoint", spawnPoint);
+            print("character="+character);
+            print("spawnPoint="+spawnPoint);
+            player.SetCustomProperties(hash);
+        }
     }
+
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        if (targetPlayer.ActorNumber == PhotonNetwork.PlayerList[PhotonNetwork.PlayerList.Length-1].ActorNumber) PhotonNetwork.LoadLevel(1);
+    }
+
     
     public void LeaveRoom()
     {

@@ -23,8 +23,8 @@ public class PlayerClimbController : MonoBehaviour
     PhotonView PV;
     Rigidbody RB;
 
-    Vector3 heightChange = new Vector3(-0.1f, 0.25f, -0.1f);   
-    Vector3 yPosChange = new Vector3(0, 0.25f, 0);
+    Vector3 heightChange; 
+    Vector3 yPosChange;
 
 
     void Awake()
@@ -33,6 +33,8 @@ public class PlayerClimbController : MonoBehaviour
         RB = GetComponent<Rigidbody>();
         playerLiftController = GetComponent<PlayerLiftController>();
         head = gameObject.transform.GetChild(1);
+        heightChange = new Vector3(-0.1f, gameObject.transform.localScale.y*0.5f, -0.1f);
+        yPosChange = new Vector3(0, gameObject.transform.localScale.y*0.5f, 0);
     }
 
     void Update()

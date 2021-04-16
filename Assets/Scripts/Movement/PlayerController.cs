@@ -7,31 +7,43 @@ public class PlayerController : MonoBehaviour
 {
     PhotonView PV;
     Rigidbody rb;
-    [SerializeField] float movementSpeed, smoothTime;
-    private float horizontalInput, verticalInput;
+    [SerializeField] public float smoothTime;
+    [SerializeField] public float rotateSpeed;
+    float horizontalInput, verticalInput;
 
     Vector3 smoothMoveVelocity;
     Vector3 moveDir;
     Vector3 moveAmount;
-    Quaternion rotation = Quaternion.identity;
+    Quaternion rotation;
 
-    PlayerClimbController playerClimbController;
+    PlayerLiftController playerLC;
+    PlayerPackController playerPC;
+    PlayerClimbController playerCC;
+    PlayerMultiLiftController playerMLC;
+    Character character;
 
     public static KeyCode useButton = KeyCode.Space;
     public static KeyCode tapeButton = KeyCode.E;
     public static KeyCode packButton = KeyCode.LeftShift;
     public static KeyCode crouchButton = KeyCode.LeftControl;
 
+    Vector3 networkMoveAmount = Vector3.zero;
+    Quaternion networkRotation = Quaternion.identity;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         PV = GetComponent<PhotonView>();
-        playerClimbController = gameObject.GetComponent<PlayerClimbController>();
+        playerLC = GetComponent<PlayerLiftController>();
+        playerPC = GetComponent<PlayerPackController>();
+        playerCC = GetComponent<PlayerClimbController>();
+        playerMLC = GetComponent<PlayerMultiLiftController>();
+        character = GetComponent<Character>();
     }
 
     void Start()
     {
-        if (!PV.IsMine) Destroy(rb);
+        if (!PV.IsMine) rb.isKinematic = true;
 
         rb.centerOfMass = Vector3.zero;
     }
@@ -40,34 +52,51 @@ public class PlayerController : MonoBehaviour
     {
         if (!PV.IsMine) return;
         
-        if (!gameObject.GetComponent<PlayerPackController>().isTaping)
+        if (playerPC.isTaping)
         {
-            MoveAndRotate();
+            moveAmount = Vector3.zero;
+            return;
         }
+        Inputs();
+        Move();
+        Rotate();
     }
 
     void FixedUpdate()
     {
         if (!PV.IsMine) return;
         
+        if (playerMLC.isMultiLifting) return;
         rb.velocity = new Vector3(moveAmount.x, rb.velocity.y, moveAmount.z);
         rb.MoveRotation(rotation);
     }
 
-    void MoveAndRotate()
+    void Inputs()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
         moveDir = new Vector3(horizontalInput, 0, verticalInput).normalized;
+    }
 
-        // Move
-        moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * movementSpeed, ref smoothMoveVelocity, smoothTime);    
+    void Move()
+    {
+        if (playerMLC.tooHeavy && playerLC.liftingID != -1)
+        {
+            moveAmount = Vector3.zero;
+            return;
+        }
+        moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * character.movementSpeed, ref smoothMoveVelocity, smoothTime);
+    }
 
-        if (playerClimbController.isCrouching) return;
+    void Rotate()
+    {
+        if (playerCC.isCrouching || moveDir == Vector3.zero)
+        {
+            rotation = rb.rotation;
+            return;
+        }
 
-        // Rotate
-        if (moveDir == Vector3.zero) return;
-        var targetRotation = Quaternion.LookRotation(moveDir);
-        rotation = Quaternion.Slerp(rb.rotation, targetRotation, Time.fixedDeltaTime * 15);
+        Quaternion targetRotation = Quaternion.LookRotation(moveDir);
+        rotation = Quaternion.Slerp(rb.rotation, targetRotation, Time.fixedDeltaTime * rotateSpeed);
     }
 }
