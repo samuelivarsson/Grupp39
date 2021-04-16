@@ -27,11 +27,15 @@ public class PlayerLiftController : MonoBehaviour
     // This player's character traits.
     Character character;
 
+    // This player's climb controller
+    PlayerClimbController playerCC;
+
     void Awake()
     {
         PV = GetComponent<PhotonView>();
         hand = gameObject.transform.GetChild(0);
         character = GetComponent<Character>();
+        playerCC = GetComponent<PlayerClimbController>();
     }
 
     void Update()
@@ -54,7 +58,7 @@ public class PlayerLiftController : MonoBehaviour
             if (manager.CreateController()) Lift();
             return;
         }
-        if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && IsLifting(-1) && CanHelp(controller) && character.characterType != "Long")
+        if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && IsLifting(-1) && CanHelp(controller) && character.characterType != "Long" && !playerCC.isCrouching)
         {
             HelpLift();
             return;
@@ -64,7 +68,7 @@ public class PlayerLiftController : MonoBehaviour
             DropHelp();
             return;
         }
-        if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && IsLifting(-1) && !IsPackaged(controller) && !controller.isLifted)
+        if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && IsLifting(-1) && !IsPackaged(controller) && !controller.isLifted && !playerCC.isCrouching)
         {
             Lift();
             return;
