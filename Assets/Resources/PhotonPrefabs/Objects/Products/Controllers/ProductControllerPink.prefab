@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3716330393956155042}
   - component: {fileID: 2722574424089058331}
   - component: {fileID: 390834526916893737}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: PcCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -71,7 +71,7 @@ GameObject:
   - component: {fileID: 3290315257116680614}
   - component: {fileID: 3290315257116680634}
   - component: {fileID: 5324589393070720018}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ProductControllerPink
   m_TagString: ProductController
   m_Icon: {fileID: 0}
@@ -165,7 +165,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc6b6170377b8304e950352d26d9ba46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 
 --- !u!114 &5324589393070720018
 MonoBehaviour:
   m_ObjectHideFlags: 0

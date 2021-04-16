@@ -105,18 +105,18 @@ public class Launcher : MonoBehaviourPunCallbacks
 
         foreach (Player player in PhotonNetwork.PlayerList)
         {
-            print("Player " + player.NickName + ":");
             Hashtable hash = new Hashtable();
+
             int randomCharacterIndex = Random.Range(0, characterList.Count-1);
             string character = characterList[randomCharacterIndex];
             characterList.RemoveAt(randomCharacterIndex);
             hash.Add("character", character);
+
             int randomSpawnPointIndex = Random.Range(0, spawnPointList.Count-1);
             int spawnPoint = spawnPointList[randomSpawnPointIndex];
             spawnPointList.RemoveAt(randomSpawnPointIndex);
             hash.Add("spawnPoint", spawnPoint);
-            print("character="+character);
-            print("spawnPoint="+spawnPoint);
+
             player.SetCustomProperties(hash);
         }
     }
