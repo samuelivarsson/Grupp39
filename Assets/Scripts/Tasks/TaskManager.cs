@@ -9,10 +9,6 @@ public class TaskManager : MonoBehaviour
     GameObject canvasManager;
 
     PhotonView PV;
-
-    [SerializeField] bool stopGenerating = false;
-    [SerializeField] float generateTime;
-    [SerializeField] float generateDelay;
  
     void Awake()
     {
@@ -25,24 +21,25 @@ public class TaskManager : MonoBehaviour
         
     void Start()
     {
-       if (PV.IsMine)
-       {
-            InvokeRepeating("CreateTasks", generateTime, generateDelay);
-       }
+        if (PhotonNetwork.IsMasterClient)
+        {
+            CreateTasks();
+        }
     }
 
     void CreateTasks()
     {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            GameObject task1Obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task1"), Vector3.zero,  Quaternion.identity);
-            GameObject task2Obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task2"), Vector3.zero,  Quaternion.identity);
-            GameObject task3Obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task3"), Vector3.zero,  Quaternion.identity);
-            GameObject task4Obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task4"), Vector3.zero,  Quaternion.identity);
-        }
-        if (stopGenerating)
-        {
-            CancelInvoke("GenerateTask");
-        }
+        GameObject task1Obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task"), Vector3.zero,  Quaternion.identity);
+        task1Obj.tag = "Task1";
+        task1Obj.GetComponent<TaskController>().taskNr = 1;
+        GameObject task2Obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task"), Vector3.zero,  Quaternion.identity);
+        task2Obj.tag = "Task2";
+        task2Obj.GetComponent<TaskController>().taskNr = 2;
+        GameObject task3Obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task"), Vector3.zero,  Quaternion.identity);
+        task3Obj.tag = "Task3";
+        task3Obj.GetComponent<TaskController>().taskNr = 3;
+        GameObject task4Obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task"), Vector3.zero,  Quaternion.identity);
+        task4Obj.tag = "Task4";
+        task4Obj.GetComponent<TaskController>().taskNr = 4;
     }
 }

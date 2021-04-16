@@ -10,29 +10,31 @@ using System.Linq;
 public class TaskController : MonoBehaviourPunCallbacks
 {
     GameObject canvasManager;
-    [SerializeField] int taskNr;
+    [SerializeField] Material[] materials;
+    [SerializeField] Image bg;
+    public int taskNr {get; set;}
     [SerializeField] Text textProducts;
 
     PhotonView PV;
 
     // The objects in the order
-    private List<string> orderedProducts = new List<string>();
+    public List<string> orderedProducts {get; set;} = new List<string>();
 
-    private List<string> possibleProducts = new List<string>() { "Blå", "Röd", "Turkos", "Grön", "Gul", "Rosa"};
+    private List<string> possibleProducts = new List<string>() {"Blue", "Red", "Cyan", "Green", "Yellow", "Pink"};
 
     void Awake()
     {
-        canvasManager = CanvasManager.Instance.gameObject;
         PV = GetComponent<PhotonView>();
+        canvasManager = CanvasManager.Instance.gameObject;
         gameObject.transform.SetParent(canvasManager.transform);
+    }
+
+    void Start()
+    {
         GetComponent<RectTransform>().anchoredPosition3D = new Vector3(-160, -110 - 250 * (taskNr-1), 0);
         GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
         GenerateOrderedProducts();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
+        bg.color = materials[taskNr-1].color;
     }
 
     private void GenerateOrderedProducts()
@@ -69,8 +71,11 @@ public class TaskController : MonoBehaviourPunCallbacks
         GetComponentInChildren<TaskTimer>().maxTime = _amount;
     }
 
-    public List<string> GetOrderedProducts()
+    public enum TaskColors
     {
-        return orderedProducts;
+        Red = 1,
+        Blue = 2,
+        Pink = 3,
+        Green = 4
     }
 }

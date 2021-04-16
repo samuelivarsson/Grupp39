@@ -166,10 +166,10 @@ public class PackageController : MonoBehaviour, LiftablePackage
             playerMLC.tooHeavy = tooHeavy;
             playerMLC.iAmLifting = lifters.Contains(PlayerManager.myPlayerLiftController.GetComponent<PhotonView>().ViewID);
             playerMLC.isMultiLifting = lifters.Count > 1;
-            print("News:");
-            print("Too Heavy = " + playerMLC.tooHeavy);
-            print("I Am Lifting = " + playerMLC.iAmLifting);
-            print("Is Multi Lifting = " + playerMLC.isMultiLifting);
+            // print("News:");
+            // print("Too Heavy = " + playerMLC.tooHeavy);
+            // print("I Am Lifting = " + playerMLC.iAmLifting);
+            // print("Is Multi Lifting = " + playerMLC.isMultiLifting);
         }
     }
 
@@ -217,9 +217,8 @@ public class PackageController : MonoBehaviour, LiftablePackage
     public void OrderDelivery(GameObject latestTile)
     {
         string num = latestTile.name.Substring(latestTile.name.Length - 1);
-        PackageController package = GetComponent<PackageController>();
         GameObject task = GameObject.FindGameObjectWithTag("Task"+num);
-        Delivery(package, task);
+        Delivery(this, task);
     }
 
     private void Delivery(PackageController package, GameObject task)
@@ -254,7 +253,7 @@ public class PackageController : MonoBehaviour, LiftablePackage
 
     public bool CompareProductsWithTask(TaskController task)
     {
-        var orderedProducts = task.GetOrderedProducts();
+        var orderedProducts = task.orderedProducts;
         var deliveredProducts = GetAllDeliveredProducts(gameObject.transform);
 
         if (deliveredProducts.Count <= 0)
