@@ -186,7 +186,6 @@ public class PlayerLiftController : MonoBehaviour
             latestObject.GetComponent<PackageController>().OrderDelivery(latestTile);
             latestCollision = null;
             latestObject = null;
-            return;
         }
 
         PV.RPC("OnDrop", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID, eulerY, latestTile.name, offset);
@@ -196,6 +195,7 @@ public class PlayerLiftController : MonoBehaviour
     void OnDrop(int viewID, float eulerY, string tileName, Vector3 offset)
     {
         GameObject obj = PhotonView.Find(viewID).gameObject;
+        if (obj == null) return;
         GameObject tile = GameObject.Find(tileName);
         _Drop(obj, eulerY, tile, offset);
     }
