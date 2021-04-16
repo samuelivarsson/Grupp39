@@ -18,7 +18,7 @@ public class TaskController : MonoBehaviourPunCallbacks
     // The objects in the order
     private List<string> orderedProducts = new List<string>();
 
-    private List<string> possibleProducts = new List<string>() { "Blue", "Red", "Cyan", "Green", "Yellow", "Pink"};
+    private List<string> possibleProducts = new List<string>() { "Blå", "Röd", "Turkos", "Grön", "Gul", "Rosa"};
 
     void Awake()
     {
