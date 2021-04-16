@@ -30,5 +30,6 @@ public class PlayerManager : MonoBehaviour
         GameObject playerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Player", character+"PlayerController"), spawnPoint.position, spawnPoint.rotation);
         myPlayerLiftController = playerObj.GetComponent<PlayerLiftController>();
         myPlayerPackController = playerObj.GetComponent<PlayerPackController>();
+        playerObj.GetComponent<Character>().characterType = character;
     }
 }

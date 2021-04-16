@@ -101,6 +101,8 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void StartGame()
     {
+        if (PhotonNetwork.PlayerList.Length != 4) return;
+
         foreach (Player player in PhotonNetwork.PlayerList)
         {
             print("Player " + player.NickName + ":");
@@ -133,7 +135,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void JoinRoom(RoomInfo info)
     {
-        if(string.IsNullOrEmpty(findNickNameInputField.text))
+        if(string.IsNullOrEmpty(findNickNameInputField.text) || PhotonNetwork.PlayerList.Length >= 4)
         {
           return;
         }

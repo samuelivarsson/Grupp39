@@ -54,7 +54,7 @@ public class PlayerLiftController : MonoBehaviour
             if (manager.CreateController()) Lift();
             return;
         }
-        if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && IsLifting(-1) && CanHelp(controller))
+        if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && IsLifting(-1) && CanHelp(controller) && character.characterType != "Long")
         {
             HelpLift();
             return;

@@ -51,7 +51,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stopGenerating: 0
   generateTime: 1
-  generateDelay: 40
+  generateDelay: 70
 --- !u!114 &-5072130919891996220
 MonoBehaviour:
   m_ObjectHideFlags: 0

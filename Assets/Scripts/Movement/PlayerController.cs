@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     PhotonView PV;
     Rigidbody rb;
+    [SerializeField] GameObject myPlayerIcon;
     [SerializeField] public float smoothTime;
     [SerializeField] public float rotateSpeed;
     float horizontalInput, verticalInput;
@@ -34,6 +35,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         PV = GetComponent<PhotonView>();
+        myPlayerIcon.SetActive(PV.CreatorActorNr == PhotonNetwork.LocalPlayer.ActorNumber);
         playerLC = GetComponent<PlayerLiftController>();
         playerPC = GetComponent<PlayerPackController>();
         playerCC = GetComponent<PlayerClimbController>();

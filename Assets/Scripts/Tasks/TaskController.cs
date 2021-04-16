@@ -41,11 +41,12 @@ public class TaskController : MonoBehaviourPunCallbacks
         {
 
             System.Random rnd = new System.Random();
-            int amount = rnd.Next(3) + 1;
+            //int amount = rnd.Next(3) + 1;
+            int amount = UnityEngine.Random.Range(1, 3);
 
             for(int i = 0; i < amount; i++)
             {
-                orderedProducts.Add(possibleProducts[rnd.Next(possibleProducts.Count)]);
+                orderedProducts.Add(possibleProducts[UnityEngine.Random.Range(0, possibleProducts.Count-1)]);
             }
 
             string text = String.Join("\n", orderedProducts);
@@ -58,12 +59,12 @@ public class TaskController : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void OnGenerateOrderedProducts(string _orderedProducts, int _amount)
+    void OnGenerateOrderedProducts(string _text, int _amount)
     {
         print("I am here");
 
-        textProducts.text = _orderedProducts;
-        orderedProducts = _orderedProducts.Split('\n').ToList();
+        textProducts.text = _text;
+        orderedProducts = _text.Split('\n').ToList();
 
         GetComponentInChildren<TaskTimer>().maxTime = _amount;
     }
