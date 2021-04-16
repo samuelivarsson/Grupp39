@@ -6,7 +6,7 @@ using Photon.Pun;
 
 public class TaskTimer : MonoBehaviour
 {
-
+    public bool startTimer {get; set;} = false;
     public float maxTime {get; set;}
     public float timeLeft {get; set;}
     [SerializeField] Image timerBar;
@@ -28,6 +28,8 @@ public class TaskTimer : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (!startTimer) return;
+
         if(timeLeft > 0)
         {
             timeLeft -= Time.fixedDeltaTime;

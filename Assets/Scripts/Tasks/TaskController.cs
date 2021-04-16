@@ -14,7 +14,7 @@ public class TaskController : MonoBehaviourPunCallbacks
     [SerializeField] Image bg;
     public int taskNr {get; set;}
     [SerializeField] Text textProducts;
-
+    TaskTimer taskTimer;
     PhotonView PV;
 
     // The objects in the order
@@ -25,6 +25,7 @@ public class TaskController : MonoBehaviourPunCallbacks
     void Awake()
     {
         PV = GetComponent<PhotonView>();
+        taskTimer = GetComponentInChildren<TaskTimer>();
         canvasManager = CanvasManager.Instance.gameObject;
         gameObject.transform.SetParent(canvasManager.transform);
     }
@@ -53,24 +54,26 @@ public class TaskController : MonoBehaviourPunCallbacks
 
             string text = String.Join("\n", orderedProducts);
             textProducts.text = text;
-            int timer = 20 + (amount * 20);
-            TaskTimer taskTimer = GetComponentInChildren<TaskTimer>();
-            taskTimer.maxTime = timer;
-            taskTimer.timeLeft = timer;
+            int time = 20 + (amount * 20);
+            taskTimer.maxTime = time;
+            taskTimer.timeLeft = time;
+            taskTimer.startTimer = true;
 
-            PV.RPC("OnGenerateOrderedProducts", RpcTarget.OthersBuffered, text, timer);
+            PV.RPC("OnGenerateOrderedProducts", RpcTarget.OthersBuffered, text, time);
         }
     }
 
     [PunRPC]
-    void OnGenerateOrderedProducts(string _text, int _amount)
+    void OnGenerateOrderedProducts(string text, int time)
     {
         print("I am here");
 
-        textProducts.text = _text;
-        orderedProducts = _text.Split('\n').ToList();
+        textProducts.text = text;
+        orderedProducts = text.Split('\n').ToList();
 
-        GetComponentInChildren<TaskTimer>().maxTime = _amount;
+        taskTimer.maxTime = time;
+        taskTimer.timeLeft = time;
+        taskTimer.startTimer = true;
     }
 
     [PunRPC]
