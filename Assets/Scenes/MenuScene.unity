@@ -5815,7 +5815,7 @@ MonoBehaviour:
   findNickNameInputField: {fileID: 1724720403}
   errorText: {fileID: 280389141}
   roomNameText: {fileID: 1414246876}
-  amountOfPlayers: {fileID: 1352080293}
+  currPlayersInRoom: {fileID: 1352080293}
   roomListContent: {fileID: 175944276}
   playerListContent: {fileID: 158898753}
   roomListItemPrefab: {fileID: 1219362387725598088, guid: 4ec1da2139b78284fb1305be007a8e6e,
