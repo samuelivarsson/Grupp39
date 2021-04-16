@@ -37,8 +37,8 @@ public class TaskManager : MonoBehaviour
         {
             GameObject task1Obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task1"), Vector3.zero,  Quaternion.identity);
             GameObject task2Obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task2"), Vector3.zero,  Quaternion.identity);
-            GameObject task3Obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task3"), Vector3.zero,  Quaternion.identity);
-            GameObject task4Obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task4"), Vector3.zero,  Quaternion.identity);
+            // GameObject task3Obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task3"), Vector3.zero,  Quaternion.identity);
+            // GameObject task4Obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task4"), Vector3.zero,  Quaternion.identity);
         }
         if (stopGenerating)
         {
