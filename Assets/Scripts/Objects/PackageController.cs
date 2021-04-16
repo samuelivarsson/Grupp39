@@ -227,9 +227,8 @@ public class PackageController : MonoBehaviour, LiftablePackage
 
         if (package.CompareProductsWithTask(taskController) && package.isTaped)
         {
-            package.Deliver(1);
+            package.Deliver(1, task);
             Debug.Log("The package contained all products!");
-            Destroy(task);
         }
         else
         {
@@ -237,18 +236,21 @@ public class PackageController : MonoBehaviour, LiftablePackage
         }
     }
 
-    public void Deliver(int score)
+    public void Deliver(int score, GameObject task)
     {
-        //droppedDeliveries.Add(gameObject);
         Destroy(gameObject);
+        Destroy(task);
         ScoreController.Instance.IncrementScore(score);
-        PV.RPC("OnDeliver", RpcTarget.OthersBuffered);
+        PV.RPC("OnDeliver", RpcTarget.OthersBuffered, task.GetComponent<PhotonView>().ViewID);
     }
 
     [PunRPC]
-    void OnDeliver()
+    void OnDeliver(int viewID)
     {
+        // Destroy package
         Destroy(gameObject);
+        // Destroy task
+        Destroy(PhotonView.Find(viewID).gameObject);
     }
 
     public bool CompareProductsWithTask(TaskController task)

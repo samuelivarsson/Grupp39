@@ -461,6 +461,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76b23fe46c661f348a4f4e78a06b40bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  timerBar: {fileID: 7690100308600964840}
   timesUpText: {fileID: 7690100308485258539}
   taskWindow: {fileID: 7690100309756457549}
 --- !u!1 &7690100309195411524

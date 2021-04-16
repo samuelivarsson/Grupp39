@@ -54,7 +54,9 @@ public class TaskController : MonoBehaviourPunCallbacks
             string text = String.Join("\n", orderedProducts);
             textProducts.text = text;
             int timer = 20 + (amount * 20);
-            GetComponentInChildren<TaskTimer>().maxTime = timer;
+            TaskTimer taskTimer = GetComponentInChildren<TaskTimer>();
+            taskTimer.maxTime = timer;
+            taskTimer.timeLeft = timer;
 
             PV.RPC("OnGenerateOrderedProducts", RpcTarget.OthersBuffered, text, timer);
         }
