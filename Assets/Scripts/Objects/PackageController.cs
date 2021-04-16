@@ -256,7 +256,11 @@ public class PackageController : MonoBehaviour, LiftablePackage
     public bool CompareProductsWithTask(TaskController task)
     {
         var orderedProducts = task.orderedProducts;
+        string test = "{" + String.Join(", ", orderedProducts) + "}";
         var deliveredProducts = GetAllDeliveredProducts(gameObject.transform);
+        string test1 = "{" + String.Join(", ", deliveredProducts) + "}";
+        print("Test: "+test);
+        print("Test1: "+test1);
 
         if (deliveredProducts.Count <= 0)
         {
