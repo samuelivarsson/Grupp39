@@ -71,6 +71,13 @@ public class TaskController : MonoBehaviourPunCallbacks
         GetComponentInChildren<TaskTimer>().maxTime = _amount;
     }
 
+    [PunRPC]
+    void OnInit(string tag, int _taskNr)
+    {
+        gameObject.tag = tag;
+        taskNr = _taskNr;
+    }
+
     public enum TaskColors
     {
         Red = 1,

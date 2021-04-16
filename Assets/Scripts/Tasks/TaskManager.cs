@@ -29,17 +29,13 @@ public class TaskManager : MonoBehaviour
 
     void CreateTasks()
     {
-        GameObject task1Obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task"), Vector3.zero,  Quaternion.identity);
-        task1Obj.tag = "Task1";
-        task1Obj.GetComponent<TaskController>().taskNr = 1;
-        GameObject task2Obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task"), Vector3.zero,  Quaternion.identity);
-        task2Obj.tag = "Task2";
-        task2Obj.GetComponent<TaskController>().taskNr = 2;
-        GameObject task3Obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task"), Vector3.zero,  Quaternion.identity);
-        task3Obj.tag = "Task3";
-        task3Obj.GetComponent<TaskController>().taskNr = 3;
-        GameObject task4Obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task"), Vector3.zero,  Quaternion.identity);
-        task4Obj.tag = "Task4";
-        task4Obj.GetComponent<TaskController>().taskNr = 4;
+        for (int i = 1; i < 5; i++)
+        {
+            GameObject taskObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task"), Vector3.zero,  Quaternion.identity);
+            string tag = "Task"+i;
+            taskObj.tag = tag;
+            taskObj.GetComponent<TaskController>().taskNr = i;
+            taskObj.GetComponent<PhotonView>().RPC("OnInit", RpcTarget.OthersBuffered, tag, i);
+        }
     }
 }
