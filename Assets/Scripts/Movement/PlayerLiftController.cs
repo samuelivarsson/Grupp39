@@ -73,17 +73,17 @@ public class PlayerLiftController : MonoBehaviour
             Lift();
             return;
         }
-        if (Input.GetKeyDown(PlayerController.useButton) && IsLifting(latestObjViewID) && latestTile && (latestTile.CompareTag("PlaceableTile") || latestTile.CompareTag("DropZone")))
+        if (Input.GetKeyDown(PlayerController.useButton) && IsLifting(latestObjViewID) && latestTile && !TileIsOccupied() && (latestTile.CompareTag("PlaceableTile") || latestTile.CompareTag("DropZone")))
         {
             Drop();
             return;
         }
-        if (Input.GetKeyDown(PlayerController.useButton) && IsLifting(latestObjViewID) && latestTile && latestTile.CompareTag("TapeTile"))
+        if (Input.GetKeyDown(PlayerController.useButton) && IsLifting(latestObjViewID) && latestTile && latestTile.CompareTag("TapeTile") && !TileIsOccupied())
         {
             DropOnTapeTable();
             return;
         }
-        if (Input.GetKeyDown(PlayerController.useButton) && IsLifting(latestObjViewID) && latestTile && latestTile.CompareTag("TableTile"))
+        if (Input.GetKeyDown(PlayerController.useButton) && IsLifting(latestObjViewID) && latestTile && latestTile.CompareTag("TableTile") && !TileIsOccupied())
         {
             DropOnTable();
         }
@@ -310,6 +310,13 @@ public class PlayerLiftController : MonoBehaviour
         if (obj.CompareTag("ProductController")) result = ProductController.cabinetOffset;
         else result = PackageController.cabinetOffset;
         return result;
+    }
+
+    bool TileIsOccupied()
+    {
+        PackageController pkg = latestTile.GetComponentInChildren<PackageController>();
+        ProductController prdct = latestTile.GetComponentInChildren<ProductController>();
+        return pkg != null || prdct != null;
     }
 
     public bool IsLifting(int _liftingID)
