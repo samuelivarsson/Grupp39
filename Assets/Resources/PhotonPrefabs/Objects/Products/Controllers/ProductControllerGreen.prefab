@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3716330393956155042}
   - component: {fileID: 2722574424089058331}
   - component: {fileID: 390834526916893737}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: PcCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -71,7 +71,7 @@ GameObject:
   - component: {fileID: 3290315257116680614}
   - component: {fileID: 3290315257116680634}
   - component: {fileID: 5324589393070720018}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ProductControllerGreen
   m_TagString: ProductController
   m_Icon: {fileID: 0}
