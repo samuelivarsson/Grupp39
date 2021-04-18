@@ -1996,7 +1996,7 @@ GameObject:
   - component: {fileID: 4704681167869514660}
   - component: {fileID: 4704681167869514664}
   - component: {fileID: -4629809851890186303}
-  - component: {fileID: 4786451045283639236}
+  - component: {fileID: 8939512342670707405}
   m_Layer: 5
   m_Name: CanvasManager
   m_TagString: Untagged
@@ -2111,7 +2111,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   endScore: {fileID: 9151273591227607370}
---- !u!114 &4786451045283639236
+--- !u!114 &8939512342670707405
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

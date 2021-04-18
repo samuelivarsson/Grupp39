@@ -108,7 +108,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   balance: 100
-  type: Green
 --- !u!114 &3631734112957662894
 MonoBehaviour:
   m_ObjectHideFlags: 0

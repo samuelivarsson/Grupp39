@@ -40,9 +40,9 @@ public class RoomManager : MonoBehaviourPunCallbacks
             if (PhotonNetwork.IsMasterClient) 
             {
                 PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "ObjectManager"), Vector3.zero, Quaternion.identity);
-                GameObject canvasObj = PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "UI", "CanvasManager"), Vector3.zero, Quaternion.identity);
-                canvasObj.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
-                canvasObj.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+                //GameObject canvasObj = PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "UI", "CanvasManager"), Vector3.zero, Quaternion.identity);
+                //canvasObj.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
+                //canvasObj.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
             }
         }
     }

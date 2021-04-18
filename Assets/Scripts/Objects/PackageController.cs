@@ -216,81 +216,94 @@ public class PackageController : MonoBehaviour, LiftablePackage
 
     public void OrderDelivery(GameObject latestTile)
     {
-        string num = latestTile.name.Substring(latestTile.name.Length - 1);
-        GameObject task = GameObject.FindGameObjectWithTag("Task"+num);
-        Delivery(this, task);
-    }
-
-    private void Delivery(PackageController package, GameObject task)
-    {
-        TaskController taskController = task.GetComponent<TaskController>();
-
-        if (package.CompareProductsWithTask(taskController) && package.isTaped)
+        if (!isTaped)
         {
-            package.Deliver(1, task);
-            Debug.Log("The package contained all products!");
+            print("Package isn't taped!");
+            return;
+        }
+        if (!latestTile.CompareTag("DropZone"))
+        {
+            print("This is not a drop zone!");
+            return;
+        }
+        int num = int.Parse(latestTile.name.Substring(latestTile.name.Length - 1))-1;
+        GameObject taskObj = GameObject.FindGameObjectWithTag("Task"+num);
+        if (taskObj == null)
+        {
+            // Task was already destroyed and no new task has spawned yet
+            print("No task was found with name Task"+num);
+            return;
+        }
+        TaskTimer taskTimer = taskObj.GetComponent<TaskTimer>();
+        if (taskTimer.timeLeft <= 0)
+        {
+            // Task hasn't been destroyed yet, but the time was up
+            print("Time is up!");
+            return;
+        }
+
+        TaskController taskController = taskObj.GetComponent<TaskController>();
+        PhotonView taskPV = taskObj.GetComponent<PhotonView>();
+        if (HasRequiredProducts(taskController))
+        {
+            ScoreController.Instance.IncrementScore(taskController.productAmount);
+            if (PV.IsMine)
+            {
+                // Destroy package
+                PhotonNetwork.Destroy(gameObject);
+            }
+            else PV.RPC("DestroyPackage", RpcTarget.OthersBuffered);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                // Destroy task
+                PhotonNetwork.Destroy(taskObj);
+                TaskManager.Instance.GenerateNewTask(taskController.taskNr);
+            }
+            else taskPV.RPC("DestroyTask", RpcTarget.OthersBuffered);
+            print("The package contained the required products!");
         }
         else
         {
-            Debug.Log("The package did not contain all products!");
+            print("The package did not contain the required products!");
         }
     }
 
-    public void Deliver(int score, GameObject task)
-    {
-        Destroy(gameObject);
-        Destroy(task);
-        ScoreController.Instance.IncrementScore(score);
-        PV.RPC("OnDeliver", RpcTarget.OthersBuffered, task.GetComponent<PhotonView>().ViewID);
-    }
-
     [PunRPC]
-    void OnDeliver(int viewID)
+    void DestroyPackage()
     {
-        // Destroy package
-        Destroy(gameObject);
-        // Destroy task
-        Destroy(PhotonView.Find(viewID).gameObject);
+        if (PV.IsMine) PhotonNetwork.Destroy(gameObject);
     }
 
-    public bool CompareProductsWithTask(TaskController task)
+    bool HasRequiredProducts(TaskController task)
     {
-        var orderedProducts = task.orderedProducts;
-        string test = "{" + String.Join(", ", orderedProducts) + "}";
-        var deliveredProducts = GetAllDeliveredProducts(gameObject.transform);
-        string test1 = "{" + String.Join(", ", deliveredProducts) + "}";
+        HashSet<string> packageProducts = GetProducts();
+        HashSet<string> requiredProducts = task.requiredProducts;
+
+        string test = "{" + String.Join(", ", requiredProducts) + "}";
+        string test1 = "{" + String.Join(", ", packageProducts) + "}";
         print("Test: "+test);
         print("Test1: "+test1);
 
-        if (deliveredProducts.Count <= 0)
+        if (packageProducts.Count <= 0)
         {
             return false;
         }
 
-        foreach (string product in deliveredProducts)
-        {
-            if(!orderedProducts.Contains(product))
-            {
-                return false;
-            }
-            orderedProducts.Remove(product);
-        }
-
-        return true;
+        return requiredProducts.SetEquals(packageProducts);
     }
 
-    public List<string> GetAllDeliveredProducts(Transform package)
+    HashSet<string> GetProducts()
     {
-        List<string> deliveredProducts = new List<string>();
+        HashSet<string> packageProducts = new HashSet<string>();
         
-        foreach(Transform child in package)
+        foreach(ProductController productController in GetComponentsInChildren<ProductController>())
         {
-            if (child.CompareTag("ProductController"))
+            if (productController.gameObject.CompareTag("ProductController"))
             {
-                deliveredProducts.Add(child.GetComponent<ProductController>().type);
+                packageProducts.Add(productController.type);
             }
         }
 
-        return deliveredProducts;
+        return packageProducts;
     }
 }

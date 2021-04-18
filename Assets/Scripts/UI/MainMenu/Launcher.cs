@@ -34,7 +34,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        //Connecting to master server (Set to eu in PhotonServerSettings)
+        // Connecting to master server (Set to eu in PhotonServerSettings)
         if(!PhotonNetwork.IsConnected) 
         {
             Debug.Log("Connecting to the master server...");
@@ -49,7 +49,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        print(PhotonNetwork.InLobby);
         if(!PhotonNetwork.InLobby) 
         {
             PhotonNetwork.JoinLobby();
@@ -109,6 +108,9 @@ public class Launcher : MonoBehaviourPunCallbacks
             int currPlayers = (int)propertiesThatChanged["players"];
             currPlayersInRoom.text = currPlayers.ToString();
         }
+        // When the last player has updated the room properties -> Start the game.
+        string lastPlayerNick = PhotonNetwork.PlayerList[PhotonNetwork.PlayerList.Length-1].NickName;
+        if (propertiesThatChanged[lastPlayerNick+"Character"] != null) PhotonNetwork.LoadLevel(1);
     }
 
     public override void OnMasterClientSwitched(Player newMasterClient)
@@ -133,22 +135,16 @@ public class Launcher : MonoBehaviourPunCallbacks
             int randomCharacterIndex = Random.Range(0, characterList.Count-1);
             string character = characterList[randomCharacterIndex];
             characterList.RemoveAt(randomCharacterIndex);
-            hash.Add("character", character);
+            hash.Add(player.NickName+"Character", character);
 
             int randomSpawnPointIndex = Random.Range(0, spawnPointList.Count-1);
             int spawnPoint = spawnPointList[randomSpawnPointIndex];
             spawnPointList.RemoveAt(randomSpawnPointIndex);
-            hash.Add("spawnPoint", spawnPoint);
+            hash.Add(player.NickName+"SpawnPoint", spawnPoint);
 
-            player.SetCustomProperties(hash);
+            PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
         }
     }
-
-    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
-    {
-        if (targetPlayer.ActorNumber == PhotonNetwork.PlayerList[PhotonNetwork.PlayerList.Length-1].ActorNumber) PhotonNetwork.LoadLevel(1);
-    }
-
     
     public void LeaveRoom()
     {

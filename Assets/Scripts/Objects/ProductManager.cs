@@ -8,7 +8,7 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 public class ProductManager : MonoBehaviourPunCallbacks, ICreateController
 {
     [SerializeField] int balance;
-    [SerializeField] string type;
+    string type;
 
     string balanceKey;
     PlayerLiftController playerLiftController;
@@ -18,6 +18,7 @@ public class ProductManager : MonoBehaviourPunCallbacks, ICreateController
     void Awake()
     {
         PV = GetComponent<PhotonView>();
+        type = gameObject.name.Split('(')[0].Substring(gameObject.tag.Length);
         balanceKey = "balance" + PV.ViewID;
         playerLiftController = PlayerManager.myPlayerLiftController;
     }
@@ -34,12 +35,12 @@ public class ProductManager : MonoBehaviourPunCallbacks, ICreateController
     {
         if (playerLiftController.liftingID != -1)
         {
-            Debug.Log("You are already lifting something!");
+            print("You are already lifting something!");
             return false;
         }
         if (balance == 0)
         {
-            Debug.Log("Balance is 0!");
+            print("Balance is 0!");
             return false;
         }
         GameObject obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "Products", "Controllers", "ProductController"+type), Vector3.zero,  Quaternion.identity);

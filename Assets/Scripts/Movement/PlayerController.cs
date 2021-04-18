@@ -48,6 +48,7 @@ public class PlayerController : MonoBehaviour
         if (!PV.IsMine) rb.isKinematic = true;
 
         rb.centerOfMass = Vector3.zero;
+        rotation = rb.rotation;
     }
 
     void Update()
@@ -69,12 +70,7 @@ public class PlayerController : MonoBehaviour
         if (!PV.IsMine) return;
         
         if (playerMLC.isMultiLifting) return;
-        // RaycastHit hit;
-        // if (Physics.Raycast(transform.position, -Vector3.up, out hit, 1.5f))
-        // {
-        //     float dist = hit.distance - 0.5f;
-        //     rb.MovePosition(new Vector3(transform.position.x, transform.position.y - dist, transform.position.z));
-        // }
+        
         rb.velocity = new Vector3(moveAmount.x, rb.velocity.y, moveAmount.z);
         rb.MoveRotation(rotation);
     }
@@ -98,11 +94,7 @@ public class PlayerController : MonoBehaviour
 
     void Rotate()
     {
-        if (playerCC.isCrouching || moveDir == Vector3.zero)
-        {
-            rotation = rb.rotation.normalized;
-            return;
-        }
+        if (playerCC.isCrouching || moveDir == Vector3.zero) return;
 
         Quaternion targetRotation = Quaternion.LookRotation(moveDir);
         rotation = Quaternion.Slerp(rb.rotation, targetRotation, Time.fixedDeltaTime * rotateSpeed);
