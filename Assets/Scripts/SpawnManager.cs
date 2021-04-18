@@ -10,16 +10,13 @@ public class SpawnManager : MonoBehaviour
     SpawnPoint[] productSpawnPoints;
     SpawnPoint[] packageSpawnPoints;
 
-    GameObject playerObj;
-    GameObject productObj;
-    GameObject packageObj;
+    [SerializeField] GameObject playerObj;
+    [SerializeField] GameObject productObj;
+    [SerializeField] GameObject packageObj;
 
     void Awake()
     {
         Instance = this;
-        playerObj = transform.GetChild(0).gameObject;
-        productObj = transform.GetChild(1).gameObject;
-        packageObj = transform.GetChild(2).gameObject;
         playerSpawnPoints = playerObj.GetComponentsInChildren<SpawnPoint>();
         productSpawnPoints = productObj.GetComponentsInChildren<SpawnPoint>();
         packageSpawnPoints = packageObj.GetComponentsInChildren<SpawnPoint>();

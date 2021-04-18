@@ -76,7 +76,7 @@ public class ObjectManager : MonoBehaviour
             int index = Random.Range(0, packageSpawnPointList.Count);
             int result = packageSpawnPointList[index];
             packageSpawnPointList.RemoveAt(index);
-            return SpawnManager.Instance.GetProductSpawnPoint(result);
+            return SpawnManager.Instance.GetPackageSpawnPoint(result);
         }
     }
 }
