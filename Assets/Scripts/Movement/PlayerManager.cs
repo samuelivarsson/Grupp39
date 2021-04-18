@@ -26,8 +26,10 @@ public class PlayerManager : MonoBehaviour
         Hashtable hash = PhotonNetwork.CurrentRoom.CustomProperties;
         string character = (string) hash[PhotonNetwork.LocalPlayer.NickName+"Character"];
         int spIndex = (int) hash[PhotonNetwork.LocalPlayer.NickName+"SpawnPoint"];
-        Transform spawnPoint = SpawnManager.Instance.GetSpawnPoint(spIndex);
+        
+        Transform spawnPoint = SpawnManager.Instance.GetPlayerSpawnPoint(spIndex);
         GameObject playerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Player", character+"PlayerController"), spawnPoint.position, spawnPoint.rotation);
+
         myPlayerLiftController = playerObj.GetComponent<PlayerLiftController>();
         myPlayerPackController = playerObj.GetComponent<PlayerPackController>();
         playerObj.GetComponent<Character>().characterType = character;

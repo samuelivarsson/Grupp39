@@ -23,13 +23,19 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] GameObject startGameButton;
 
     Player[] players;
- 
+
+    const int maxPlayers = 4;
+
     List<string> characterList = new List<string> {"Long", "Normal", "Strong", "Weak"};
-    List<int> spawnPointList = new List<int> {0, 1, 2, 3};
+    List<int> spawnPointList = new List<int>();
 
     void Awake()
     {
         Instance = this;
+        for (int i = 0; i < maxPlayers; i++)
+        {
+            spawnPointList.Add(i);
+        }
     }
 
     void Start()
@@ -126,7 +132,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void StartGame()
     {
-        //if (PhotonNetwork.PlayerList.Length != 4) return;
+        //if (PhotonNetwork.PlayerList.Length != maxPlayers) return;
 
         foreach (Player player in PhotonNetwork.PlayerList)
         {

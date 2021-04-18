@@ -7,26 +7,27 @@ using System.IO;
 public class ObjectManager : MonoBehaviour
 {
     PhotonView PV;
-    
-    //Vector3 productPos1 = new Vector3(13.2f, 0.95f, 11f);
-	Vector3 productPos1 = new Vector3(13.2f, 0.825f, 11f);
-    //Vector3 productPos2 = new Vector3(13.2f, 0.95f, 13f);
-	Vector3 productPos2 = new Vector3(13.2f, 0.825f, 13f);
-    //Vector3 productPos3 = new Vector3(1.8f, 0.95f, 7f);
-	Vector3 productPos3 = new Vector3(1.8f, 0.825f, 7f);
-    //Vector3 productPos4 = new Vector3(1.8f, 0.95f, 9f);
-	Vector3 productPos4 = new Vector3(1.8f, 0.825f, 9f);
-    //Vector3 productPos5 = new Vector3(2f, 2.45f, 13.2f);
-	Vector3 productPos5 = new Vector3(2f, 2.325f, 13.2f);
-    //Vector3 productPos6 = new Vector3(3.75f, 1.55f, 7f);
-	Vector3 productPos6 = new Vector3(3.75f, 1.9917f, 7f);
 
-    //Vector3 packagePos = new Vector3(14.5f, 0.91f, 5.5f);
-	Vector3 packagePos = new Vector3(14.5f, 0.825f, 5.5f);
+    // The amount of different products
+    const int productCount = 6;
+
+    // The amount of package spawn points
+    const int packageCount = 1;
+
+    List<int> productSpawnPointList = new List<int>();
+    List<int> packageSpawnPointList = new List<int>();
+
+    // The different products
+    static string[] possibleProducts = {"Blue", "Red", "Cyan", "Green", "Yellow", "Pink"};
  
     void Awake()
     {
         PV = GetComponent<PhotonView>();
+        for (int i = 0; i < 6; i++)
+        {
+            productSpawnPointList.Add(i);
+            packageSpawnPointList.Add(i);
+        }
     }
         
     void Start()
@@ -38,14 +39,44 @@ public class ObjectManager : MonoBehaviour
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerRed"), productPos1,  Quaternion.identity);
-            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerBlue"), productPos2,  Quaternion.identity);
-            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerGreen"), productPos3,  Quaternion.identity);
-            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerPink"), productPos4,  Quaternion.identity);
-            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerYellow"), productPos5,  Quaternion.identity);
-            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerCyan"), productPos6,  Quaternion.identity);
+            for (int i = 0; i < productCount; i++)
+            {
+                Transform spawnPoint = GetProductSpawnPoint();
+                PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManager"+possibleProducts[i]), spawnPoint.position,  spawnPoint.rotation);
+            }
+            for (int i = 0; i < packageCount; i++)
+            {
+                Transform pkgSpawnPoint = GetPackageSpawnPoint();
+                PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "PackageManager"), pkgSpawnPoint.position, pkgSpawnPoint.rotation);
+            }
+        }
+    }
 
-            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "PackageManager"), packagePos, Quaternion.identity);
+    Transform GetProductSpawnPoint()
+    {
+        return GetSpawnPoint(0);
+    }
+
+    Transform GetPackageSpawnPoint()
+    {
+        return GetSpawnPoint(1);
+    }
+
+    Transform GetSpawnPoint(int i)
+    {
+        if (i == 0)
+        {
+            int index = Random.Range(0, productSpawnPointList.Count);
+            int result = productSpawnPointList[index];
+            productSpawnPointList.RemoveAt(index);
+            return SpawnManager.Instance.GetProductSpawnPoint(result);
+        }
+        else
+        {
+            int index = Random.Range(0, packageSpawnPointList.Count);
+            int result = packageSpawnPointList[index];
+            packageSpawnPointList.RemoveAt(index);
+            return SpawnManager.Instance.GetProductSpawnPoint(result);
         }
     }
 }
