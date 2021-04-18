@@ -43,11 +43,10 @@ public class ProductManager : MonoBehaviourPunCallbacks, ICreateController
             print("Balance is 0!");
             return false;
         }
-        GameObject obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "Products", "Controllers", "ProductController"+type), Vector3.zero,  Quaternion.identity);
+        object[] initData = {type};
+        GameObject obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "Products", "Controllers", "ProductController"+type), Vector3.zero,  Quaternion.identity, 0, initData);
         playerLiftController.latestCollision = obj;
         playerLiftController.canLiftID = obj.GetComponent<PhotonView>().ViewID;
-        ProductController productController = obj.GetComponent<ProductController>();
-        productController.type = type;
 
         Hashtable hash = new Hashtable();
         balance--;

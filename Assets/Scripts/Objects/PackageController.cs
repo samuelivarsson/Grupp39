@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Photon.Realtime;
-using System;
+using String = System.String;
+using System.Linq;
 
 public class PackageController : MonoBehaviour, LiftablePackage
 {
@@ -226,7 +226,7 @@ public class PackageController : MonoBehaviour, LiftablePackage
             print("This is not a drop zone!");
             return;
         }
-        int num = int.Parse(latestTile.name.Substring(latestTile.name.Length - 1))-1;
+        string num = latestTile.name.Substring(latestTile.name.Length - 1);
         GameObject taskObj = GameObject.FindGameObjectWithTag("Task"+num);
         if (taskObj == null)
         {
@@ -276,32 +276,40 @@ public class PackageController : MonoBehaviour, LiftablePackage
 
     bool HasRequiredProducts(TaskController task)
     {
-        HashSet<string> packageProducts = GetProducts();
-        HashSet<string> requiredProducts = task.requiredProducts;
+        string[] packageProducts = GetProducts();
+        string[] requiredProducts = task.requiredProducts;
 
-        string test = "{" + String.Join(", ", requiredProducts) + "}";
-        string test1 = "{" + String.Join(", ", packageProducts) + "}";
-        print("Test: "+test);
-        print("Test1: "+test1);
+        string pkgProducts = "{" + String.Join(", ", packageProducts) + "}";
+        string rqrdProducts = "{" + String.Join(", ", requiredProducts) + "}";
+        
+        print("Package Products: "+pkgProducts);
+        print("Required Products: "+rqrdProducts);
 
-        if (packageProducts.Count <= 0)
+        if (packageProducts.Length <= 0)
         {
             return false;
         }
 
-        return requiredProducts.SetEquals(packageProducts);
+        var q = from a in packageProducts join b in requiredProducts on a equals b select a;
+
+        return packageProducts.Length == requiredProducts.Length && q.Count() == packageProducts.Length;
     }
 
-    HashSet<string> GetProducts()
+    string[] GetProducts()
     {
-        HashSet<string> packageProducts = new HashSet<string>();
+        ProductController[] productControllers = GetComponentsInChildren<ProductController>();
+        // string productControllerss = "";
+        // foreach (ProductController item in productControllers)
+        // {
+        //     productControllerss += item.type+", ";
+        // }
+        // print("Product Controllers: "+productControllerss);
+        string[] packageProducts = new string[productControllers.Length];
         
-        foreach(ProductController productController in GetComponentsInChildren<ProductController>())
+        for (int i = 0; i < productControllers.Length; i++)
         {
-            if (productController.gameObject.CompareTag("ProductController"))
-            {
-                packageProducts.Add(productController.type);
-            }
+            print("Product"+i+" was set to "+productControllers[i].type);
+            packageProducts[i] = productControllers[i].type;
         }
 
         return packageProducts;

@@ -45,7 +45,7 @@ public class CanvasManager : MonoBehaviourPunCallbacks
         GameObject scoreObj = PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "UI", "ScoreController"), Vector3.zero,  Quaternion.identity);
         GameObject taskObj = PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "UI", "Tasks", "TaskManager"), Vector3.zero,  Quaternion.identity);
     }
-    // Fixa joints, spawnpoints för lådor efter merge, fixa offsets för lådor efter merge, fixa dropzone siffror efter merge
+    // Fixa joints, spawnpoints för lådor efter merge, fixa offsets för lådor efter merge, fixa collision bug när man spawnar lådor
     void LeaveRoom()
     {
         Destroy(RoomManager.Instance.gameObject);

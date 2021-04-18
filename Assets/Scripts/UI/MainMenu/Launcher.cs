@@ -132,12 +132,12 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             Hashtable hash = new Hashtable();
 
-            int randomCharacterIndex = Random.Range(0, characterList.Count-1);
+            int randomCharacterIndex = Random.Range(0, characterList.Count);
             string character = characterList[randomCharacterIndex];
             characterList.RemoveAt(randomCharacterIndex);
             hash.Add(player.NickName+"Character", character);
 
-            int randomSpawnPointIndex = Random.Range(0, spawnPointList.Count-1);
+            int randomSpawnPointIndex = Random.Range(0, spawnPointList.Count);
             int spawnPoint = spawnPointList[randomSpawnPointIndex];
             spawnPointList.RemoveAt(randomSpawnPointIndex);
             hash.Add(player.NickName+"SpawnPoint", spawnPoint);
