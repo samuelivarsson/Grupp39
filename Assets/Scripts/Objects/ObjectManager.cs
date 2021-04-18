@@ -8,14 +8,21 @@ public class ObjectManager : MonoBehaviour
 {
     PhotonView PV;
     
-    Vector3 productPos1 = new Vector3(13.2f, 0.95f, 11f);
-    Vector3 productPos2 = new Vector3(13.2f, 0.95f, 13f);
-    Vector3 productPos3 = new Vector3(1.8f, 0.95f, 7f);
-    Vector3 productPos4 = new Vector3(1.8f, 0.95f, 9f);
-    Vector3 productPos5 = new Vector3(2f, 2.45f, 13.2f);
-    Vector3 productPos6 = new Vector3(3.75f, 1.55f, 7f);
+    //Vector3 productPos1 = new Vector3(13.2f, 0.95f, 11f);
+	Vector3 productPos1 = new Vector3(13.2f, 0.825f, 11f);
+    //Vector3 productPos2 = new Vector3(13.2f, 0.95f, 13f);
+	Vector3 productPos2 = new Vector3(13.2f, 0.825f, 13f);
+    //Vector3 productPos3 = new Vector3(1.8f, 0.95f, 7f);
+	Vector3 productPos3 = new Vector3(1.8f, 0.825f, 7f);
+    //Vector3 productPos4 = new Vector3(1.8f, 0.95f, 9f);
+	Vector3 productPos4 = new Vector3(1.8f, 0.825f, 9f);
+    //Vector3 productPos5 = new Vector3(2f, 2.45f, 13.2f);
+	Vector3 productPos5 = new Vector3(2f, 2.325f, 13.2f);
+    //Vector3 productPos6 = new Vector3(3.75f, 1.55f, 7f);
+	Vector3 productPos6 = new Vector3(3.75f, 1.9917f, 7f);
 
-    Vector3 packagePos = new Vector3(14.5f, 0.91f, 5.5f);
+    //Vector3 packagePos = new Vector3(14.5f, 0.91f, 5.5f);
+	Vector3 packagePos = new Vector3(14.5f, 0.825f, 5.5f);
  
     void Awake()
     {
