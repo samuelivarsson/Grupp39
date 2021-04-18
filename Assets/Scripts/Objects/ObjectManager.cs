@@ -23,9 +23,12 @@ public class ObjectManager : MonoBehaviour
     void Awake()
     {
         PV = GetComponent<PhotonView>();
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < productCount; i++)
         {
             productSpawnPointList.Add(i);
+        }
+        for (int i = 0; i < packageCount; i++)
+        {
             packageSpawnPointList.Add(i);
         }
     }
