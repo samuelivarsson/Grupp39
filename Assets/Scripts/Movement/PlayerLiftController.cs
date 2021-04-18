@@ -203,7 +203,7 @@ public class PlayerLiftController : MonoBehaviour
         if (latestObject == null) return;
 
         float eulerY = ClosestAngle(latestObject.transform.rotation.eulerAngles.y);
-        Vector3 offset = GetCabinetOffset(latestObject);
+        Vector3 offset = GetTableOffset(latestObject);
         _Drop(latestObject, eulerY, latestTile, offset);
         PV.RPC("OnDropOnTable", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID, eulerY, latestTile.name, offset);
     }
@@ -223,7 +223,7 @@ public class PlayerLiftController : MonoBehaviour
         if (latestObject.CompareTag("PackageController"))
         {
             float eulerY = ClosestAngle(latestObject.transform.rotation.eulerAngles.y);
-            Vector3 offset = PackageController.cabinetOffset;
+            Vector3 offset = PackageController.tapeOffset;
             _Drop(latestObject, eulerY, latestTile, offset);
             PV.RPC("OnDropOnTapeTable", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID, eulerY, latestTile.name, offset);
         }
@@ -304,11 +304,11 @@ public class PlayerLiftController : MonoBehaviour
         return result;
     }
 
-    Vector3 GetCabinetOffset(GameObject obj)
+    Vector3 GetTableOffset(GameObject obj)
     {
         Vector3 result;
-        if (obj.CompareTag("ProductController")) result = ProductController.cabinetOffset;
-        else result = PackageController.cabinetOffset;
+        if (obj.CompareTag("ProductController")) result = ProductController.tableOffset;
+        else result = PackageController.tableOffset;
         return result;
     }
 

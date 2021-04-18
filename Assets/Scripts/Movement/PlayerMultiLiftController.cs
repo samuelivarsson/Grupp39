@@ -96,7 +96,6 @@ public class PlayerMultiLiftController : MonoBehaviour
                         // Interpolation is finished
                         rb.position = networkPosition;
                         interpolating = false;
-                        print("6. Done interpolating");
                     }
                 }
                 rb.velocity = networkVelocity;

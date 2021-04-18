@@ -28,8 +28,9 @@ public class PackageController : MonoBehaviour, LiftablePackage
     public int productCount {get; set;} = 0;
     public bool canTape { get; set; } = false;
 
-    public static Vector3 tileOffset = new Vector3(1.5f, 0.35f, 1.5f);
-    public static Vector3 cabinetOffset = new Vector3(1.5f, 0.6f, 1.5f);
+    public static Vector3 tileOffset = new Vector3(1.5f, 0f, 1.5f);
+    public static Vector3 tapeOffset = new Vector3(1.5f, 0.28f, 1.5f);
+    public static Vector3 tableOffset = new Vector3(1.5f, 0.3f, 1.5f);
 
     void Awake()
     {
@@ -279,12 +280,6 @@ public class PackageController : MonoBehaviour, LiftablePackage
         string[] packageProducts = GetProducts();
         string[] requiredProducts = task.requiredProducts;
 
-        string pkgProducts = "{" + String.Join(", ", packageProducts) + "}";
-        string rqrdProducts = "{" + String.Join(", ", requiredProducts) + "}";
-        
-        print("Package Products: "+pkgProducts);
-        print("Required Products: "+rqrdProducts);
-
         if (packageProducts.Length <= 0)
         {
             return false;
@@ -298,17 +293,10 @@ public class PackageController : MonoBehaviour, LiftablePackage
     string[] GetProducts()
     {
         ProductController[] productControllers = GetComponentsInChildren<ProductController>();
-        // string productControllerss = "";
-        // foreach (ProductController item in productControllers)
-        // {
-        //     productControllerss += item.type+", ";
-        // }
-        // print("Product Controllers: "+productControllerss);
         string[] packageProducts = new string[productControllers.Length];
         
         for (int i = 0; i < productControllers.Length; i++)
         {
-            print("Product"+i+" was set to "+productControllers[i].type);
             packageProducts[i] = productControllers[i].type;
         }
 

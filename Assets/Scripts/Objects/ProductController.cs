@@ -8,7 +8,7 @@ public class ProductController : MonoBehaviour, LiftableProduct, IPunInstantiate
     public string type {get; set;}
 
     public static Vector3 tileOffset = new Vector3(1.5f, 0.25f, 1.5f);
-    public static Vector3 cabinetOffset = new Vector3(1.5f, 0.5f, 1.5f);
+    public static Vector3 tableOffset = new Vector3(1.5f, 0.55f, 1.5f);
 
     public void OnPhotonInstantiate(PhotonMessageInfo info)
     {
