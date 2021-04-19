@@ -1,6 +1,7 @@
 ﻿using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using TMPro;
 using Photon.Realtime;
@@ -17,12 +18,14 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] TMP_Text roomNameText;
     [SerializeField] TMP_Text currPlayersInRoom;
     [SerializeField] Transform roomListContent;
-    [SerializeField] Transform playerListContent;
+    public Transform playerListContent;
     [SerializeField] GameObject roomListItemPrefab;
     [SerializeField] GameObject playerListItemPrefab;
     [SerializeField] GameObject startGameButton;
 
     Player[] players;
+
+    List<string> takenNames = new List<string>{};
 
     const int maxPlayers = 4;
 
@@ -50,7 +53,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        
+        if (PhotonNetwork.InRoom) currPlayersInRoom.text = PhotonNetwork.PlayerList.Length.ToString();
     }
 
     public override void OnConnectedToMaster()
@@ -85,35 +88,15 @@ public class Launcher : MonoBehaviourPunCallbacks
         roomNameText.text = PhotonNetwork.CurrentRoom.Name;
         MenuManager.Instance.OpenMenu("room");
 
-
-        players = PhotonNetwork.PlayerList;
-        
-
-        foreach (Transform child in playerListContent)
-        {
-            Destroy(child.gameObject);
-        }
-
-        for (int i = 0; i < players.Length; i++)
-        {
-            Instantiate(playerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(players[i]);
-        }
-
-        Hashtable hash = new Hashtable();
-        hash.Add("players", players.Length);
-        PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
-        currPlayersInRoom.text = players.Length.ToString();
+        SetNick(PhotonNetwork.LocalPlayer);
+        object[] initData = {PhotonNetwork.LocalPlayer.NickName};
+        PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "MainMenu", "PlayerListItem"), Vector3.zero, Quaternion.identity, 0, initData);
 
         startGameButton.SetActive(PhotonNetwork.IsMasterClient);
     }
 
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
     {
-        if (propertiesThatChanged["players"] != null)
-        {
-            int currPlayers = (int)propertiesThatChanged["players"];
-            currPlayersInRoom.text = currPlayers.ToString();
-        }
         // When the last player has updated the room properties -> Start the game.
         string lastPlayerNick = PhotonNetwork.PlayerList[PhotonNetwork.PlayerList.Length-1].NickName;
         if (propertiesThatChanged[lastPlayerNick+"Character"] != null) PhotonNetwork.LoadLevel(1);
@@ -159,13 +142,14 @@ public class Launcher : MonoBehaviourPunCallbacks
     }
 
     public void JoinRoom(RoomInfo info)
-    {
+    {        
         if(string.IsNullOrEmpty(findNickNameInputField.text) || PhotonNetwork.PlayerList.Length >= 4)
-        {
-          return;
+        {                
+            return;
         }
+                      
         PhotonNetwork.JoinRoom(info.Name);
-        PhotonNetwork.NickName = findNickNameInputField.text;
+        PhotonNetwork.NickName = findNickNameInputField.text;       
         MenuManager.Instance.OpenMenu("loading");
     }
 
@@ -186,9 +170,7 @@ public class Launcher : MonoBehaviourPunCallbacks
                     Destroy(currentRooms[j].gameObject);
                 }
             } 
-        }
-        
-    
+        }         
 
         for (int i = 0; i < roomList.Count; i++)
         {
@@ -197,16 +179,37 @@ public class Launcher : MonoBehaviourPunCallbacks
         }
     }
 
-    public override void OnPlayerEnteredRoom(Player newPlayer)
-    {
-        Instantiate(playerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(newPlayer);
-       
-    }
-
-    public void quitGame()
+    public void QuitGame()
     {
         Application.Quit();
     }
     
+    bool IsNameTaken(string name)
+    {
+        foreach (Player player in PhotonNetwork.PlayerListOthers)
+        {
+            if(player.NickName.Equals(name)) 
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void SetNick(Player player) 
+    {
+        if(!IsNameTaken(player.NickName)) return;
+
+        int i = 0;
+        string temp = player.NickName; 
+        string newName = player.NickName;        
+        while (IsNameTaken(temp))
+        {   
+            i++;
+            temp = newName + i;            
+        }
+        newName += i;
+        player.NickName = newName;
+    }
 }
 
