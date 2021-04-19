@@ -246,7 +246,7 @@ public class PackageController : MonoBehaviour, LiftablePackage
         PhotonView taskPV = taskObj.GetComponent<PhotonView>();
         if (HasRequiredProducts(taskController))
         {
-            ScoreController.Instance.IncrementScore(taskController.productAmount);
+            ScoreController.Instance.IncrementScore(taskController.productAmount * 100);
             foreach (ProductController productController in GetComponentsInChildren<ProductController>())
             {
                 PhotonView productPV = productController.GetComponent<PhotonView>();

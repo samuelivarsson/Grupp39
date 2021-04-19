@@ -175,12 +175,21 @@ public class Launcher : MonoBehaviourPunCallbacks
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
-    {
-        foreach(Transform trans in roomListContent)
+    {    
+        RoomListItem[] currentRooms = roomListContent.GetComponentsInChildren<RoomListItem>();
+        for (int i = 0; i < roomList.Count; i++)
         {
-            Destroy(trans.gameObject);
+            for (int j = 0; j < currentRooms.Length; j++)
+            {
+                if(roomList[i].Name == currentRooms[j].info.Name) 
+                {
+                    Destroy(currentRooms[j].gameObject);
+                }
+            } 
         }
         
+    
+
         for (int i = 0; i < roomList.Count; i++)
         {
             if(roomList[i].RemovedFromList) continue;
