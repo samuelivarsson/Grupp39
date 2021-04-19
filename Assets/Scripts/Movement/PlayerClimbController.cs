@@ -78,6 +78,7 @@ public class PlayerClimbController : MonoBehaviour
         gameObject.transform.localScale -= heightChange;
         gameObject.transform.localPosition -= yPosChange;
         isCrouching = true;
+        RB.isKinematic = true;
         PV.RPC("OnCrouch", RpcTarget.OthersBuffered);
     }
 
@@ -86,7 +87,7 @@ public class PlayerClimbController : MonoBehaviour
     {
         gameObject.transform.localScale -= heightChange;
         gameObject.transform.localPosition -= yPosChange;
-        isCrouching = true;
+        
     }
 
     void Stand() 
@@ -94,6 +95,7 @@ public class PlayerClimbController : MonoBehaviour
         gameObject.transform.localScale += heightChange;
         gameObject.transform.localPosition += yPosChange;
         isCrouching = false;
+        RB.isKinematic = false;
         PV.RPC("OnStand", RpcTarget.OthersBuffered);
     }
 
@@ -102,7 +104,7 @@ public class PlayerClimbController : MonoBehaviour
     {
         gameObject.transform.localScale += heightChange;
         gameObject.transform.localPosition += yPosChange;
-        isCrouching = false;
+        
     }
 
     
@@ -124,11 +126,12 @@ public class PlayerClimbController : MonoBehaviour
             
             PhotonView playerToClimbPV = PhotonView.Find(playerToClimbID);
             _OnClimb(playerToClimbPV);
-            playerToClimbPV.GetComponent<Rigidbody>().isKinematic = false;            
+            playerToClimbPV.GetComponent<Rigidbody>().isKinematic = false;
+                      
             isClimbed = true;
             
             PV.RPC("OnClimb", RpcTarget.OthersBuffered, playerToClimbID);
-            playerToClimbPV.RPC("OnClimbSucess", RpcTarget.OthersBuffered, PV.ViewID);
+            playerToClimbPV.RPC("OnClimbSuccess", RpcTarget.OthersBuffered, PV.ViewID);
         }
     }
     
@@ -149,25 +152,22 @@ public class PlayerClimbController : MonoBehaviour
         //playerToClimb.parent = gameObject.transform;
         //playerToClimb.localPosition = head.localPosition;
 
-        
+        RB.isKinematic = true; 
         ActivateHeadJoint(playerToClimbPV.GetComponent<Rigidbody>());
     }
 
     [PunRPC]
-    void OnClimbSucess(int _viewID)
+    void OnClimbSuccess(int _viewID)
     {
         if(!PV.IsMine) return;
 
-        PhotonView.Find(_viewID).GetComponent<Rigidbody>().isKinematic = false;
+        //PhotonView.Find(_viewID).GetComponent<Rigidbody>().isKinematic = true;
+        
         isClimbing = true;
-        //RB.constraints = RigidbodyConstraints.FreezeAll;
     }
 
     void ClimbDownRequest()
     {
-        //gameObject.transform.parent = null;
-        //gameObject.transform.position = posPreClimb;
-        
         //playerClimbed.GetComponent<PlayerClimbController>().isClimbed = false;
         //RB.constraints = RigidbodyConstraints.FreezeRotation;
         
@@ -183,7 +183,7 @@ public class PlayerClimbController : MonoBehaviour
         PhotonView playerClimbingPV = PhotonView.Find(_viewID);
         
         _ClimbDown();
-        playerClimbingPV.GetComponent<Rigidbody>().isKinematic = false;
+        playerClimbingPV.GetComponent<Rigidbody>().isKinematic = true;
         PV.RPC("OnClimbDown", RpcTarget.OthersBuffered);
         playerClimbingPV.RPC("OnClimbDownSuccess", RpcTarget.OthersBuffered);
     }
@@ -206,7 +206,7 @@ public class PlayerClimbController : MonoBehaviour
     {    
         if(!PV.IsMine) return;
 
-        playerClimbed.GetComponent<Rigidbody>().isKinematic = true;  
+        RB.isKinematic = false;  
         RB.position = posPreClimb;
         isClimbing = false;
     }
