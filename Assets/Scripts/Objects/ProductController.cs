@@ -10,6 +10,19 @@ public class ProductController : MonoBehaviour, LiftableProduct, IPunInstantiate
     public static Vector3 tileOffset = new Vector3(1.5f, 0.25f, 1.5f);
     public static Vector3 tableOffset = new Vector3(1.5f, 0.55f, 1.5f);
 
+    PhotonView PV;
+
+    void Awake()
+    {
+        PV = GetComponent<PhotonView>();
+    }
+
+    [PunRPC]
+    void DestroyProduct()
+    {
+        if (PV.IsMine) PhotonNetwork.Destroy(gameObject);
+    }
+
     public void OnPhotonInstantiate(PhotonMessageInfo info)
     {
         object[] initData = info.photonView.InstantiationData;

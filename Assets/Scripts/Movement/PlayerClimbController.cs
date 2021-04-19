@@ -78,7 +78,6 @@ public class PlayerClimbController : MonoBehaviour
         gameObject.transform.localScale -= heightChange;
         gameObject.transform.localPosition -= yPosChange;
         isCrouching = true;
-        RB.constraints = RigidbodyConstraints.FreezeAll;
         PV.RPC("OnCrouch", RpcTarget.OthersBuffered);
     }
 
@@ -95,7 +94,6 @@ public class PlayerClimbController : MonoBehaviour
         gameObject.transform.localScale += heightChange;
         gameObject.transform.localPosition += yPosChange;
         isCrouching = false;
-        RB.constraints = RigidbodyConstraints.FreezeRotation;
         PV.RPC("OnStand", RpcTarget.OthersBuffered);
     }
 

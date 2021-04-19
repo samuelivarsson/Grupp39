@@ -55,7 +55,7 @@ public class PlayerController : MonoBehaviour
     {
         if (!PV.IsMine) return;
         
-        if (playerPC.isTaping)
+        if (playerPC.isTaping || playerCC.isCrouching)
         {
             moveAmount = Vector3.zero;
             return;

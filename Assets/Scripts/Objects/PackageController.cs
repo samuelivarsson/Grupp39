@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using String = System.String;
 using System.Linq;
 
 public class PackageController : MonoBehaviour, LiftablePackage
@@ -215,17 +214,17 @@ public class PackageController : MonoBehaviour, LiftablePackage
 
     // Delivery
 
-    public void OrderDelivery(GameObject latestTile)
+    public bool OrderDelivery(GameObject latestTile)
     {
         if (!isTaped)
         {
             print("Package isn't taped!");
-            return;
+            return false;
         }
         if (!latestTile.CompareTag("DropZone"))
         {
             print("This is not a drop zone!");
-            return;
+            return false;
         }
         string num = latestTile.name.Substring(latestTile.name.Length - 1);
         GameObject taskObj = GameObject.FindGameObjectWithTag("Task"+num);
@@ -233,14 +232,14 @@ public class PackageController : MonoBehaviour, LiftablePackage
         {
             // Task was already destroyed and no new task has spawned yet
             print("No task was found with name Task"+num);
-            return;
+            return false;
         }
         TaskTimer taskTimer = taskObj.GetComponent<TaskTimer>();
         if (taskTimer.timeLeft <= 0)
         {
             // Task hasn't been destroyed yet, but the time was up
             print("Time is up!");
-            return;
+            return false;
         }
 
         TaskController taskController = taskObj.GetComponent<TaskController>();
@@ -248,6 +247,16 @@ public class PackageController : MonoBehaviour, LiftablePackage
         if (HasRequiredProducts(taskController))
         {
             ScoreController.Instance.IncrementScore(taskController.productAmount);
+            foreach (ProductController productController in GetComponentsInChildren<ProductController>())
+            {
+                PhotonView productPV = productController.GetComponent<PhotonView>();
+                if (productPV.IsMine)
+                {
+                    // Destroy product
+                    PhotonNetwork.Destroy(productController.gameObject);
+                }
+                else productPV.RPC("DestroyProduct", RpcTarget.OthersBuffered);
+            }
             if (PV.IsMine)
             {
                 // Destroy package
@@ -262,10 +271,12 @@ public class PackageController : MonoBehaviour, LiftablePackage
             }
             else taskPV.RPC("DestroyTask", RpcTarget.OthersBuffered);
             print("The package contained the required products!");
+            return true;
         }
         else
         {
             print("The package did not contain the required products!");
+            return false;
         }
     }
 
@@ -277,20 +288,20 @@ public class PackageController : MonoBehaviour, LiftablePackage
 
     bool HasRequiredProducts(TaskController task)
     {
-        string[] packageProducts = GetProducts();
+        string[] packageProducts = GetProductTypes();
         string[] requiredProducts = task.requiredProducts;
 
-        if (packageProducts.Length <= 0)
-        {
-            return false;
-        }
+        string pkgProducts = "{" + System.String.Join(", ", packageProducts) + "}";
+        string rqrdProducts = "{" + System.String.Join(", ", requiredProducts) + "}";
+        print("Package products: "+pkgProducts);
+        print("Required products: "+rqrdProducts);
 
-        var q = from a in packageProducts join b in requiredProducts on a equals b select a;
+        if (packageProducts.Length <= 0) return false;
 
-        return packageProducts.Length == requiredProducts.Length && q.Count() == packageProducts.Length;
+        return packageProducts.OrderBy(x=>x).SequenceEqual(requiredProducts.OrderBy(x=>x));
     }
 
-    string[] GetProducts()
+    string[] GetProductTypes()
     {
         ProductController[] productControllers = GetComponentsInChildren<ProductController>();
         string[] packageProducts = new string[productControllers.Length];

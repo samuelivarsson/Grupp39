@@ -8,17 +8,17 @@ public class ObjectManager : MonoBehaviour
 {
     PhotonView PV;
 
+    // The different products
+    static string[] possibleProducts = {"Blue", "Red", "Cyan", "Green", "Yellow", "Pink"};
+
     // The amount of different products
-    const int productCount = 6;
+    static int productCount = possibleProducts.Length;
 
     // The amount of package spawn points
     const int packageCount = 1;
 
     List<int> productSpawnPointList = new List<int>();
     List<int> packageSpawnPointList = new List<int>();
-
-    // The different products
-    static string[] possibleProducts = {"Blue", "Red", "Cyan", "Green", "Yellow", "Pink"};
  
     void Awake()
     {

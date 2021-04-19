@@ -179,14 +179,19 @@ public class PlayerLiftController : MonoBehaviour
 
         float eulerY = ClosestAngle(latestObject.transform.rotation.eulerAngles.y);
         Vector3 offset = GetTileOffset(latestObject);
-        _Drop(latestObject, eulerY, latestTile, offset);
-        PV.RPC("OnDrop", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID, eulerY, latestTile.name, offset);
         if (latestTile.CompareTag("DropZone") && latestObject.CompareTag("PackageController"))
         {
-            latestObject.GetComponent<PackageController>().OrderDelivery(latestTile);
-            latestCollision = null;
-            latestObject = null;
+            bool delivered = latestObject.GetComponent<PackageController>().OrderDelivery(latestTile);
+            if (delivered)
+            {
+                _Drop(latestObject, eulerY, latestTile, offset);
+                latestCollision = null;
+                latestObject = null;
+            }
+            return;
         }
+        _Drop(latestObject, eulerY, latestTile, offset);
+        PV.RPC("OnDrop", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID, eulerY, latestTile.name, offset);
     }
 
     [PunRPC]
