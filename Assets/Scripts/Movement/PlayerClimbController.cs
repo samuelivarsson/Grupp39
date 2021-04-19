@@ -64,7 +64,7 @@ public class PlayerClimbController : MonoBehaviour
 
         if (Input.GetKeyDown(PlayerController.useButton) && !isClimbing && CanClimb(latestCollision.GetComponent<PhotonView>().ViewID))
         {
-            Climb();
+            ClimbRequest();
             return;
         }
         if (Input.GetKeyDown(PlayerController.crouchButton) && isClimbing)
@@ -105,26 +105,55 @@ public class PlayerClimbController : MonoBehaviour
         isCrouching = false;
     }
 
-    void Climb()
+    
+
+    void ClimbRequest()
     {
         playerClimbed = latestCollision;
         posPreClimb = gameObject.transform.position;
-        gameObject.transform.parent = playerClimbed.transform;
-        gameObject.transform.localPosition = head.localPosition;
-        isClimbing = true;
-        playerClimbed.GetComponent<PlayerClimbController>().isClimbed = true;
-        RB.constraints = RigidbodyConstraints.FreezeAll;
-        PV.RPC("OnClimb", RpcTarget.OthersBuffered, playerClimbed.GetComponent<PhotonView>().ViewID);
+        playerClimbed.GetPhotonView().RPC("OnClimbRequest", RpcTarget.OthersBuffered, PV.ViewID);
+    }
+
+    [PunRPC]
+    void OnClimbRequest(int playerToClimbID) 
+    {
+        if(!PV.IsMine) return;
+        
+        if(isCrouching)
+        {
+            PhotonView playerToClimbPV = PhotonView.Find(playerToClimbID);
+            _OnClimb(playerToClimbPV);
+                        
+            isClimbed = true;
+            
+            PV.RPC("OnClimb", RpcTarget.OthersBuffered, playerToClimbID);
+            playerToClimbPV.RPC("OnClimbSucess", RpcTarget.OthersBuffered);
+        }
     }
     
     [PunRPC]
     void OnClimb(int viewID)
     {
-        GameObject obj = PhotonView.Find(viewID).gameObject;
-        gameObject.transform.parent = obj.transform;
-        PlayerClimbController otherClimbController = obj.GetComponent<PlayerClimbController>(); 
-        otherClimbController.isClimbed = true;
+        PhotonView obj = PhotonView.Find(viewID);
+        _OnClimb(obj);
+
+    }
+
+    void _OnClimb (PhotonView playerToClimbPV)
+    {
+        Transform playerToClimb = playerToClimbPV.gameObject.transform;
+        playerToClimb.parent = gameObject.transform;
+        playerToClimb.localPosition = head.localPosition;
+    }
+
+    [PunRPC]
+    void OnClimbSucess()
+    {
+        if(!PV.IsMine) return;
+
+
         isClimbing = true;
+        RB.constraints = RigidbodyConstraints.FreezeAll;
     }
 
     void ClimbDown()

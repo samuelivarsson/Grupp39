@@ -37,7 +37,7 @@ public class PickUpCheck : MonoBehaviour
             }
         }
 
-        if (other.CompareTag("PlayerController") && other.GetComponent<PlayerClimbController>().isCrouching)
+        if (other.CompareTag("PlayerController"))
         {
             playerClimbController.canClimbID = other.gameObject.GetComponent<PhotonView>().ViewID;
             playerClimbController.latestCollision = other.gameObject;
