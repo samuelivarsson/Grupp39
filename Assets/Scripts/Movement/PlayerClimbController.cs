@@ -17,7 +17,7 @@ public class PlayerClimbController : MonoBehaviour
     
     GameObject playerClimbed;                       //spelaren man klättrar upp på
 
-    Transform head;                                 //positionen på spelaren man ställer sig
+    [SerializeField] GameObject head;                                 //positionen på spelaren man ställer sig
     
     PlayerLiftController playerLiftController;
     PhotonView PV;
@@ -32,7 +32,7 @@ public class PlayerClimbController : MonoBehaviour
         PV = GetComponent<PhotonView>();
         RB = GetComponent<Rigidbody>();
         playerLiftController = GetComponent<PlayerLiftController>();
-        head = gameObject.transform.GetChild(1);
+        //head = gameObject.transform.GetChild(1);
         heightChange = new Vector3(-0.1f, gameObject.transform.localScale.y*0.5f, -0.1f);
         yPosChange = new Vector3(0, gameObject.transform.localScale.y*0.5f, 0);
     }
@@ -124,11 +124,11 @@ public class PlayerClimbController : MonoBehaviour
             
             PhotonView playerToClimbPV = PhotonView.Find(playerToClimbID);
             _OnClimb(playerToClimbPV);
-                        
+            playerToClimbPV.GetComponent<Rigidbody>().isKinematic = false;            
             isClimbed = true;
             
             PV.RPC("OnClimb", RpcTarget.OthersBuffered, playerToClimbID);
-            playerToClimbPV.RPC("OnClimbSucess", RpcTarget.OthersBuffered);
+            playerToClimbPV.RPC("OnClimbSucess", RpcTarget.OthersBuffered, PV.ViewID);
         }
     }
     
@@ -142,19 +142,23 @@ public class PlayerClimbController : MonoBehaviour
 
     void _OnClimb (PhotonView playerToClimbPV)
     {
-        HingeJoint hingeJoint = gameObject.AddComponent<HingeJoint>();
-        SetHingeJoint(hingeJoint, playerToClimbPV.GetComponent<Rigidbody>(), head.position);
-
+        //HingeJoint hingeJoint = gameObject.AddComponent<HingeJoint>();
+        //SetHingeJoint(hingeJoint, playerToClimbPV.GetComponent<Rigidbody>(), head.localPosition);
+        
         //Transform playerToClimb = playerToClimbPV.gameObject.transform;
         //playerToClimb.parent = gameObject.transform;
         //playerToClimb.localPosition = head.localPosition;
+
+        
+        ActivateHeadJoint(playerToClimbPV.GetComponent<Rigidbody>());
     }
 
     [PunRPC]
-    void OnClimbSucess()
+    void OnClimbSucess(int _viewID)
     {
         if(!PV.IsMine) return;
 
+        PhotonView.Find(_viewID).GetComponent<Rigidbody>().isKinematic = false;
         isClimbing = true;
         //RB.constraints = RigidbodyConstraints.FreezeAll;
     }
@@ -166,6 +170,7 @@ public class PlayerClimbController : MonoBehaviour
         
         //playerClimbed.GetComponent<PlayerClimbController>().isClimbed = false;
         //RB.constraints = RigidbodyConstraints.FreezeRotation;
+        
         playerClimbed.GetPhotonView().RPC("OnClimbDownRequest", RpcTarget.OthersBuffered, PV.ViewID);
     }
 
@@ -174,10 +179,13 @@ public class PlayerClimbController : MonoBehaviour
     void OnClimbDownRequest(int _viewID)
     {
         if(!PV.IsMine) return;
+
+        PhotonView playerClimbingPV = PhotonView.Find(_viewID);
         
         _ClimbDown();
+        playerClimbingPV.GetComponent<Rigidbody>().isKinematic = false;
         PV.RPC("OnClimbDown", RpcTarget.OthersBuffered);
-        PhotonView.Find(_viewID).RPC("OnClimbDownSuccess", RpcTarget.OthersBuffered);
+        playerClimbingPV.RPC("OnClimbDownSuccess", RpcTarget.OthersBuffered);
     }
 
     [PunRPC]
@@ -188,13 +196,17 @@ public class PlayerClimbController : MonoBehaviour
 
     void _ClimbDown()
     {
-        Destroy(GetComponent<HingeJoint>());
+        //Destroy(GetComponent<HingeJoint>());
+        DeactivateHeadJoint();
         isClimbed = false;
     }
 
     [PunRPC]
     void OnClimbDownSuccess()
-    {       
+    {    
+        if(!PV.IsMine) return;
+
+        playerClimbed.GetComponent<Rigidbody>().isKinematic = true;  
         RB.position = posPreClimb;
         isClimbing = false;
     }
@@ -210,6 +222,20 @@ public class PlayerClimbController : MonoBehaviour
         hingeJoint.autoConfigureConnectedAnchor = false;
         hingeJoint.connectedAnchor = Vector3.zero;
         hingeJoint.connectedBody = conBody;
+    }
+
+    void ActivateHeadJoint(Rigidbody conBody)
+    {
+        HingeJoint hingeJoint = head.GetComponent<HingeJoint>();        
+        hingeJoint.connectedBody = conBody;
+        head.SetActive(true);
+    }
+
+    void DeactivateHeadJoint()
+    {
+        HingeJoint hingeJoint = head.GetComponent<HingeJoint>();        
+        hingeJoint.connectedBody = null;
+        head.SetActive(false);
     }
 
 }
