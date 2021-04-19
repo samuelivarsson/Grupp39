@@ -69,7 +69,7 @@ public class PlayerClimbController : MonoBehaviour
         }
         if (Input.GetKeyDown(PlayerController.crouchButton) && isClimbing)
         {
-            ClimbDown();
+            ClimbDownRequest();
         }
     }
 
@@ -119,8 +119,9 @@ public class PlayerClimbController : MonoBehaviour
     {
         if(!PV.IsMine) return;
         
-        if(isCrouching)
+        if(isCrouching && !isClimbed)
         {
+            
             PhotonView playerToClimbPV = PhotonView.Find(playerToClimbID);
             _OnClimb(playerToClimbPV);
                         
@@ -141,9 +142,12 @@ public class PlayerClimbController : MonoBehaviour
 
     void _OnClimb (PhotonView playerToClimbPV)
     {
-        Transform playerToClimb = playerToClimbPV.gameObject.transform;
-        playerToClimb.parent = gameObject.transform;
-        playerToClimb.localPosition = head.localPosition;
+        HingeJoint hingeJoint = gameObject.AddComponent<HingeJoint>();
+        SetHingeJoint(hingeJoint, playerToClimbPV.GetComponent<Rigidbody>(), head.position);
+
+        //Transform playerToClimb = playerToClimbPV.gameObject.transform;
+        //playerToClimb.parent = gameObject.transform;
+        //playerToClimb.localPosition = head.localPosition;
     }
 
     [PunRPC]
@@ -151,32 +155,61 @@ public class PlayerClimbController : MonoBehaviour
     {
         if(!PV.IsMine) return;
 
-
         isClimbing = true;
-        RB.constraints = RigidbodyConstraints.FreezeAll;
+        //RB.constraints = RigidbodyConstraints.FreezeAll;
     }
 
-    void ClimbDown()
+    void ClimbDownRequest()
     {
-        gameObject.transform.parent = null;
-        gameObject.transform.position = posPreClimb;
-        isClimbing = false;
-        playerClimbed.GetComponent<PlayerClimbController>().isClimbed = false;
-        RB.constraints = RigidbodyConstraints.FreezeRotation;
-        PV.RPC("OnClimbDown", RpcTarget.OthersBuffered, playerClimbed.GetComponent<PhotonView>().ViewID, posPreClimb);
+        //gameObject.transform.parent = null;
+        //gameObject.transform.position = posPreClimb;
+        
+        //playerClimbed.GetComponent<PlayerClimbController>().isClimbed = false;
+        //RB.constraints = RigidbodyConstraints.FreezeRotation;
+        playerClimbed.GetPhotonView().RPC("OnClimbDownRequest", RpcTarget.OthersBuffered, PV.ViewID);
+    }
+
+
+    [PunRPC]
+    void OnClimbDownRequest(int _viewID)
+    {
+        if(!PV.IsMine) return;
+        
+        _ClimbDown();
+        PV.RPC("OnClimbDown", RpcTarget.OthersBuffered);
+        PhotonView.Find(_viewID).RPC("OnClimbDownSuccess", RpcTarget.OthersBuffered);
     }
 
     [PunRPC]
-    void OnClimbDown(int viewID, Vector3 _posPreClimb)
+    void OnClimbDown()
+    {       
+        _ClimbDown();        
+    }
+
+    void _ClimbDown()
     {
-        GameObject obj = PhotonView.Find(viewID).gameObject;
-        gameObject.transform.parent = null;
+        Destroy(GetComponent<HingeJoint>());
+        isClimbed = false;
+    }
+
+    [PunRPC]
+    void OnClimbDownSuccess()
+    {       
+        RB.position = posPreClimb;
         isClimbing = false;
-        obj.GetComponent<PlayerClimbController>().isClimbed = false;
     }
 
     bool CanClimb(int _canClimbID)
     {
         return canClimbID == _canClimbID;
     }
+
+    void SetHingeJoint(HingeJoint hingeJoint, Rigidbody conBody, Vector3 _head)
+    {
+        hingeJoint.anchor = _head;
+        hingeJoint.autoConfigureConnectedAnchor = false;
+        hingeJoint.connectedAnchor = Vector3.zero;
+        hingeJoint.connectedBody = conBody;
+    }
+
 }
