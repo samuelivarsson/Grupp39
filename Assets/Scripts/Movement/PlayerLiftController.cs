@@ -177,6 +177,8 @@ public class PlayerLiftController : MonoBehaviour
     {
         if (latestObject == null) return;
 
+        if (latestTile.CompareTag("DropZone") && latestObject.CompareTag("ProductController")) return;
+        
         float eulerY = ClosestAngle(latestObject.transform.rotation.eulerAngles.y);
         Vector3 offset = GetTileOffset(latestObject);
         if (latestTile.CompareTag("DropZone") && latestObject.CompareTag("PackageController"))
