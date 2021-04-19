@@ -177,8 +177,12 @@ public class PlayerLiftController : MonoBehaviour
     {
         if (latestObject == null) return;
 
-        if (latestTile.CompareTag("DropZone") && latestObject.CompareTag("ProductController")) return;
+        // not able to drop products on dropzones
+        if (latestTile.CompareTag("DropZone") && latestObject.CompareTag("ProductController")) return; 
         
+        // Long player unable to drop stuff on the floor
+        if (latestTile.CompareTag("PlaceableTile") && character.characterType.Equals("Long")) return;
+
         float eulerY = ClosestAngle(latestObject.transform.rotation.eulerAngles.y);
         Vector3 offset = GetTileOffset(latestObject);
         if (latestTile.CompareTag("DropZone") && latestObject.CompareTag("PackageController"))
