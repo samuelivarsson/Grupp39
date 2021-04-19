@@ -56,12 +56,44 @@ public class TaskController : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
         productAmount = (int) initData[2];
 
         requiredProducts = (string[]) initData[3];
-        string text = String.Join("\n", requiredProducts);
+
+        string[] translatedProducts = new string[requiredProducts.Length];
+
+        for (int i = 0; i < requiredProducts.Length; i++)
+        {
+            translatedProducts[i] = Translate(requiredProducts[i]);
+        }
+
+        string text = String.Join("\n", translatedProducts);
         textProducts.text = text;
 
         int time = (int) initData[4];
         taskTimer.maxTime = time;
         taskTimer.timeLeft = time;
         taskTimer.timerActive = true;
+    }
+
+    string Translate(string prodName)
+    {
+        switch(prodName)
+        {
+            case "Green":
+                return "Grön";
+
+            case "Blue":
+                return "Blå";
+            
+            case "Red":
+                return "Röd";
+
+            case "Cyan":
+                return "Turkos";
+            
+            case "Yellow":
+                return "Gul";
+            
+            default:
+                return "Rosa";
+        }
     }
 }
