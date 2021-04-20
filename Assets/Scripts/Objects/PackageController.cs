@@ -117,7 +117,9 @@ public class PackageController : MonoBehaviour, LiftablePackage
         {
             // First helper was added -> Make original lifter a helper.
             // Set kinematic = false for everyone when someone is multilifting this package.
-            rb.isKinematic = false;
+            // rb.isKinematic = false;
+            // Add rb for everyone when someone starts to multilift this package.
+            rb = gameObject.AddComponent<Rigidbody>();
             PhotonView parentPV = PhotonView.Find(lifters[0]);
             PlayerLiftController parentPLC = parentPV.GetComponent<PlayerLiftController>();
             Rigidbody parentRB = parentPV.GetComponent<Rigidbody>();
@@ -194,7 +196,6 @@ public class PackageController : MonoBehaviour, LiftablePackage
                     // Also enable transform views for yourself (locally)
                     playerPV.GetComponent<PhotonTransformViewClassic>().enabled = true;
                 }
-                rb.isKinematic = true;
             }
             else
             {
@@ -224,7 +225,10 @@ public class PackageController : MonoBehaviour, LiftablePackage
         if (lifters.Count < 2)
         {
             // Set kinematic = true for everyone when this package isn't being multilifted anymore.
-            rb.isKinematic = true;
+            // rb.isKinematic = true;
+            // Destroy rb when this package isn't being multilifted anymore.
+            Destroy(rb);
+            rb = null;
             if (confJoints.Count > 1) Debug.LogError("MORE THAN ONE CONFJOINT!");
             Destroy(confJoints[0]);
             PlayerLiftController lastPlayerLC = PhotonView.Find(lifters[0]).GetComponent<PlayerLiftController>();
