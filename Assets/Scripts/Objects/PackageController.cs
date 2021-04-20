@@ -100,7 +100,6 @@ public class PackageController : MonoBehaviour, LiftablePackage
                 PhotonView playerPV = PhotonView.Find(vid);
                 playerPV.GetComponent<Rigidbody>().isKinematic = false;
             }
-            rb.isKinematic = false;
         }
         else
         {
@@ -117,6 +116,8 @@ public class PackageController : MonoBehaviour, LiftablePackage
         if (lifters.Count == 2)
         {
             // First helper was added -> Make original lifter a helper.
+            // Set kinematic = false for everyone when someone is multilifting this package.
+            rb.isKinematic = false;
             PhotonView parentPV = PhotonView.Find(lifters[0]);
             PlayerLiftController parentPLC = parentPV.GetComponent<PlayerLiftController>();
             Rigidbody parentRB = parentPV.GetComponent<Rigidbody>();
@@ -222,6 +223,7 @@ public class PackageController : MonoBehaviour, LiftablePackage
         }
         if (lifters.Count < 2)
         {
+            // Set kinematic = true for everyone when this package isn't being multilifted anymore.
             rb.isKinematic = true;
             if (confJoints.Count > 1) Debug.LogError("MORE THAN ONE CONFJOINT!");
             Destroy(confJoints[0]);
