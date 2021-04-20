@@ -226,9 +226,6 @@ public class PackageController : MonoBehaviour, LiftablePackage
         {
             // Set kinematic = true for everyone when this package isn't being multilifted anymore.
             // rb.isKinematic = true;
-            // Destroy rb when this package isn't being multilifted anymore.
-            Destroy(rb);
-            rb = null;
             if (confJoints.Count > 1) Debug.LogError("MORE THAN ONE CONFJOINT!");
             Destroy(confJoints[0]);
             PlayerLiftController lastPlayerLC = PhotonView.Find(lifters[0]).GetComponent<PlayerLiftController>();
@@ -236,6 +233,9 @@ public class PackageController : MonoBehaviour, LiftablePackage
             gameObject.transform.position = lastPlayerLC.hand.position;
             PhotonView lastPlayerPV = lastPlayerLC.GetComponent<PhotonView>();
             if (lastPlayerPV.IsMine && lastPlayerPV.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber) lastPlayerPV.TransferOwnership(lastPlayerPV.CreatorActorNr);
+            // Destroy rb when this package isn't being multilifted anymore.
+            Destroy(rb);
+            rb = null;
         }
         SetMultiLiftBools(playerLiftController);
     }
