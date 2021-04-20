@@ -187,6 +187,8 @@ public class PackageController : MonoBehaviour, LiftablePackage
                         PhotonView _playerPV = PhotonView.Find(vid);
                         _playerPV.GetComponent<PhotonTransformViewClassic>().enabled = true;
                     }
+                    // Also enable transform views for yourself (locally)
+                    playerPV.GetComponent<PhotonTransformViewClassic>().enabled = true;
                 }
                 rb.isKinematic = true;
             }
@@ -202,7 +204,7 @@ public class PackageController : MonoBehaviour, LiftablePackage
             {
                 // Set all players to kinematic (except myself)
                 PhotonView _playerPV = PhotonView.Find(vid);
-                if (playerPV.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber) _playerPV.GetComponent<Rigidbody>().isKinematic = true;
+                _playerPV.GetComponent<Rigidbody>().isKinematic = true;
             }
         }
         List<ConfigurableJoint> confJoints = new List<ConfigurableJoint>(GetComponents<ConfigurableJoint>());
