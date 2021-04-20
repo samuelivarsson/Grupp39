@@ -205,23 +205,23 @@ public class PackageController : MonoBehaviour, LiftablePackage
                 if (playerPV.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber) _playerPV.GetComponent<Rigidbody>().isKinematic = true;
             }
         }
-        ConfigurableJoint[] confJoints = GetComponents<ConfigurableJoint>();
-        for (int i = 0; i < confJoints.Length; i++)
+        List<ConfigurableJoint> confJoints = new List<ConfigurableJoint>(GetComponents<ConfigurableJoint>());
+        foreach (ConfigurableJoint confJoint in confJoints)
         {
-            if (confJoints[i].connectedBody.GetComponent<PhotonView>().ViewID == viewID) 
+            if (confJoint.connectedBody.GetComponent<PhotonView>().ViewID == viewID) 
             {
                 Debug.LogError("DESTROYING");
-                Destroy(confJoints[i]);
-                confJoints[i] = null;
+                Destroy(confJoint);
+                confJoints.Remove(confJoint);
             }
         }
         if (lifters.Count < 2)
         {
             rb.isKinematic = true;
-            if (confJoints.Length > 1)
+            if (confJoints.Count > 1)
             {
                 Debug.LogError("MORE THAN ONE CONFJOINT!");
-                print("Length: "+confJoints.Length);
+                print("Length: "+confJoints.Count);
                 print("First: "+confJoints[0].anchor);
                 if (confJoints[1] != null) print("Second: "+confJoints[1].anchor);
             }
