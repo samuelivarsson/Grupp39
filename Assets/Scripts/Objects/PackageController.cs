@@ -205,8 +205,8 @@ public class PackageController : MonoBehaviour, LiftablePackage
                 if (playerPV.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber) _playerPV.GetComponent<Rigidbody>().isKinematic = true;
             }
         }
-
-        foreach (ConfigurableJoint confJoint in GetComponents<ConfigurableJoint>())
+        ConfigurableJoint[] confJoints = GetComponents<ConfigurableJoint>();
+        foreach (ConfigurableJoint confJoint in confJoints)
         {
             if (confJoint.connectedBody.GetComponent<PhotonView>().ViewID == viewID) 
             {
@@ -217,7 +217,6 @@ public class PackageController : MonoBehaviour, LiftablePackage
         if (lifters.Count < 2)
         {
             rb.isKinematic = true;
-            ConfigurableJoint[] confJoints = GetComponents<ConfigurableJoint>();
             if (confJoints.Length > 1)
             {
                 Debug.LogError("MORE THAN ONE CONFJOINT!");
