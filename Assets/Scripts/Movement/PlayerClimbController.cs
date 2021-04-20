@@ -145,13 +145,6 @@ public class PlayerClimbController : MonoBehaviour
 
     void _OnClimb (PhotonView playerToClimbPV)
     {
-        //HingeJoint hingeJoint = gameObject.AddComponent<HingeJoint>();
-        //SetHingeJoint(hingeJoint, playerToClimbPV.GetComponent<Rigidbody>(), head.localPosition);
-        
-        //Transform playerToClimb = playerToClimbPV.gameObject.transform;
-        //playerToClimb.parent = gameObject.transform;
-        //playerToClimb.localPosition = head.localPosition;
-
         RB.isKinematic = true; 
         ActivateHeadJoint(playerToClimbPV.GetComponent<Rigidbody>());
     }
@@ -161,16 +154,11 @@ public class PlayerClimbController : MonoBehaviour
     {
         if(!PV.IsMine) return;
 
-        //PhotonView.Find(_viewID).GetComponent<Rigidbody>().isKinematic = true;
-        
         isClimbing = true;
     }
 
     void ClimbDownRequest()
-    {
-        //playerClimbed.GetComponent<PlayerClimbController>().isClimbed = false;
-        //RB.constraints = RigidbodyConstraints.FreezeRotation;
-        
+    {        
         playerClimbed.GetPhotonView().RPC("OnClimbDownRequest", RpcTarget.OthersBuffered, PV.ViewID);
     }
 
@@ -196,7 +184,6 @@ public class PlayerClimbController : MonoBehaviour
 
     void _ClimbDown()
     {
-        //Destroy(GetComponent<HingeJoint>());
         DeactivateHeadJoint();
         isClimbed = false;
     }
