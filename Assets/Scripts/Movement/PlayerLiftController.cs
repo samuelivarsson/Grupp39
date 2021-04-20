@@ -213,10 +213,19 @@ public class PlayerLiftController : MonoBehaviour
         if (latestObject == null) return;
 
         // not able to drop products on dropzones
-        if (latestTile.CompareTag("DropZone") && latestObject.CompareTag("ProductController")) return; 
-        
+        if (latestTile.CompareTag("DropZone") && latestObject.CompareTag("ProductController"))
+        {
+            PopupInfo.Instance.Popup("Man kan inte placera en produkt i leveranszoner", 7);
+            return;
+        }
+
         // Long player unable to drop stuff on the floor
-        if (latestTile.CompareTag("PlaceableTile") && character.characterType.Equals("Long")) return;
+        if (latestTile.CompareTag("PlaceableTile") && character.characterType.Equals("Long"))
+        {
+            PopupInfo.Instance.Popup("Den långakaraktären kan inte placera en låda på golvet", 7);
+            return;
+        }
+        
 
         float eulerY = ClosestAngle(latestObject.transform.rotation.eulerAngles.y);
         Vector3 offset = GetTileOffset(latestObject);

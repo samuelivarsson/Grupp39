@@ -219,6 +219,7 @@ public class PackageController : MonoBehaviour, LiftablePackage
         if (!isTaped)
         {
             print("Package isn't taped!");
+            PopupInfo.Instance.Popup("Paketet måste tejpas innan den kan levereras", 7);
             return false;
         }
         if (!latestTile.CompareTag("DropZone"))
@@ -276,6 +277,7 @@ public class PackageController : MonoBehaviour, LiftablePackage
         else
         {
             print("The package did not contain the required products!");
+            PopupInfo.Instance.Popup("Paketet innehöll inte alla produkter", 7);
             return false;
         }
     }

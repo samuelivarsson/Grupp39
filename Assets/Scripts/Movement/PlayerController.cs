@@ -87,6 +87,7 @@ public class PlayerController : MonoBehaviour
         if (playerMLC.tooHeavy && playerLC.liftingID != -1)
         {
             moveAmount = Vector3.zero;
+            PopupInfo.Instance.Popup("Lådan är för tung att lyfta själv", 7);
             return;
         }
         moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * character.movementSpeed, ref smoothMoveVelocity, smoothTime);
