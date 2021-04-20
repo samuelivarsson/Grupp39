@@ -84,12 +84,15 @@ public class PackageController : MonoBehaviour, LiftablePackage
                 {
                     // My player was added and I am not the owner of the package.
                     newPlayerPV.TransferOwnership(PV.Owner);
-                    // Disable transform views for all lifters (locally)
-                    foreach (int vid in lifters)
-                    {
-                        PhotonView playerPV = PhotonView.Find(vid);
-                        playerPV.GetComponent<PhotonTransformViewClassic>().enabled = false;
-                    }
+                }
+            }
+            if (!PV.IsMine)
+            {
+                // Disable transform views for all lifters (locally)
+                foreach (int vid in lifters)
+                {
+                    PhotonView playerPV = PhotonView.Find(vid);
+                    playerPV.GetComponent<PhotonTransformViewClassic>().enabled = false;
                 }
             }
             foreach (int vid in lifters)
