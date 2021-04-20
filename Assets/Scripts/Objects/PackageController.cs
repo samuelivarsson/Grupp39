@@ -245,8 +245,8 @@ public class PackageController : MonoBehaviour, LiftablePackage
             Destroy(confJoints[0]);
             PlayerLiftController lastPlayerLC = PhotonView.Find(lifters[0]).GetComponent<PlayerLiftController>();
             gameObject.transform.parent = lastPlayerLC.transform;
-            gameObject.transform.localPosition = lastPlayerLC.hand.position;
-            float eulerY = PlayerLiftController.ClosestAngle(gameObject.transform.rotation.eulerAngles.y);
+            gameObject.transform.localPosition = lastPlayerLC.hand.localPosition;
+            float eulerY = PlayerLiftController.ClosestAngle(gameObject.transform.rotation.eulerAngles.y - lastPlayerLC.gameObject.transform.rotation.eulerAngles.y);
             gameObject.transform.localRotation = Quaternion.Euler(0, eulerY, 0);
             PhotonView lastPlayerPV = lastPlayerLC.GetComponent<PhotonView>();
             if (lastPlayerPV.IsMine && lastPlayerPV.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber) lastPlayerPV.TransferOwnership(lastPlayerPV.CreatorActorNr);
