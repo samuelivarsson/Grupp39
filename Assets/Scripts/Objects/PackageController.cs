@@ -210,13 +210,21 @@ public class PackageController : MonoBehaviour, LiftablePackage
         {
             if (confJoint.connectedBody.GetComponent<PhotonView>().ViewID == viewID) 
             {
+                Debug.LogError("DESTROYING");
                 Destroy(confJoint);
             }
         }
         if (lifters.Count < 2)
         {
+            rb.isKinematic = true;
             ConfigurableJoint[] confJoints = GetComponents<ConfigurableJoint>();
-            if (confJoints.Length > 1) Debug.LogError("MORE THAN ONE CONFJOINT!");
+            if (confJoints.Length > 1)
+            {
+                Debug.LogError("MORE THAN ONE CONFJOINT!");
+                print("Length: "+confJoints.Length);
+                print("First: "+confJoints[0].anchor);
+                if (confJoints[1] != null) print("Second: "+confJoints[1].anchor);
+            }
             Destroy(confJoints[0]);
             PlayerLiftController lastPlayerLC = PhotonView.Find(lifters[0]).GetComponent<PlayerLiftController>();
             gameObject.transform.parent = lastPlayerLC.transform;
