@@ -34,6 +34,7 @@ public class PackageController : MonoBehaviour, LiftablePackage
     void Awake()
     {
         PV = GetComponent<PhotonView>();
+        rb = GetComponent<Rigidbody>();
         pic1 = gameObject.transform.GetChild(0);
         pic2 = gameObject.transform.GetChild(1);
         pic3 = gameObject.transform.GetChild(2);
@@ -53,6 +54,18 @@ public class PackageController : MonoBehaviour, LiftablePackage
         SetMultiLiftBools(null);
     }
 
+    // AFTER ADDING TO LIST:
+    // I am a lifter:
+        // Me who was added:
+            // I'm owner: both kinematic = false; add confjoints; package kinematic = false;
+            // I'm not owner: both kinematic = false; add confjoints; disable transform view for all lifters; transfer ownership; package kinematic = false;
+        // Not me who was added:
+            // I'm owner: both kinematic = false; add confjoints; package kinematic = false;
+            // I'm not owner: both kinematic = false; add confjoints; disable transform view; package kinematic = false;
+    // I am not a lifter:
+        // Not me who was added:
+            // I'm owner: both kinematic = true; add confjoints;
+            // I'm not owner: both kinematic = true; add confjoints; disable transform view;   
     public void AddHelper(PlayerLiftController newPlayerLC)
     {
         if (lifters.Count == 0) return;
@@ -61,39 +74,56 @@ public class PackageController : MonoBehaviour, LiftablePackage
         int viewID = newPlayerPV.ViewID;
         if (!lifters.Contains(viewID)) lifters.Add(viewID);
 
-        if (GetComponent<Rigidbody>() == null) rb = gameObject.AddComponent<Rigidbody>();
+        if (lifters.Contains(PlayerManager.myPlayerLiftController.GetComponent<PhotonView>().ViewID))
+        {
+            // I am a lifter -> I was either added or was already in the lifters list.
+            if (PhotonNetwork.LocalPlayer.ActorNumber == newPlayerPV.CreatorActorNr)
+            {
+                // My player was added
+                if (!PV.IsMine)
+                {
+                    // My player was added and I am not the owner of the package.
+                    newPlayerPV.TransferOwnership(PV.Owner);
+                    // Disable transform views for all lifters (locally)
+                    foreach (int vid in lifters)
+                    {
+                        PhotonView playerPV = PhotonView.Find(vid);
+                        playerPV.GetComponent<PhotonTransformViewClassic>().enabled = false;
+                    }
+                }
+            }
+            foreach (int vid in lifters)
+            {
+                PhotonView playerPV = PhotonView.Find(vid);
+                playerPV.GetComponent<Rigidbody>().isKinematic = false;
+            }
+            rb.isKinematic = false;
+        }
+        else
+        {
+            // I am not a lifter -> the player that was added was not me.
+            foreach (int vid in lifters)
+            {
+                // Set all players to kinematic (except myself)
+                PhotonView playerPV = PhotonView.Find(vid);
+                if (playerPV.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber) playerPV.GetComponent<Rigidbody>().isKinematic = true;
+            }
+        }
 
+        // Add confjoints
         if (lifters.Count == 2)
         {
-            PlayerLiftController parentPLC = GetComponentInParent<PlayerLiftController>();
-            PhotonView parentPV = parentPLC.GetComponent<PhotonView>();
-            Rigidbody parentRB = parentPLC.GetComponent<Rigidbody>();
+            // First helper was added -> Make original lifter a helper.
+            PhotonView parentPV = PhotonView.Find(lifters[0]);
+            PlayerLiftController parentPLC = parentPV.GetComponent<PlayerLiftController>();
+            Rigidbody parentRB = parentPV.GetComponent<Rigidbody>();
             if (parentPV.IsMine && !PV.IsMine) parentPV.TransferOwnership(PV.Owner);
             gameObject.transform.parent = null;
             ConfigurableJoint confJoint = gameObject.AddComponent<ConfigurableJoint>();
             SetConfJoint(confJoint, parentRB, parentPLC);
-            if (lifters.Contains(PlayerManager.myPlayerLiftController.GetComponent<PhotonView>().ViewID))
-            {
-                parentRB.isKinematic = false;
-            }
-        }
-
-        if (lifters.Contains(PlayerManager.myPlayerLiftController.GetComponent<PhotonView>().ViewID) && !PV.IsMine)
-        {
-            foreach (int vid in lifters)
-            {
-                PhotonView playerPV = PhotonView.Find(vid);
-                playerPV.GetComponent<PhotonTransformViewClassic>().enabled = false;
-                //playerPV.GetComponent<PhotonRigidbodyView>().enabled = false;
-            }
         }
 
         Rigidbody newPlayerRB = newPlayerLC.GetComponent<Rigidbody>();
-        if (newPlayerPV.IsMine && !PV.IsMine) newPlayerPV.TransferOwnership(PV.Owner);
-        if (lifters.Contains(PlayerManager.myPlayerLiftController.GetComponent<PhotonView>().ViewID))
-        {
-            newPlayerRB.isKinematic = false;
-        }
         ConfigurableJoint configJoint = gameObject.AddComponent<ConfigurableJoint>();
         SetConfJoint(configJoint, newPlayerRB, newPlayerLC);
 
@@ -108,11 +138,74 @@ public class PackageController : MonoBehaviour, LiftablePackage
         SetMultiLiftBools(playerLiftController);
     }
 
+    // AFTER REMOVING FROM LIST:
+    // I am a lifter:
+        // Not me who was removed:
+            // I'm owner: removed player kinematic = true; remove confjoint; transfer ownership back;
+            // I'm not owner: removed player kinematic = true; remove confjoint; enable transform view for all non-lifters;
+    // I am not a lifter:
+        // Me who was removed:
+            // I'm owner: all except myself kinematic = true; remove confjoint; package kinematic = true;
+            // I'm not owner: all except myself kinematic = true; remove confjoint; enable transform view; package kinematic = true;
+        // Not me who was removed:
+            // I'm owner: all except myself kinematic = true; remove confjoint; transfer ownership back;
+            // I'm not owner: all except myself kinematic = true; remove confjoint;        
     public void RemoveHelper(PlayerLiftController playerLiftController)
     {
         PhotonView playerPV = playerLiftController.GetComponent<PhotonView>();
         int viewID = playerPV.ViewID;
         if (!lifters.Remove(viewID)) print("Couldn't remove lifter");
+
+        if (lifters.Contains(PlayerManager.myPlayerLiftController.GetComponent<PhotonView>().ViewID))
+        {
+            // I am a lifter -> I was not removed.
+            if (PV.IsMine)
+            {
+                // I was not removed but I am owner of the package.
+                playerPV.TransferOwnership(playerPV.CreatorActorNr);
+            }
+            else
+            {
+                // I'm not owner of package -> I have disabled the removed player's transform view -> enable it again.
+                playerPV.GetComponent<PhotonTransformViewClassic>().enabled = true;
+            }
+            // Set the removed player to kinematic = true
+            playerPV.GetComponent<Rigidbody>().isKinematic = true;
+        }
+        else
+        {
+            // I am not a lifter -> I was either removed or only watching.
+            if (PhotonNetwork.LocalPlayer.ActorNumber == playerPV.CreatorActorNr)
+            {
+                // I was removed
+                if (!PV.IsMine)
+                {
+                    // My player was removed and I am not the owner of the package.
+                    // Enable transform views for all lifters (locally)
+                    foreach (int vid in lifters)
+                    {
+                        PhotonView _playerPV = PhotonView.Find(vid);
+                        _playerPV.GetComponent<PhotonTransformViewClassic>().enabled = true;
+                    }
+                }
+                rb.isKinematic = true;
+            }
+            else
+            {
+                if (PV.IsMine)
+                {
+                    // Not my player was removed but I am the owner of the package.
+                    playerPV.TransferOwnership(playerPV.CreatorActorNr);
+                }
+            }
+            foreach (int vid in lifters)
+            {
+                // Set all players to kinematic (except myself)
+                PhotonView _playerPV = PhotonView.Find(vid);
+                if (playerPV.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber) _playerPV.GetComponent<Rigidbody>().isKinematic = true;
+            }
+        }
+
         foreach (ConfigurableJoint confJoint in GetComponents<ConfigurableJoint>())
         {
             if (confJoint.connectedBody.GetComponent<PhotonView>().ViewID == viewID) 
@@ -120,24 +213,11 @@ public class PackageController : MonoBehaviour, LiftablePackage
                 Destroy(confJoint);
             }
         }
-        if (playerPV.IsMine && playerPV.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber) playerPV.TransferOwnership(playerPV.CreatorActorNr);
-        if (!lifters.Contains(PlayerManager.myPlayerLiftController.GetComponent<PhotonView>().ViewID) && !PV.IsMine)
-        {
-            foreach (int vid in lifters)
-            {
-                PhotonView _pv = PhotonView.Find(vid);
-                _pv.GetComponent<PhotonTransformViewClassic>().enabled = true;
-                //_pv.GetComponent<PhotonRigidbodyView>().enabled = true;
-            }
-        }
         if (lifters.Count < 2)
         {
-            foreach (ConfigurableJoint confJoint in GetComponents<ConfigurableJoint>())
-            {
-                Destroy(confJoint);
-            }
-            Destroy(rb);
-            rb = null;
+            ConfigurableJoint[] confJoints = GetComponents<ConfigurableJoint>();
+            if (confJoints.Length > 1) Debug.LogError("MORE THAN ONE CONFJOINT!");
+            Destroy(confJoints[0]);
             PlayerLiftController lastPlayerLC = PhotonView.Find(lifters[0]).GetComponent<PlayerLiftController>();
             gameObject.transform.parent = lastPlayerLC.transform;
             gameObject.transform.position = lastPlayerLC.hand.position;
@@ -219,6 +299,7 @@ public class PackageController : MonoBehaviour, LiftablePackage
         if (!isTaped)
         {
             print("Package isn't taped!");
+            PopupInfo.Instance.Popup("Package isn't taped!", 5);
             return false;
         }
         if (!latestTile.CompareTag("DropZone"))
