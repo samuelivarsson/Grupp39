@@ -275,6 +275,12 @@ public class PlayerLiftController : MonoBehaviour
     {
         if (latestObject == null) return;
 
+        if (latestObject.CompareTag("ProductController"))
+        {
+            PopupInfo.Instance.Popup("Man kan inte placera en produkt på tejpstationen", 7);
+            return;
+        }
+
         if (latestObject.CompareTag("PackageController"))
         {
             float eulerY = ClosestAngle(latestObject.transform.rotation.eulerAngles.y);
