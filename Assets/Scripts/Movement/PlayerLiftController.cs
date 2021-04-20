@@ -74,7 +74,7 @@ public class PlayerLiftController : MonoBehaviour
         }
         if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && IsLifting(-1) && !IsPackaged(controller) && !controller.isLifted && !playerCC.isCrouching)
         {
-            Lift();
+            LiftRequest();
             return;
         }
         if (Input.GetKeyDown(PlayerController.useButton) && IsLifting(latestObjViewID) && latestTile && !TileIsOccupied() && (latestTile.CompareTag("PlaceableTile") || latestTile.CompareTag("DropZone")))
@@ -91,6 +91,37 @@ public class PlayerLiftController : MonoBehaviour
         {
             DropOnTable();
         }
+    }
+
+    void LiftRequest()
+    {
+        latestObject = latestCollision;
+        float eulerY = ClosestAngle(latestObject.transform.rotation.eulerAngles.y - gameObject.transform.rotation.eulerAngles.y);
+        PhotonView objPV = latestObject.GetComponent<PhotonView>();
+
+        if(objPV.IsMine) 
+        {
+            Lift();
+            return;
+        }
+        PV.RPC("OnLiftRequest", RpcTarget.OthersBuffered, objPV.ViewID, eulerY);
+    }
+
+    [PunRPC]
+    void OnLiftRequest(int objViewID, float eulerY)
+    {
+        PhotonView objPV = PhotonView.Find(objViewID);
+        if(!objPV.IsMine) return;
+
+        GameObject objToLift = objPV.gameObject;
+        Liftable controller = GetController(objToLift);
+
+        if(!controller.isLifted)
+        {     
+            _Lift(objToLift, eulerY);        
+            PV.RPC("OnLiftSuccess", RpcTarget.OthersBuffered, objViewID, eulerY);
+            controller.isLifted = true;
+        }        
     }
 
     void _Lift(GameObject obj, float eulerY)
@@ -120,15 +151,15 @@ public class PlayerLiftController : MonoBehaviour
         latestObject = latestCollision;
         float eulerY = ClosestAngle(latestObject.transform.rotation.eulerAngles.y - gameObject.transform.rotation.eulerAngles.y);
         _Lift(latestObject, eulerY);
-        PV.RPC("OnLift", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID, eulerY);
+        PV.RPC("OnLiftSuccess", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID, eulerY);
     }
 
     [PunRPC]
-    void OnLift(int viewID, float eulerY)
+    void OnLiftSuccess(int viewID, float eulerY)
     {
         GameObject obj = PhotonView.Find(viewID).gameObject;
         _Lift(obj, eulerY);
-    }
+    }    
 
     void _HelpLift(GameObject obj)
     {
