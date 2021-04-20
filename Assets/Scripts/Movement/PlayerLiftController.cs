@@ -30,12 +30,16 @@ public class PlayerLiftController : MonoBehaviour
     // This player's climb controller
     PlayerClimbController playerCC;
 
+    // This player's multi lift controller
+    PlayerMultiLiftController playerMLC;
+
     void Awake()
     {
         PV = GetComponent<PhotonView>();
         hand = gameObject.transform.GetChild(0);
         character = GetComponent<Character>();
         playerCC = GetComponent<PlayerClimbController>();
+        playerMLC = GetComponent<PlayerMultiLiftController>();
     }
 
     void Update()
@@ -58,12 +62,12 @@ public class PlayerLiftController : MonoBehaviour
             if (manager.CreateController()) Lift();
             return;
         }
-        if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && IsLifting(-1) && CanHelp(controller) && character.characterType != "Long" && !playerCC.isCrouching)
+        if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && IsLifting(-1) && CanHelp(controller) && !playerCC.isCrouching)
         {
             HelpLift();
             return;
         }
-        if (Input.GetKeyDown(PlayerController.useButton) && IsLifting(latestObjViewID) && IsHelper(controller))
+        if (Input.GetKeyDown(PlayerController.useButton) && IsLifting(latestObjViewID) && playerMLC.isMultiLifting && playerMLC.iAmLifting)
         {
             DropHelp();
             return;
@@ -157,7 +161,7 @@ public class PlayerLiftController : MonoBehaviour
         obj.transform.localPosition = offset;
         obj.transform.rotation = Quaternion.Euler(0, eulerY, 0);
 
-        // If package -> add lifter
+        // If package -> remove lifter
         PackageController packageController = obj.GetComponent<PackageController>();
         if (packageController != null) packageController.RemoveLifter(this);
 
@@ -259,7 +263,6 @@ public class PlayerLiftController : MonoBehaviour
 
     void DropHelp()
     {
-        latestObject = latestCollision;
         _DropHelp(latestObject);
         PV.RPC("OnDropHelp", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID);
     }
@@ -268,7 +271,6 @@ public class PlayerLiftController : MonoBehaviour
     void OnDropHelp(int viewID)
     {
         GameObject obj = PhotonView.Find(viewID).gameObject;
-        latestObject = obj;
         _DropHelp(obj);
     }
 
@@ -356,11 +358,11 @@ public class PlayerLiftController : MonoBehaviour
         return canHelp;
     }
 
-    bool IsHelper(Liftable controller)
-    {
-        bool isHelper = false;
-        LiftablePackage packageController = controller as LiftablePackage;
-        if (packageController != null) isHelper = packageController.lifters.Count > 1;
-        return isHelper;
-    }
+    // bool IsHelper(Liftable controller)
+    // {
+    //     bool isHelper = false;
+    //     LiftablePackage packageController = controller as LiftablePackage;
+    //     if (packageController != null) isHelper = packageController.lifters.Count > 1;
+    //     return isHelper;
+    // }
 }

@@ -25,12 +25,10 @@ public class PlayerMultiLiftController : MonoBehaviour
     Vector3 networkVelocity = Vector3.zero;
     Vector3 networkPosition;
 
-    const float farAway = 1f; // Fastest movement speed = 6u/s, Maximum lag = 400ms = 0.4s --> far away = 6/0.4 = 2.4
+    const float farAway = 2f; // Fastest movement speed = 6u/s, Maximum lag = 400ms = 0.4s --> far away = 6/0.4 = 2.4
     const float veryClose = 0.001f;
-    const int interpolationTime = 200; // How much time the client has to interpolate the position (milliseconds) OLD
     const float interpolationSpeed = 20f;
     Vector3 interpolationStartPosition;
-    int interpolationStartTime; // OLD
     bool interpolating = false;
 
     int updateFreq = 20; // Interval in milliseconds of how often RPCs are executed
@@ -69,13 +67,6 @@ public class PlayerMultiLiftController : MonoBehaviour
             if (PV.CreatorActorNr == PhotonNetwork.LocalPlayer.ActorNumber)
             {
                 // Owner and creator
-                RaycastHit hit;
-                if (Physics.Raycast(transform.position, -Vector3.up, out hit, 1.5f))
-                {
-                    float dist = hit.distance - 0.5f;
-                    rb.MovePosition(new Vector3(transform.position.x, transform.position.y - dist, transform.position.z));
-                }
-
                 rb.velocity = new Vector3(moveAmount.x, rb.velocity.y, moveAmount.z);
                 rb.MoveRotation(rotation);
                 if (PhotonNetwork.ServerTimestamp - latestServerSend > updateFreq)
@@ -108,13 +99,6 @@ public class PlayerMultiLiftController : MonoBehaviour
             if (PV.CreatorActorNr == PhotonNetwork.LocalPlayer.ActorNumber)
             {
                 // Not owner but creator
-                RaycastHit hit;
-                if (Physics.Raycast(transform.position, -Vector3.up, out hit, 1.5f))
-                {
-                    float dist = hit.distance - 0.5f;
-                    rb.MovePosition(new Vector3(transform.position.x, transform.position.y - dist, transform.position.z));
-                }
-
                 rb.velocity = new Vector3(moveAmount.x, rb.velocity.y, moveAmount.z);
                 rb.MoveRotation(rotation);
                 if (PhotonNetwork.ServerTimestamp - latestClientSend > updateFreq)
