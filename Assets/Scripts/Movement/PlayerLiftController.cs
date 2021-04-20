@@ -163,9 +163,6 @@ public class PlayerLiftController : MonoBehaviour
 
     void _HelpLift(GameObject obj)
     {
-        PackageController packageController = obj.GetComponent<PackageController>();
-        packageController.AddHelper(this);
-
         // Set booleans and liftingID
         liftingID = obj.GetComponent<PhotonView>().ViewID;
     }
@@ -175,6 +172,8 @@ public class PlayerLiftController : MonoBehaviour
         latestObject = latestCollision;
         _HelpLift(latestObject);
         PV.RPC("OnHelpLift", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID);
+        PackageController packageController = latestObject.GetComponent<PackageController>();
+        packageController.AddHelper(this);
     }
 
     [PunRPC]
@@ -300,9 +299,6 @@ public class PlayerLiftController : MonoBehaviour
 
     void _DropHelp(GameObject obj)
     {
-        PackageController packageController = obj.GetComponent<PackageController>();
-        packageController.RemoveHelper(this);
-
         // Set booleans and liftingID
         liftingID = -1;
     }
@@ -311,6 +307,8 @@ public class PlayerLiftController : MonoBehaviour
     {
         _DropHelp(latestObject);
         PV.RPC("OnDropHelp", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID);
+        PackageController packageController = latestObject.GetComponent<PackageController>();
+        packageController.RemoveHelper(this);
     }
 
     [PunRPC]

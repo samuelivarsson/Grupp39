@@ -66,7 +66,7 @@ public class PackageController : MonoBehaviour, LiftablePackage
         // Not me who was added:
             // I'm owner: both kinematic = true; add confjoints;
             // I'm not owner: both kinematic = true; add confjoints; disable transform view;   
-    public void AddHelper(PlayerLiftController newPlayerLC)
+    void _AddHelper(PlayerLiftController newPlayerLC, Vector3 anchor)
     {
         if (lifters.Count == 0) return;
 
@@ -126,14 +126,29 @@ public class PackageController : MonoBehaviour, LiftablePackage
             if (parentPV.IsMine && !PV.IsMine) parentPV.TransferOwnership(PV.Owner);
             gameObject.transform.parent = null;
             ConfigurableJoint confJoint = gameObject.AddComponent<ConfigurableJoint>();
-            SetConfJoint(confJoint, parentRB, parentPLC);
+            Vector3 anchor2 = CalculateLocalAnchors(parentPLC);
+            SetConfJoint(confJoint, parentRB, anchor2);
         }
 
         Rigidbody newPlayerRB = newPlayerLC.GetComponent<Rigidbody>();
         ConfigurableJoint configJoint = gameObject.AddComponent<ConfigurableJoint>();
-        SetConfJoint(configJoint, newPlayerRB, newPlayerLC);
+        SetConfJoint(configJoint, newPlayerRB, anchor);
 
         SetMultiLiftBools(null);
+    }
+
+    public void AddHelper(PlayerLiftController playerLiftController)
+    {
+        Vector3 anchor = CalculateLocalAnchors(playerLiftController);
+        _AddHelper(playerLiftController, anchor);
+        PV.RPC("OnAddHelper", RpcTarget.OthersBuffered, playerLiftController.GetComponent<PhotonView>().ViewID, anchor);
+    }
+
+    [PunRPC]
+    void OnAddHelper(int playerViewID, Vector3 anchor)
+    {
+        PlayerLiftController playerLC = PhotonView.Find(playerViewID).GetComponent<PlayerLiftController>();
+        _AddHelper(playerLC, anchor);
     }
 
     public void RemoveLifter(PlayerLiftController playerLiftController)
@@ -156,7 +171,7 @@ public class PackageController : MonoBehaviour, LiftablePackage
         // Not me who was removed:
             // I'm owner: all except myself kinematic = true; remove confjoint; transfer ownership back;
             // I'm not owner: all except myself kinematic = true; remove confjoint;        
-    public void RemoveHelper(PlayerLiftController playerLiftController)
+    void _RemoveHelper(PlayerLiftController playerLiftController)
     {
         PhotonView playerPV = playerLiftController.GetComponent<PhotonView>();
         int viewID = playerPV.ViewID;
@@ -230,7 +245,9 @@ public class PackageController : MonoBehaviour, LiftablePackage
             Destroy(confJoints[0]);
             PlayerLiftController lastPlayerLC = PhotonView.Find(lifters[0]).GetComponent<PlayerLiftController>();
             gameObject.transform.parent = lastPlayerLC.transform;
-            gameObject.transform.position = lastPlayerLC.hand.position;
+            gameObject.transform.localPosition = lastPlayerLC.hand.position;
+            float eulerY = PlayerLiftController.ClosestAngle(gameObject.transform.rotation.eulerAngles.y);
+            gameObject.transform.localRotation = Quaternion.Euler(0, eulerY, 0);
             PhotonView lastPlayerPV = lastPlayerLC.GetComponent<PhotonView>();
             if (lastPlayerPV.IsMine && lastPlayerPV.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber) lastPlayerPV.TransferOwnership(lastPlayerPV.CreatorActorNr);
             // Destroy rb when this package isn't being multilifted anymore.
@@ -238,6 +255,19 @@ public class PackageController : MonoBehaviour, LiftablePackage
             rb = null;
         }
         SetMultiLiftBools(playerLiftController);
+    }
+
+    public void RemoveHelper(PlayerLiftController playerLiftController)
+    {
+        _RemoveHelper(playerLiftController);
+        PV.RPC("OnRemoveHelper", RpcTarget.OthersBuffered, playerLiftController.GetComponent<PhotonView>().ViewID);
+    }
+
+    [PunRPC]
+    void OnRemoveHelper(int playerViewID)
+    {
+        PlayerLiftController playerLC = PhotonView.Find(playerViewID).GetComponent<PlayerLiftController>();
+        _RemoveHelper(playerLC);
     }
 
     void SetMultiLiftBools(PlayerLiftController removedPlayer)
@@ -265,10 +295,9 @@ public class PackageController : MonoBehaviour, LiftablePackage
         }
     }
 
-    void SetConfJoint(ConfigurableJoint confJoint, Rigidbody conBody, PlayerLiftController player)
+    void SetConfJoint(ConfigurableJoint confJoint, Rigidbody conBody, Vector3 anchor)
     {
         confJoint.connectedBody = conBody;
-        Vector3 anchor = CalculateLocalAnchors(player);
         confJoint.anchor = anchor;
         confJoint.axis = Vector3.zero;
         confJoint.autoConfigureConnectedAnchor = false;
