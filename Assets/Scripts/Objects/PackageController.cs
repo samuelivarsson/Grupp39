@@ -215,7 +215,6 @@ public class PackageController : MonoBehaviour, LiftablePackage
         {
             if (confJoints[i].connectedBody.GetComponent<PhotonView>().ViewID == viewID) 
             {
-                Debug.LogError("DESTROYING");
                 Destroy(confJoints[i]);
                 confJoints.Remove(confJoints[i]);
             }
@@ -224,13 +223,7 @@ public class PackageController : MonoBehaviour, LiftablePackage
         if (lifters.Count < 2)
         {
             rb.isKinematic = true;
-            if (confJoints.Count > 1)
-            {
-                Debug.LogError("MORE THAN ONE CONFJOINT!");
-                print("Length: "+confJoints.Count);
-                print("First: "+confJoints[0].anchor);
-                if (confJoints[1] != null) print("Second: "+confJoints[1].anchor);
-            }
+            if (confJoints.Count > 1) Debug.LogError("MORE THAN ONE CONFJOINT!");
             Destroy(confJoints[0]);
             PlayerLiftController lastPlayerLC = PhotonView.Find(lifters[0]).GetComponent<PlayerLiftController>();
             gameObject.transform.parent = lastPlayerLC.transform;
