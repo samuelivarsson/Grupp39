@@ -206,14 +206,15 @@ public class PackageController : MonoBehaviour, LiftablePackage
             }
         }
         List<ConfigurableJoint> confJoints = new List<ConfigurableJoint>(GetComponents<ConfigurableJoint>());
-        foreach (ConfigurableJoint confJoint in confJoints)
+        for (int i = 0; i < confJoints.Count;)
         {
-            if (confJoint.connectedBody.GetComponent<PhotonView>().ViewID == viewID) 
+            if (confJoints[i].connectedBody.GetComponent<PhotonView>().ViewID == viewID) 
             {
                 Debug.LogError("DESTROYING");
-                Destroy(confJoint);
-                confJoints.Remove(confJoint);
+                Destroy(confJoints[i]);
+                confJoints.Remove(confJoints[i]);
             }
+            else i++;
         }
         if (lifters.Count < 2)
         {
