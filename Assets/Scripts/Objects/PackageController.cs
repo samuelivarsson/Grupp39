@@ -61,17 +61,17 @@ public class PackageController : MonoBehaviour, LiftablePackage
         int viewID = newPlayerPV.ViewID;
         if (!lifters.Contains(viewID)) lifters.Add(viewID);
 
-        if (rb == null) rb = gameObject.AddComponent<Rigidbody>();
+        if (GetComponent<Rigidbody>() == null) rb = gameObject.AddComponent<Rigidbody>();
 
         if (lifters.Count == 2)
         {
-            GameObject parentPlayer = GetComponentInParent<PlayerLiftController>().gameObject;
-            PhotonView parentPV = parentPlayer.GetComponent<PhotonView>();
-            Rigidbody parentRB = parentPlayer.GetComponent<Rigidbody>();
+            PlayerLiftController parentPLC = GetComponentInParent<PlayerLiftController>();
+            PhotonView parentPV = parentPLC.GetComponent<PhotonView>();
+            Rigidbody parentRB = parentPLC.GetComponent<Rigidbody>();
             if (parentPV.IsMine && !PV.IsMine) parentPV.TransferOwnership(PV.Owner);
             gameObject.transform.parent = null;
             ConfigurableJoint confJoint = gameObject.AddComponent<ConfigurableJoint>();
-            SetConfJoint(confJoint, parentRB, parentPlayer.GetComponent<PlayerLiftController>());
+            SetConfJoint(confJoint, parentRB, parentPLC);
             if (lifters.Contains(PlayerManager.myPlayerLiftController.GetComponent<PhotonView>().ViewID))
             {
                 parentRB.isKinematic = false;
@@ -84,7 +84,7 @@ public class PackageController : MonoBehaviour, LiftablePackage
             {
                 PhotonView playerPV = PhotonView.Find(vid);
                 playerPV.GetComponent<PhotonTransformViewClassic>().enabled = false;
-                playerPV.GetComponent<PhotonRigidbodyView>().enabled = false;
+                //playerPV.GetComponent<PhotonRigidbodyView>().enabled = false;
             }
         }
 
@@ -127,18 +127,21 @@ public class PackageController : MonoBehaviour, LiftablePackage
             {
                 PhotonView _pv = PhotonView.Find(vid);
                 _pv.GetComponent<PhotonTransformViewClassic>().enabled = true;
-                _pv.GetComponent<PhotonRigidbodyView>().enabled = true;
+                //_pv.GetComponent<PhotonRigidbodyView>().enabled = true;
             }
         }
         if (lifters.Count < 2)
         {
-            Destroy(GetComponent<ConfigurableJoint>());
+            foreach (ConfigurableJoint confJoint in GetComponents<ConfigurableJoint>())
+            {
+                Destroy(confJoint);
+            }
             Destroy(rb);
             rb = null;
-            GameObject lastPlayer = PhotonView.Find(lifters[0]).GetComponent<PlayerLiftController>().gameObject;
-            gameObject.transform.parent = lastPlayer.transform;
-            gameObject.transform.position = lastPlayer.GetComponent<PlayerLiftController>().hand.position;
-            PhotonView lastPlayerPV = lastPlayer.GetComponent<PhotonView>();
+            PlayerLiftController lastPlayerLC = PhotonView.Find(lifters[0]).GetComponent<PlayerLiftController>();
+            gameObject.transform.parent = lastPlayerLC.transform;
+            gameObject.transform.position = lastPlayerLC.hand.position;
+            PhotonView lastPlayerPV = lastPlayerLC.GetComponent<PhotonView>();
             if (lastPlayerPV.IsMine && lastPlayerPV.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber) lastPlayerPV.TransferOwnership(lastPlayerPV.CreatorActorNr);
         }
         SetMultiLiftBools(playerLiftController);
@@ -166,42 +169,39 @@ public class PackageController : MonoBehaviour, LiftablePackage
             playerMLC.tooHeavy = tooHeavy;
             playerMLC.iAmLifting = lifters.Contains(PlayerManager.myPlayerLiftController.GetComponent<PhotonView>().ViewID);
             playerMLC.isMultiLifting = lifters.Count > 1;
-            // print("News:");
-            // print("Too Heavy = " + playerMLC.tooHeavy);
-            // print("I Am Lifting = " + playerMLC.iAmLifting);
-            // print("Is Multi Lifting = " + playerMLC.isMultiLifting);
         }
     }
 
     void SetConfJoint(ConfigurableJoint confJoint, Rigidbody conBody, PlayerLiftController player)
     {
         confJoint.connectedBody = conBody;
-        confJoint.anchor = CalculateLocalAnchors(player);
+        Vector3 anchor = CalculateLocalAnchors(player);
+        confJoint.anchor = anchor;
+        confJoint.axis = Vector3.zero;
         confJoint.autoConfigureConnectedAnchor = false;
-        confJoint.connectedAnchor = Vector3.zero;
+        confJoint.connectedAnchor = new Vector3(0, 0.5f, 0.7f);
         confJoint.xMotion = ConfigurableJointMotion.Locked;
-        confJoint.yMotion = ConfigurableJointMotion.Locked;
+        confJoint.yMotion = ConfigurableJointMotion.Limited;
         confJoint.zMotion = ConfigurableJointMotion.Locked;
         confJoint.angularXMotion = ConfigurableJointMotion.Locked;
         confJoint.angularYMotion = ConfigurableJointMotion.Free;
-        confJoint.angularZMotion = ConfigurableJointMotion.Limited;
+        confJoint.angularZMotion = ConfigurableJointMotion.Locked;
+        float limit = 0.5f;
         SoftJointLimit sjl = new SoftJointLimit();
-        sjl.limit = 20;
-        // confJoint.lowAngularXLimit = sjl;
-        // confJoint.highAngularXLimit = sjl;
-        confJoint.angularZLimit = sjl;
+        sjl.limit = limit;
+        confJoint.linearLimit = sjl;
     }
 
     Vector3 CalculateLocalAnchors(PlayerLiftController player)
     {
-        float offset1 = 0.7f;
+        float offset1 = 0.5f;
         Vector3[] list = {new Vector3(offset1, 0, 0), new Vector3(-offset1, 0, 0), new Vector3(0, 0, offset1), new Vector3(0, 0, -offset1)};
 
         Vector3 anchor = list[0];
-        float min = Vector3.Distance(gameObject.transform.position + list[0], player.transform.position);
+        float min = Vector3.Distance(gameObject.transform.TransformPoint(list[0]), player.transform.position);
         for (int i = 1; i < list.Length; i++)
         {
-            Vector3 pos = gameObject.transform.position + list[i];
+            Vector3 pos = gameObject.transform.TransformPoint(list[i]);
             float current = Vector3.Distance(pos, player.transform.position);
             if (current < min) 
             {
