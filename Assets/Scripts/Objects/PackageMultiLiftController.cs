@@ -17,20 +17,30 @@ public class PackageMultiLiftController : MonoBehaviour
         packageController = GetComponent<PackageController>();
     }
 
-    public void AddLifter(PlayerLiftController playerLiftController)
+    public void AddLifter(PlayerLiftController addedPlayerLC)
     {
-        PhotonView playerPV = playerLiftController.GetComponent<PhotonView>();
+        if (lifters.Count != 0)
+        {
+            Debug.LogError("Tried to add lifter when Lifters.Count was not 0!");
+            return;
+        }
+        PhotonView playerPV = addedPlayerLC.GetComponent<PhotonView>();
         int viewID = playerPV.ViewID;
         if (!lifters.Contains(viewID)) lifters.Add(viewID);
         SetMultiLiftBools(null);
     }
 
-    public void RemoveLifter(PlayerLiftController playerLiftController)
+    public void RemoveLifter(PlayerLiftController removedPlayerLC)
     {
-        PhotonView playerPV = playerLiftController.GetComponent<PhotonView>();
+        if (lifters.Count != 1)
+        {
+            Debug.LogError("Tried to remove lifter when Lifters.Count was not 1!");
+            return;
+        }
+        PhotonView playerPV = removedPlayerLC.GetComponent<PhotonView>();
         int viewID = playerPV.ViewID;
         if (!lifters.Remove(viewID)) print("Couldn't remove lifter");
-        SetMultiLiftBools(playerLiftController);
+        SetMultiLiftBools(removedPlayerLC);
     }
 
     // AFTER ADDING TO LIST:
@@ -47,13 +57,17 @@ public class PackageMultiLiftController : MonoBehaviour
             // I'm not owner: both kinematic = true; add confjoints; disable transform view;   
     public void AddHelper(PlayerLiftController addedPlayerLC, Vector3 anchor)
     {
-        if (lifters.Count == 0) return;
+        if (lifters.Count == 0)
+        {
+            Debug.LogError("Tried to add helper when Lifters.Count was 0!");
+            return;
+        }
 
         PhotonView addedPlayerPV = addedPlayerLC.GetComponent<PhotonView>();
         int addedViewID = addedPlayerPV.ViewID;
         if (!lifters.Contains(addedViewID)) lifters.Add(addedViewID);
 
-        bool iAmLifting = (lifters.Contains(PlayerManager.myPlayerLiftController.GetComponent<PhotonView>().ViewID));
+        bool iAmLifting = lifters.Contains(PlayerManager.myPlayerLiftController.GetComponent<PhotonView>().ViewID);
         bool iAmPackageOwner = PV.IsMine;
         bool myPlayer = PhotonNetwork.LocalPlayer.ActorNumber == addedPlayerPV.CreatorActorNr;
 
@@ -63,7 +77,7 @@ public class PackageMultiLiftController : MonoBehaviour
             if (myPlayer)
             {
                 // My player was added
-                if (iAmPackageOwner)
+                if (!iAmPackageOwner)
                 {
                     // My player was added and I am not the owner of the package.
                     addedPlayerPV.TransferOwnership(PV.Owner);
@@ -114,9 +128,14 @@ public class PackageMultiLiftController : MonoBehaviour
         // Not me who was removed:
             // I'm owner: all except myself kinematic = true; remove confjoint; transfer ownership back;
             // I'm not owner: all except myself kinematic = true; remove confjoint;        
-    public void RemoveHelper(PlayerLiftController playerLiftController)
+    public void RemoveHelper(PlayerLiftController removedPlayerLC)
     {
-        PhotonView removedPlayerPV = playerLiftController.GetComponent<PhotonView>();
+        if (lifters.Count < 2)
+        {
+            Debug.LogError("Tried to remove helper when Lifters.Count was less than 2!");
+            return;
+        }
+        PhotonView removedPlayerPV = removedPlayerLC.GetComponent<PhotonView>();
         int removedViewID = removedPlayerPV.ViewID;
         if (!lifters.Remove(removedViewID)) print("Couldn't remove lifter");
 
@@ -137,45 +156,37 @@ public class PackageMultiLiftController : MonoBehaviour
                 // I'm not owner of package -> I have disabled the removed player's transform view -> enable it again.
                 removedPlayerPV.GetComponent<PhotonTransformViewClassic>().enabled = true;
             }
-            // Set the removed player to kinematic = true
-            removedPlayerPV.GetComponent<Rigidbody>().isKinematic = true;
         }
         else
         {
             // I am not a lifter -> I was either removed or only watching.
-            if (PhotonNetwork.LocalPlayer.ActorNumber == removedPlayerPV.CreatorActorNr)
+            if (myPlayer)
             {
                 // I was removed
-                if (!PV.IsMine)
+                if (!iAmPackageOwner)
                 {
                     // My player was removed and I am not the owner of the package.
-                    // Enable transform views for all lifters (locally)
-                    foreach (int vid in lifters)
-                    {
-                        PhotonView _playerPV = PhotonView.Find(vid);
-                        _playerPV.GetComponent<PhotonTransformViewClassic>().enabled = true;
-                    }
-                    // Also enable transform views for yourself (locally)
+                    // Enable transform views on all lifters for me
+                    SetLiftersTransformView(true);
+                    // Also enable the transform view on yourself
                     removedPlayerPV.GetComponent<PhotonTransformViewClassic>().enabled = true;
                 }
             }
             else
             {
-                if (PV.IsMine)
+                if (iAmPackageOwner)
                 {
                     // Not my player was removed but I am the owner of the package.
                     removedPlayerPV.TransferOwnership(removedPlayerPV.CreatorActorNr);
                 }
             }
-            foreach (int vid in lifters)
-            {
-                // Set all players to kinematic (except myself)
-                PhotonView _playerPV = PhotonView.Find(vid);
-                _playerPV.GetComponent<Rigidbody>().isKinematic = true;
-            }
+            // Set all players to kinematic (except myself)
+            SetLiftersKinematic(true, true);
         }
+
         List<ConfigurableJoint> confJoints = new List<ConfigurableJoint>(GetComponents<ConfigurableJoint>());
         DestroyPlayerJoint(confJoints, removedViewID);
+
         if (lifters.Count < 2)
         {
             // Only 1 lifter remaining -> Package isn't being multilifted anymore.
@@ -196,7 +207,7 @@ public class PackageMultiLiftController : MonoBehaviour
             // I am not the last player, but I own his photon view -> give it back to the creator.
             else if (lastPlayerPV.IsMine) lastPlayerPV.TransferOwnership(lastPlayerPV.CreatorActorNr);
         }
-        SetMultiLiftBools(playerLiftController);
+        SetMultiLiftBools(removedPlayerLC);
     }
 
     // -------------------------------------------- Helper Methods --------------------------------------------
@@ -265,12 +276,11 @@ public class PackageMultiLiftController : MonoBehaviour
         return anchor;
     }
 
-    void SetLiftersTransformView(bool b, bool exceptMyself = false)
+    void SetLiftersTransformView(bool b)
     {
         foreach (int vid in lifters)
         {
             PhotonView playerPV = PhotonView.Find(vid);
-            if (exceptMyself && playerPV.CreatorActorNr == PhotonNetwork.LocalPlayer.ActorNumber) continue;
             playerPV.GetComponent<PhotonTransformViewClassic>().enabled = b;
         }
     }
