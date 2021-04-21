@@ -98,7 +98,7 @@ public class PackageMultiLiftController : MonoBehaviour
         }
 
         // Add confjoints
-        
+
         if (lifters.Count == 2)
         {
             // First helper was added -> Make original lifter a helper.
@@ -209,7 +209,7 @@ public class PackageMultiLiftController : MonoBehaviour
             // Lift the package normally with the last player.
             // float eulerY = PlayerLiftController.ClosestAngle(gameObject.transform.rotation.eulerAngles.y - lastPlayerLC.transform.rotation.eulerAngles.y);
             gameObject.transform.parent = lastPlayerLC.gameObject.transform;
-            gameObject.transform.localPosition = lastPlayerLC.hand.transform.localPosition;
+            gameObject.transform.position = lastPlayerLC.hand.transform.position;
             // gameObject.transform.localRotation = Quaternion.Euler(0, eulerY, 0);
             
             // I am not the last player, but I own his photon view -> give it back to the creator.
