@@ -194,10 +194,6 @@ public class PackageMultiLiftController : MonoBehaviour
 
         if (lifters.Count < 2)
         {
-            PlayerLiftController lastPlayerLC = PhotonView.Find(lifters[0]).GetComponent<PlayerLiftController>();
-            Vector3 lastPlayerPos = lastPlayerLC.transform.position;
-            Quaternion lastPlayerRot = lastPlayerLC.transform.rotation;
-            
             // Only 1 lifter remaining -> Package isn't being multilifted anymore.
             if (confJoints.Count > 1) Debug.LogError("MORE THAN ONE CONFJOINT!");
 
@@ -208,15 +204,14 @@ public class PackageMultiLiftController : MonoBehaviour
             Destroy(rb);
             rb = null;
 
+            PlayerLiftController lastPlayerLC = PhotonView.Find(lifters[0]).GetComponent<PlayerLiftController>();
             PhotonView lastPlayerPV = lastPlayerLC.GetComponent<PhotonView>();
 
             // Lift the package normally with the last player.
             // float eulerY = PlayerLiftController.ClosestAngle(gameObject.transform.rotation.eulerAngles.y - lastPlayerLC.transform.rotation.eulerAngles.y);
             gameObject.transform.parent = lastPlayerLC.gameObject.transform;
-            gameObject.transform.position = lastPlayerLC.hand.transform.position;
+            gameObject.transform.localPosition = lastPlayerLC.hand.transform.localPosition;
             // gameObject.transform.localRotation = Quaternion.Euler(0, eulerY, 0);
-            lastPlayerLC.transform.position = lastPlayerPos;
-            lastPlayerLC.transform.rotation = lastPlayerRot;
             
             // I am not the last player, but I own his photon view -> give it back to the creator.
             if (PhotonNetwork.LocalPlayer.ActorNumber != lastPlayerPV.CreatorActorNr && lastPlayerPV.IsMine) lastPlayerPV.TransferOwnership(lastPlayerPV.CreatorActorNr);

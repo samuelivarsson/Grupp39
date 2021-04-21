@@ -6,7 +6,7 @@ public class HealthManager : MonoBehaviour
 {
     public static HealthManager Instance;
 
-    public const int maxHealth = 20;
+    public const int maxHealth = 7;
     int healthLeft;
 
     GameObject[] healthObjects = new GameObject[maxHealth];

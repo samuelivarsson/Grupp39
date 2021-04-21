@@ -114,7 +114,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void StartGame()
     {
-        //if (PhotonNetwork.PlayerList.Length != maxPlayers) return;
+        if (PhotonNetwork.PlayerList.Length != maxPlayers) return;
 
         foreach (Player player in PhotonNetwork.PlayerList)
         {

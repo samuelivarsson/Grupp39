@@ -16,6 +16,7 @@ public class PlayerListItem : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
         object[] initData = info.photonView.InstantiationData;
         string name = (string) initData[0];
         text.text = name;
+        if (GetComponent<PhotonView>().IsMine) text.text += " (Du)";
         transform.SetParent(Launcher.Instance.playerListContent);
         GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
     }
