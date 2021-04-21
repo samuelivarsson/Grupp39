@@ -156,6 +156,8 @@ public class PackageMultiLiftController : MonoBehaviour
                 // I'm not owner of package -> I have disabled the removed player's transform view -> enable it again.
                 removedPlayerPV.GetComponent<PhotonTransformViewClassic>().enabled = true;
             }
+            // Not my player -> Set kinematic true for the removed player.
+            removedPlayerPV.GetComponent<Rigidbody>().isKinematic = true;
         }
         else
         {
