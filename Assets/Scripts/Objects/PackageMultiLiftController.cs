@@ -98,11 +98,13 @@ public class PackageMultiLiftController : MonoBehaviour
         }
 
         // Add confjoints
+        
         if (lifters.Count == 2)
         {
             // First helper was added -> Make original lifter a helper.
             // Add rb to package for everyone when someone starts to multilift this package.
             rb = gameObject.AddComponent<Rigidbody>();
+
             // Remove parent from package and setup joint for parent
             gameObject.transform.parent = null;
             PhotonView parentPV = PhotonView.Find(lifters[0]);
@@ -204,10 +206,14 @@ public class PackageMultiLiftController : MonoBehaviour
             PlayerLiftController lastPlayerLC = PhotonView.Find(lifters[0]).GetComponent<PlayerLiftController>();
             PhotonView lastPlayerPV = lastPlayerLC.GetComponent<PhotonView>();
 
-            // I am the last player -> lift the package normally.
-            if (lastPlayerPV.CreatorActorNr == PhotonNetwork.LocalPlayer.ActorNumber) lastPlayerLC.Lift(gameObject);
+            // Lift the package normally with the last player.
+            // float eulerY = PlayerLiftController.ClosestAngle(gameObject.transform.rotation.eulerAngles.y - lastPlayerLC.transform.rotation.eulerAngles.y);
+            gameObject.transform.parent = lastPlayerLC.gameObject.transform;
+            gameObject.transform.localPosition = lastPlayerLC.hand.transform.localPosition;
+            // gameObject.transform.localRotation = Quaternion.Euler(0, eulerY, 0);
+            
             // I am not the last player, but I own his photon view -> give it back to the creator.
-            else if (lastPlayerPV.IsMine) lastPlayerPV.TransferOwnership(lastPlayerPV.CreatorActorNr);
+            if (PhotonNetwork.LocalPlayer.ActorNumber != lastPlayerPV.CreatorActorNr && lastPlayerPV.IsMine) lastPlayerPV.TransferOwnership(lastPlayerPV.CreatorActorNr);
         }
         SetMultiLiftBools(removedPlayerLC);
     }

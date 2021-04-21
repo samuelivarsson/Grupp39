@@ -145,12 +145,6 @@ public class PlayerLiftController : MonoBehaviour
         }
     }
 
-    public void Lift(GameObject obj)
-    {
-        latestCollision = obj;
-        Lift();
-    }
-
     void Lift()
     {
         latestObject = latestCollision;
