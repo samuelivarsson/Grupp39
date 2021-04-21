@@ -1,31 +1,29 @@
 ﻿using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 
 public class PackageController : MonoBehaviour, LiftablePackage
 {
-    public List<int> lifters {get; set;} = new List<int>(4);
-    public bool tooHeavy {get; set;} = false;
-
     public bool isLifted {get; set;} = false;
     public bool isTaped {get; set;} = false;
-
-    Rigidbody rb;
-    PhotonView PV;
+    public bool canTape { get; set; } = false;
+    public int productCount {get; set;} = 0;
+    
     public Transform pic1 {get; set;}
     public Transform pic2 {get; set;}
     public Transform pic3 {get; set;}
-
-    [SerializeField] public Image timebar;
-    TapeTimer tapeTimer;
     public bool bpic1 {get; set;} = false;
     public bool bpic2 {get; set;} = false;
     public bool bpic3 {get; set;} = false;
-    public int productCount {get; set;} = 0;
-    public bool canTape { get; set; } = false;
+
+    [SerializeField] public Image timebar;
+
+    PhotonView PV;
+    Rigidbody rb;
+    TapeTimer tapeTimer;
+
+    const int scoreMultiplier = 100;
 
     public static Vector3 tileOffset = new Vector3(1.5f, 0f, 1.5f);
     public static Vector3 tapeOffset = new Vector3(1.5f, 0.28f, 1.5f);
@@ -45,296 +43,6 @@ public class PackageController : MonoBehaviour, LiftablePackage
     {
         timebar.enabled = false;
     }
-
-    public void AddLifter(PlayerLiftController playerLiftController)
-    {
-        PhotonView playerPV = playerLiftController.GetComponent<PhotonView>();
-        int viewID = playerPV.ViewID;
-        if (!lifters.Contains(viewID)) lifters.Add(viewID);
-        SetMultiLiftBools(null);
-    }
-
-    // AFTER ADDING TO LIST:
-    // I am a lifter:
-        // Me who was added:
-            // I'm owner: both kinematic = false; add confjoints; package kinematic = false;
-            // I'm not owner: both kinematic = false; add confjoints; disable transform view for all lifters; transfer ownership; package kinematic = false;
-        // Not me who was added:
-            // I'm owner: both kinematic = false; add confjoints; package kinematic = false;
-            // I'm not owner: both kinematic = false; add confjoints; disable transform view; package kinematic = false;
-    // I am not a lifter:
-        // Not me who was added:
-            // I'm owner: both kinematic = true; add confjoints;
-            // I'm not owner: both kinematic = true; add confjoints; disable transform view;   
-    void _AddHelper(PlayerLiftController newPlayerLC, Vector3 anchor)
-    {
-        if (lifters.Count == 0) return;
-
-        PhotonView newPlayerPV = newPlayerLC.GetComponent<PhotonView>();
-        int viewID = newPlayerPV.ViewID;
-        if (!lifters.Contains(viewID)) lifters.Add(viewID);
-
-        if (lifters.Contains(PlayerManager.myPlayerLiftController.GetComponent<PhotonView>().ViewID))
-        {
-            // I am a lifter -> I was either added or was already in the lifters list.
-            if (PhotonNetwork.LocalPlayer.ActorNumber == newPlayerPV.CreatorActorNr)
-            {
-                // My player was added
-                if (!PV.IsMine)
-                {
-                    // My player was added and I am not the owner of the package.
-                    newPlayerPV.TransferOwnership(PV.Owner);
-                }
-            }
-            if (!PV.IsMine)
-            {
-                // Disable transform views for all lifters (locally)
-                foreach (int vid in lifters)
-                {
-                    PhotonView playerPV = PhotonView.Find(vid);
-                    playerPV.GetComponent<PhotonTransformViewClassic>().enabled = false;
-                }
-            }
-            foreach (int vid in lifters)
-            {
-                PhotonView playerPV = PhotonView.Find(vid);
-                playerPV.GetComponent<Rigidbody>().isKinematic = false;
-            }
-        }
-        else
-        {
-            // I am not a lifter -> the player that was added was not me.
-            foreach (int vid in lifters)
-            {
-                // Set all players to kinematic (except myself)
-                PhotonView playerPV = PhotonView.Find(vid);
-                if (playerPV.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber) playerPV.GetComponent<Rigidbody>().isKinematic = true;
-            }
-        }
-
-        // Add confjoints
-        if (lifters.Count == 2)
-        {
-            // First helper was added -> Make original lifter a helper.
-            // Set kinematic = false for everyone when someone is multilifting this package.
-            // rb.isKinematic = false;
-            // Add rb for everyone when someone starts to multilift this package.
-            rb = gameObject.AddComponent<Rigidbody>();
-            PhotonView parentPV = PhotonView.Find(lifters[0]);
-            PlayerLiftController parentPLC = parentPV.GetComponent<PlayerLiftController>();
-            Rigidbody parentRB = parentPV.GetComponent<Rigidbody>();
-            if (parentPV.IsMine && !PV.IsMine) parentPV.TransferOwnership(PV.Owner);
-            gameObject.transform.parent = null;
-            ConfigurableJoint confJoint = gameObject.AddComponent<ConfigurableJoint>();
-            Vector3 anchor2 = CalculateLocalAnchors(parentPLC);
-            SetConfJoint(confJoint, parentRB, anchor2);
-        }
-
-        Rigidbody newPlayerRB = newPlayerLC.GetComponent<Rigidbody>();
-        ConfigurableJoint configJoint = gameObject.AddComponent<ConfigurableJoint>();
-        SetConfJoint(configJoint, newPlayerRB, anchor);
-
-        SetMultiLiftBools(null);
-    }
-
-    public void AddHelper(PlayerLiftController playerLiftController)
-    {
-        Vector3 anchor = CalculateLocalAnchors(playerLiftController);
-        _AddHelper(playerLiftController, anchor);
-        PV.RPC("OnAddHelper", RpcTarget.OthersBuffered, playerLiftController.GetComponent<PhotonView>().ViewID, anchor);
-    }
-
-    [PunRPC]
-    void OnAddHelper(int playerViewID, Vector3 anchor)
-    {
-        PlayerLiftController playerLC = PhotonView.Find(playerViewID).GetComponent<PlayerLiftController>();
-        _AddHelper(playerLC, anchor);
-    }
-
-    public void RemoveLifter(PlayerLiftController playerLiftController)
-    {
-        PhotonView playerPV = playerLiftController.GetComponent<PhotonView>();
-        int viewID = playerPV.ViewID;
-        if (!lifters.Remove(viewID)) print("Couldn't remove lifter");
-        SetMultiLiftBools(playerLiftController);
-    }
-
-    // AFTER REMOVING FROM LIST:
-    // I am a lifter:
-        // Not me who was removed:
-            // I'm owner: removed player kinematic = true; remove confjoint; transfer ownership back;
-            // I'm not owner: removed player kinematic = true; remove confjoint; enable transform view for all non-lifters;
-    // I am not a lifter:
-        // Me who was removed:
-            // I'm owner: all except myself kinematic = true; remove confjoint; package kinematic = true;
-            // I'm not owner: all except myself kinematic = true; remove confjoint; enable transform view; package kinematic = true;
-        // Not me who was removed:
-            // I'm owner: all except myself kinematic = true; remove confjoint; transfer ownership back;
-            // I'm not owner: all except myself kinematic = true; remove confjoint;        
-    void _RemoveHelper(PlayerLiftController playerLiftController)
-    {
-        PhotonView playerPV = playerLiftController.GetComponent<PhotonView>();
-        int viewID = playerPV.ViewID;
-        if (!lifters.Remove(viewID)) print("Couldn't remove lifter");
-
-        if (lifters.Contains(PlayerManager.myPlayerLiftController.GetComponent<PhotonView>().ViewID))
-        {
-            // I am a lifter -> I was not removed.
-            if (PV.IsMine)
-            {
-                // I was not removed but I am owner of the package.
-                playerPV.TransferOwnership(playerPV.CreatorActorNr);
-            }
-            else
-            {
-                // I'm not owner of package -> I have disabled the removed player's transform view -> enable it again.
-                playerPV.GetComponent<PhotonTransformViewClassic>().enabled = true;
-            }
-            // Set the removed player to kinematic = true
-            playerPV.GetComponent<Rigidbody>().isKinematic = true;
-        }
-        else
-        {
-            // I am not a lifter -> I was either removed or only watching.
-            if (PhotonNetwork.LocalPlayer.ActorNumber == playerPV.CreatorActorNr)
-            {
-                // I was removed
-                if (!PV.IsMine)
-                {
-                    // My player was removed and I am not the owner of the package.
-                    // Enable transform views for all lifters (locally)
-                    foreach (int vid in lifters)
-                    {
-                        PhotonView _playerPV = PhotonView.Find(vid);
-                        _playerPV.GetComponent<PhotonTransformViewClassic>().enabled = true;
-                    }
-                    // Also enable transform views for yourself (locally)
-                    playerPV.GetComponent<PhotonTransformViewClassic>().enabled = true;
-                }
-            }
-            else
-            {
-                if (PV.IsMine)
-                {
-                    // Not my player was removed but I am the owner of the package.
-                    playerPV.TransferOwnership(playerPV.CreatorActorNr);
-                }
-            }
-            foreach (int vid in lifters)
-            {
-                // Set all players to kinematic (except myself)
-                PhotonView _playerPV = PhotonView.Find(vid);
-                _playerPV.GetComponent<Rigidbody>().isKinematic = true;
-            }
-        }
-        List<ConfigurableJoint> confJoints = new List<ConfigurableJoint>(GetComponents<ConfigurableJoint>());
-        for (int i = 0; i < confJoints.Count;)
-        {
-            if (confJoints[i].connectedBody.GetComponent<PhotonView>().ViewID == viewID) 
-            {
-                Destroy(confJoints[i]);
-                confJoints.Remove(confJoints[i]);
-            }
-            else i++;
-        }
-        if (lifters.Count < 2)
-        {
-            // Set kinematic = true for everyone when this package isn't being multilifted anymore.
-            // rb.isKinematic = true;
-            if (confJoints.Count > 1) Debug.LogError("MORE THAN ONE CONFJOINT!");
-            Destroy(confJoints[0]);
-            PlayerLiftController lastPlayerLC = PhotonView.Find(lifters[0]).GetComponent<PlayerLiftController>();
-            gameObject.transform.parent = lastPlayerLC.transform;
-            gameObject.transform.localPosition = lastPlayerLC.hand.localPosition;
-            float eulerY = PlayerLiftController.ClosestAngle(gameObject.transform.rotation.eulerAngles.y - lastPlayerLC.gameObject.transform.rotation.eulerAngles.y);
-            gameObject.transform.localRotation = Quaternion.Euler(0, eulerY, 0);
-            PhotonView lastPlayerPV = lastPlayerLC.GetComponent<PhotonView>();
-            if (lastPlayerPV.IsMine && lastPlayerPV.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber) lastPlayerPV.TransferOwnership(lastPlayerPV.CreatorActorNr);
-            // Destroy rb when this package isn't being multilifted anymore.
-            Destroy(rb);
-            rb = null;
-        }
-        SetMultiLiftBools(playerLiftController);
-    }
-
-    public void RemoveHelper(PlayerLiftController playerLiftController)
-    {
-        _RemoveHelper(playerLiftController);
-        PV.RPC("OnRemoveHelper", RpcTarget.OthersBuffered, playerLiftController.GetComponent<PhotonView>().ViewID);
-    }
-
-    [PunRPC]
-    void OnRemoveHelper(int playerViewID)
-    {
-        PlayerLiftController playerLC = PhotonView.Find(playerViewID).GetComponent<PlayerLiftController>();
-        _RemoveHelper(playerLC);
-    }
-
-    void SetMultiLiftBools(PlayerLiftController removedPlayer)
-    {
-        if (removedPlayer != null)
-        {
-            PlayerMultiLiftController removedPlayerMLC = removedPlayer.GetComponent<PlayerMultiLiftController>();
-            removedPlayerMLC.tooHeavy = false;
-            removedPlayerMLC.iAmLifting = false;
-            removedPlayerMLC.isMultiLifting = false;
-        }
-        int totalStrength = 0;
-        foreach (int viewID in lifters)
-        {
-            PlayerLiftController playerLiftController = PhotonView.Find(viewID).GetComponent<PlayerLiftController>();
-            totalStrength += playerLiftController.GetComponent<Character>().strength;
-        }
-        tooHeavy = totalStrength < productCount;
-        foreach (int viewID in lifters)
-        {
-            PlayerMultiLiftController playerMLC = PhotonView.Find(viewID).GetComponent<PlayerMultiLiftController>();
-            playerMLC.tooHeavy = tooHeavy;
-            playerMLC.iAmLifting = lifters.Contains(PlayerManager.myPlayerLiftController.GetComponent<PhotonView>().ViewID);
-            playerMLC.isMultiLifting = lifters.Count > 1;
-        }
-    }
-
-    void SetConfJoint(ConfigurableJoint confJoint, Rigidbody conBody, Vector3 anchor)
-    {
-        confJoint.connectedBody = conBody;
-        confJoint.anchor = anchor;
-        confJoint.axis = Vector3.zero;
-        confJoint.autoConfigureConnectedAnchor = false;
-        confJoint.connectedAnchor = new Vector3(0, 0.5f, 0.7f);
-        confJoint.xMotion = ConfigurableJointMotion.Locked;
-        confJoint.yMotion = ConfigurableJointMotion.Limited;
-        confJoint.zMotion = ConfigurableJointMotion.Locked;
-        confJoint.angularXMotion = ConfigurableJointMotion.Locked;
-        confJoint.angularYMotion = ConfigurableJointMotion.Free;
-        confJoint.angularZMotion = ConfigurableJointMotion.Locked;
-        float limit = 0.5f;
-        SoftJointLimit sjl = new SoftJointLimit();
-        sjl.limit = limit;
-        confJoint.linearLimit = sjl;
-    }
-
-    Vector3 CalculateLocalAnchors(PlayerLiftController player)
-    {
-        float offset1 = 0.5f;
-        Vector3[] list = {new Vector3(offset1, 0, 0), new Vector3(-offset1, 0, 0), new Vector3(0, 0, offset1), new Vector3(0, 0, -offset1)};
-
-        Vector3 anchor = list[0];
-        float min = Vector3.Distance(gameObject.transform.TransformPoint(list[0]), player.transform.position);
-        for (int i = 1; i < list.Length; i++)
-        {
-            Vector3 pos = gameObject.transform.TransformPoint(list[i]);
-            float current = Vector3.Distance(pos, player.transform.position);
-            if (current < min) 
-            {
-                min = current;
-                anchor = list[i];
-            }
-        }
-        return anchor;
-    }
-
-    // Delivery
 
     public bool OrderDelivery(GameObject latestTile)
     {
@@ -369,7 +77,7 @@ public class PackageController : MonoBehaviour, LiftablePackage
         PhotonView taskPV = taskObj.GetComponent<PhotonView>();
         if (HasRequiredProducts(taskController))
         {
-            ScoreController.Instance.IncrementScore(taskController.productAmount * 100);
+            ScoreController.Instance.IncrementScore(taskController.productAmount * scoreMultiplier);
             foreach (ProductController productController in GetComponentsInChildren<ProductController>())
             {
                 PhotonView productPV = productController.GetComponent<PhotonView>();
@@ -414,11 +122,6 @@ public class PackageController : MonoBehaviour, LiftablePackage
     {
         string[] packageProducts = GetProductTypes();
         string[] requiredProducts = task.requiredProducts;
-
-        string pkgProducts = "{" + System.String.Join(", ", packageProducts) + "}";
-        string rqrdProducts = "{" + System.String.Join(", ", requiredProducts) + "}";
-        print("Package products: "+pkgProducts);
-        print("Required products: "+rqrdProducts);
 
         if (packageProducts.Length <= 0) return false;
 

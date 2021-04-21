@@ -1,5 +1,4 @@
 ﻿using Photon.Pun;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -27,7 +26,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     List<string> takenNames = new List<string>{};
 
-    const int maxPlayers = 4;
+    public const int maxPlayers = 4;
 
     List<string> characterList = new List<string> {"Long", "Normal", "Strong", "Weak"};
     List<int> spawnPointList = new List<int>();

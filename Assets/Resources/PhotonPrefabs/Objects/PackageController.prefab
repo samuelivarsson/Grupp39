@@ -1094,8 +1094,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7271022216631183784}
   - component: {fileID: 4881368993862963087}
-  - component: {fileID: 644405785046989766}
   - component: {fileID: -7625432177342621375}
+  - component: {fileID: 644405785046989766}
+  - component: {fileID: 8882403922510208042}
   m_Layer: 10
   m_Name: PackageController
   m_TagString: PackageController
@@ -1136,19 +1137,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.7, y: 0.6, z: 0.7}
   m_Center: {x: 0, y: 0.3, z: 0}
---- !u!114 &644405785046989766
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7271022216631183796}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c45f768b756a60d4a85d54ce88db5077, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  timebar: {fileID: 1632418980853255987}
 --- !u!114 &-7625432177342621375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1171,6 +1159,31 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &644405785046989766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7271022216631183796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c45f768b756a60d4a85d54ce88db5077, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timebar: {fileID: 1632418980853255987}
+--- !u!114 &8882403922510208042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7271022216631183796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d742aaec4fca8847903c97b65c3371b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7561113992524503906
 GameObject:
   m_ObjectHideFlags: 0

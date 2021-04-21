@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using System.IO;
@@ -57,29 +56,17 @@ public class ObjectManager : MonoBehaviour
 
     Transform GetProductSpawnPoint()
     {
-        return GetSpawnPoint(0);
+        int index = Random.Range(0, productSpawnPointList.Count);
+        int result = productSpawnPointList[index];
+        productSpawnPointList.RemoveAt(index);
+        return SpawnManager.Instance.GetProductSpawnPoint(result);
     }
 
     Transform GetPackageSpawnPoint()
     {
-        return GetSpawnPoint(1);
-    }
-
-    Transform GetSpawnPoint(int i)
-    {
-        if (i == 0)
-        {
-            int index = Random.Range(0, productSpawnPointList.Count);
-            int result = productSpawnPointList[index];
-            productSpawnPointList.RemoveAt(index);
-            return SpawnManager.Instance.GetProductSpawnPoint(result);
-        }
-        else
-        {
-            int index = Random.Range(0, packageSpawnPointList.Count);
-            int result = packageSpawnPointList[index];
-            packageSpawnPointList.RemoveAt(index);
-            return SpawnManager.Instance.GetPackageSpawnPoint(result);
-        }
+        int index = Random.Range(0, packageSpawnPointList.Count);
+        int result = packageSpawnPointList[index];
+        packageSpawnPointList.RemoveAt(index);
+        return SpawnManager.Instance.GetPackageSpawnPoint(result);
     }
 }

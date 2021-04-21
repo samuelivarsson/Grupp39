@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 
@@ -56,13 +54,14 @@ public class PlayerLiftController : MonoBehaviour
         int latestColViewID = latestCollision.GetComponent<PhotonView>().ViewID;
         int latestObjViewID = latestObject ? latestObject.GetComponent<PhotonView>().ViewID : -1;
         Liftable controller = GetController(latestCollision);
+        PackageMultiLiftController packageMLC = latestCollision.GetComponent<PackageMultiLiftController>();
         if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && (latestCollision.CompareTag("ProductManager") || latestCollision.CompareTag("PackageManager")))
         {
             ICreateController manager = GetManager(latestCollision);
             if (manager.CreateController()) Lift();
             return;
         }
-        if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && IsLifting(-1) && CanHelp(controller) && !playerCC.isCrouching)
+        if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && IsLifting(-1) && CanHelp(packageMLC) && !playerCC.isCrouching)
         {
             HelpLift();
             return;
@@ -132,8 +131,8 @@ public class PlayerLiftController : MonoBehaviour
         obj.transform.localRotation = Quaternion.Euler(0, eulerY, 0);
 
         // If package -> add lifter
-        PackageController packageController = obj.GetComponent<PackageController>();
-        if (packageController != null) packageController.AddLifter(this);
+        PackageMultiLiftController packageMLC = obj.GetComponent<PackageMultiLiftController>();
+        if (packageMLC != null) packageMLC.AddLifter(this);
 
         // Set booleans and liftingID
         liftingID = obj.GetComponent<PhotonView>().ViewID;
@@ -144,6 +143,12 @@ public class PlayerLiftController : MonoBehaviour
         {
             pkgController.canTape = false;
         }
+    }
+
+    public void Lift(GameObject obj)
+    {
+        latestCollision = obj;
+        Lift();
     }
 
     void Lift()
@@ -159,12 +164,17 @@ public class PlayerLiftController : MonoBehaviour
     {
         GameObject obj = PhotonView.Find(viewID).gameObject;
         _Lift(obj, eulerY);
-    }    
+    }
 
     void _HelpLift(GameObject obj)
     {
-        // Set booleans and liftingID
+        // Set liftingID
         liftingID = obj.GetComponent<PhotonView>().ViewID;
+
+        // Add helper to package
+        PackageMultiLiftController packageMLC = obj.GetComponent<PackageMultiLiftController>();
+        Vector3 anchor = packageMLC.CalculateLocalAnchor(this);
+        if (packageMLC != null) packageMLC.AddHelper(this, anchor);
     }
 
     void HelpLift()
@@ -172,8 +182,7 @@ public class PlayerLiftController : MonoBehaviour
         latestObject = latestCollision;
         _HelpLift(latestObject);
         PV.RPC("OnHelpLift", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID);
-        PackageController packageController = latestObject.GetComponent<PackageController>();
-        packageController.AddHelper(this);
+        
     }
 
     [PunRPC]
@@ -181,7 +190,7 @@ public class PlayerLiftController : MonoBehaviour
     {
         GameObject obj = PhotonView.Find(viewID).gameObject;
         latestObject = obj;
-        _HelpLift(obj);
+        _HelpLift(latestObject);
     }
 
     void _Drop(GameObject obj, float eulerY, GameObject tile, Vector3 offset)
@@ -192,8 +201,8 @@ public class PlayerLiftController : MonoBehaviour
         obj.transform.rotation = Quaternion.Euler(0, eulerY, 0);
 
         // If package -> remove lifter
-        PackageController packageController = obj.GetComponent<PackageController>();
-        if (packageController != null) packageController.RemoveLifter(this);
+        PackageMultiLiftController packageMLC = obj.GetComponent<PackageMultiLiftController>();
+        if (packageMLC != null) packageMLC.RemoveLifter(this);
 
         // Set booleans
         canLiftID = -1;
@@ -211,7 +220,7 @@ public class PlayerLiftController : MonoBehaviour
     {
         if (latestObject == null) return;
 
-        // not able to drop products on dropzones
+        // Not able to drop products on dropzones
         if (latestTile.CompareTag("DropZone") && latestObject.CompareTag("ProductController"))
         {
             PopupInfo.Instance.Popup("Man kan inte placera en produkt i leveranszoner", 7);
@@ -224,7 +233,6 @@ public class PlayerLiftController : MonoBehaviour
             PopupInfo.Instance.Popup("Den långakaraktären kan inte placera en låda på golvet", 7);
             return;
         }
-        
 
         float eulerY = ClosestAngle(latestObject.transform.rotation.eulerAngles.y);
         Vector3 offset = GetTileOffset(latestObject);
@@ -299,22 +307,24 @@ public class PlayerLiftController : MonoBehaviour
 
     void _DropHelp(GameObject obj)
     {
-        // Set booleans and liftingID
+        // Set liftingID
         liftingID = -1;
+
+        // Remove helper from package
+        PackageMultiLiftController packageMLC = obj.GetComponent<PackageMultiLiftController>();
+        if (packageMLC != null) packageMLC.RemoveHelper(this);
     }
 
     void DropHelp()
     {
         _DropHelp(latestObject);
         PV.RPC("OnDropHelp", RpcTarget.OthersBuffered, latestObject.GetComponent<PhotonView>().ViewID);
-        PackageController packageController = latestObject.GetComponent<PackageController>();
-        packageController.RemoveHelper(this);
     }
 
     [PunRPC]
-    void OnDropHelp(int viewID)
+    void OnDropHelp(int objViewID)
     {
-        GameObject obj = PhotonView.Find(viewID).gameObject;
+        GameObject obj = PhotonView.Find(objViewID).gameObject;
         _DropHelp(obj);
     }
 
@@ -394,19 +404,10 @@ public class PlayerLiftController : MonoBehaviour
         return isPackaged;
     }
 
-    bool CanHelp(Liftable controller)
+    bool CanHelp(PackageMultiLiftController packageMLC)
     {
         bool canHelp = false;
-        LiftablePackage packageController = controller as LiftablePackage;
-        if (packageController != null) canHelp = packageController.tooHeavy && packageController.lifters.Count > 0;
+        if (packageMLC != null) canHelp = packageMLC.tooHeavy && packageMLC.lifters.Count > 0;
         return canHelp;
     }
-
-    // bool IsHelper(Liftable controller)
-    // {
-    //     bool isHelper = false;
-    //     LiftablePackage packageController = controller as LiftablePackage;
-    //     if (packageController != null) isHelper = packageController.lifters.Count > 1;
-    //     return isHelper;
-    // }
 }

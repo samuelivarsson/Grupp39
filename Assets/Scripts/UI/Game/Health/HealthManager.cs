@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Photon.Pun;
 using System.IO;
 
@@ -8,7 +6,7 @@ public class HealthManager : MonoBehaviour
 {
     public static HealthManager Instance;
 
-    public const int maxHealth = 10;
+    public const int maxHealth = 20;
     int healthLeft;
 
     GameObject[] healthObjects = new GameObject[maxHealth];
