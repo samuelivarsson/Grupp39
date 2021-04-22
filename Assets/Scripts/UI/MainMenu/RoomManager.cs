@@ -34,13 +34,12 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         if(scene.buildIndex == 1) // We're in the game scene
         {
+            DisconnectHandler.latestRoomName = PhotonNetwork.CurrentRoom.Name;
+            DisconnectHandler.inGame = true;
             PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Player", "PlayerManager"), Vector3.zero, Quaternion.identity);
             if (PhotonNetwork.IsMasterClient) 
             {
                 PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "ObjectManager"), Vector3.zero, Quaternion.identity);
-                //GameObject canvasObj = PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "UI", "CanvasManager"), Vector3.zero, Quaternion.identity);
-                //canvasObj.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
-                //canvasObj.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
             }
         }
     }
