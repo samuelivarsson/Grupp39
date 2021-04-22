@@ -9,7 +9,7 @@ public class HealthManager : MonoBehaviour
     public const int maxHealth = 7;
     int healthLeft;
 
-    GameObject[] healthObjects = new GameObject[maxHealth];
+    public GameObject[] healthObjects = new GameObject[maxHealth];
 
     GameObject canvasManager;
     PhotonView PV;

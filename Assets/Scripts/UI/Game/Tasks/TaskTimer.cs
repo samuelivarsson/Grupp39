@@ -11,7 +11,7 @@ public class TaskTimer : MonoBehaviour
     public float maxTime {get; set;}
     public float timeLeft {get; set;}
 
-    bool hasDecreasedHealth = false;
+    public bool hasDecreasedHealth {get; set;} = false;
 
     PhotonView PV;
     TaskController taskController;

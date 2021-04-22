@@ -60,7 +60,6 @@ public class TaskManager : MonoBehaviour
                 countDownTimes[i] -= Time.fixedDeltaTime;
                 if (countDownTimes[i] < 0)
                 {
-                    countDownTimes[i] = taskDelay;
                     countDownBools[i] = false;
                     CreateTask(i);
                 }
@@ -78,6 +77,7 @@ public class TaskManager : MonoBehaviour
 
     public void GenerateNewTask(int i)
     {
+        countDownTimes[i] = taskDelay;
         countDownBools[i] = true;
     }
 

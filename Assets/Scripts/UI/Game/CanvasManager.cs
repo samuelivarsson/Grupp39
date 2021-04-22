@@ -1,15 +1,20 @@
 ﻿using UnityEngine;
 using TMPro;
 using Photon.Pun;
+using Photon.Realtime;
 using System.IO;
 
 public class CanvasManager : MonoBehaviourPunCallbacks
 {
     public static CanvasManager Instance;
+    
+    [SerializeField] TMP_Text endScore;
+
     Menu gameOverMenu;
     Menu escMenu;
     PhotonView PV;
-    [SerializeField] TMP_Text endScore;
+
+    bool intentionalLeave = false;
 
     public static KeyCode escButton = KeyCode.Escape;
 
@@ -44,19 +49,24 @@ public class CanvasManager : MonoBehaviourPunCallbacks
         GameObject taskObj = PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "UI", "Tasks", "TaskManager"), Vector3.zero,  Quaternion.identity);
     }
     
-    void LeaveRoom()
+    public void LeaveRoom()
     {
+        intentionalLeave = true;
         Destroy(RoomManager.Instance.gameObject);
         PhotonNetwork.LeaveRoom(false);
     }
 
     public override void OnLeftRoom()
     {
-        base.OnLeftRoom();
-        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        if (intentionalLeave)
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+            intentionalLeave = false;
+            DisconnectHandler.inGame = false;
+        }
     }
 
-    void quitGame()
+    public void QuitGame()
     {
         Application.Quit();
     }

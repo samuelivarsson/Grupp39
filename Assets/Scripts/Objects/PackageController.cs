@@ -49,7 +49,7 @@ public class PackageController : MonoBehaviour, LiftablePackage
         if (!isTaped)
         {
             print("Package isn't taped!");
-            PopupInfo.Instance.Popup("Paketet måste tejpas innan den kan levereras", 7);
+            PopupInfo.Instance.Popup("Paketet måste tejpas innan det kan levereras", 7);
             return false;
         }
         if (!latestTile.CompareTag("DropZone"))
@@ -120,6 +120,8 @@ public class PackageController : MonoBehaviour, LiftablePackage
 
     bool HasRequiredProducts(TaskController task)
     {
+        if (task.GetComponentInChildren<TaskTimer>().hasDecreasedHealth) return false;
+
         string[] packageProducts = GetProductTypes();
         string[] requiredProducts = task.requiredProducts;
 

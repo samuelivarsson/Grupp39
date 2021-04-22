@@ -22,8 +22,8 @@ public class PlayerManager : MonoBehaviour
     void CreateController()
     {
         Hashtable hash = PhotonNetwork.CurrentRoom.CustomProperties;
-        string character = (string) hash[PhotonNetwork.LocalPlayer.NickName+"Character"];
-        int spIndex = (int) hash[PhotonNetwork.LocalPlayer.NickName+"SpawnPoint"];
+        string character = (string) hash[PhotonNetwork.LocalPlayer.UserId+"Character"];
+        int spIndex = (int) hash[PhotonNetwork.LocalPlayer.UserId+"SpawnPoint"];
         
         Transform spawnPoint = SpawnManager.Instance.GetPlayerSpawnPoint(spIndex);
         GameObject playerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Player", character+"PlayerController"), spawnPoint.position, spawnPoint.rotation);
