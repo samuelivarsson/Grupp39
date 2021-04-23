@@ -39,20 +39,22 @@ public class ObjectManager : MonoBehaviour
 
     void CreateProduct()
     {
-        if(PhotonNetwork.OfflineMode && PhotonNetwork.IsMasterClient)
-        {
-            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerBlue"), new Vector3(6, (float) 0.7, (float) 13.2), new Quaternion(0, 0, 0, 0));
-            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerGreen"), new Vector3(8, (float) 0.7, (float) 13.2), new Quaternion(0, 0, 0, 0));
-            return;
-        }
-
         if (PhotonNetwork.IsMasterClient)
         {
-            for (int i = 0; i < productCount; i++)
+            if (!PhotonNetwork.OfflineMode)
             {
-                Transform spawnPoint = GetProductSpawnPoint();
-                PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManager"+possibleProducts[i]), spawnPoint.position,  spawnPoint.rotation);
+                for (int i = 0; i < productCount; i++)
+                {
+                    Transform spawnPoint = GetProductSpawnPoint();
+                    PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManager" + possibleProducts[i]), spawnPoint.position, spawnPoint.rotation);
+                }
             }
+            else
+            {
+                PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerBlue"), new Vector3(6, (float)0.7, (float)13.2), new Quaternion(0, 0, 0, 0));
+                PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerGreen"), new Vector3(8, (float)0.7, (float)13.2), new Quaternion(0, 0, 0, 0));
+            }
+            
             for (int i = 0; i < packageCount; i++)
             {
                 Transform pkgSpawnPoint = GetPackageSpawnPoint();
