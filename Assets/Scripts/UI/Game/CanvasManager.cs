@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using TMPro;
 using Photon.Pun;
-using Photon.Realtime;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 using System.IO;
 
 public class CanvasManager : MonoBehaviourPunCallbacks
@@ -14,7 +14,7 @@ public class CanvasManager : MonoBehaviourPunCallbacks
     Menu escMenu;
     PhotonView PV;
 
-    bool intentionalLeave = false;
+    public bool intentionalLeave {get; set;} = false;
 
     public static KeyCode escButton = KeyCode.Escape;
 
@@ -86,6 +86,9 @@ public class CanvasManager : MonoBehaviourPunCallbacks
     public void GameOver()
     {
         _GameOver();
+        Hashtable hash = new Hashtable();
+        hash.Add("gOver", true);
+        PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
         PV.RPC("OnGameOver", RpcTarget.OthersBuffered);
     }
 

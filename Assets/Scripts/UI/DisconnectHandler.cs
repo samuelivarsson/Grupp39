@@ -50,6 +50,13 @@ public class DisconnectHandler : MonoBehaviourPunCallbacks
             case DisconnectCause.OperationNotAllowedInCurrentState:
             case DisconnectCause.CustomAuthenticationFailed:
             case DisconnectCause.DisconnectByClientLogic:
+                if (inGame && CanvasManager.Instance != null && !CanvasManager.Instance.intentionalLeave)
+                {
+                    Destroy(RoomManager.Instance.gameObject);
+                    UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+                    DisconnectHandler.inGame = false;
+                }
+                break;
             case DisconnectCause.InvalidAuthentication:
             case DisconnectCause.ExceptionOnConnect:
                 TryReconnectAndRejoin();
@@ -84,20 +91,6 @@ public class DisconnectHandler : MonoBehaviourPunCallbacks
         }
     }
 
-    public override void OnJoinRoomFailed(short returnCode, string message)
-    {
-        if (rejoinCalled)
-        {
-            if (inGame)
-            {
-                UnityEngine.SceneManagement.SceneManager.LoadScene(0);
-                DisconnectHandler.inGame = false;
-            }
-            Debug.LogErrorFormat("Quick rejoin failed with error code: {0} & error message: {1}", returnCode, message);
-            rejoinCalled = false;
-        }
-    }
-
     public override void OnJoinedRoom()
     {
         inRoom = true;
@@ -107,10 +100,22 @@ public class DisconnectHandler : MonoBehaviourPunCallbacks
             rejoinCalled = false;
         }
     }
+
+    public override void OnJoinRoomFailed(short returnCode, string message)
+    {
+        if (rejoinCalled)
+        {
+            if (inGame)
+            {
+                PhotonNetwork.Disconnect();
+            }
+            Debug.LogErrorFormat("Quick rejoin failed with error code: {0} & error message: {1}", returnCode, message);
+            rejoinCalled = false;
+        }
+    }
     
     public override void OnLeftRoom()
     {
-        Debug.Log("Left room");
         inRoom = false;
     }
     
