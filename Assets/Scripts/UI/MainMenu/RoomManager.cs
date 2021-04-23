@@ -42,5 +42,15 @@ public class RoomManager : MonoBehaviourPunCallbacks
                 PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "ObjectManager"), Vector3.zero, Quaternion.identity);
             }
         }
+        if(scene.buildIndex == 2) // Tutorial scene
+        {
+            DisconnectHandler.latestRoomName = PhotonNetwork.CurrentRoom.Name;
+            DisconnectHandler.inGame = true;
+            PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Player", "PlayerManager"), Vector3.zero, Quaternion.identity);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "ObjectManager"), Vector3.zero, Quaternion.identity);
+            }
+        }
     }
 }

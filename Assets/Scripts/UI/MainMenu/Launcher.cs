@@ -5,6 +5,7 @@ using UnityEngine;
 using TMPro;
 using Photon.Realtime;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
+using UnityEngine.SceneManagement;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
@@ -31,6 +32,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     List<int> spawnPointList = new List<int>();
 
     Dictionary<string, RoomListItem> cachedRoomList = new Dictionary<string, RoomListItem>();
+
+    public static bool tutorial = false;
 
     void Awake()
     {
@@ -169,6 +172,12 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
+        if(PhotonNetwork.OfflineMode)
+        {
+            MenuManager.Instance.OpenMenu("loading");
+            PhotonNetwork.LoadLevel(2);
+            return;
+        }
         roomNameText.text = PhotonNetwork.CurrentRoom.Name;
         MenuManager.Instance.OpenMenu("room");
 
@@ -305,6 +314,15 @@ public class Launcher : MonoBehaviourPunCallbacks
             Destroy(item.gameObject);
         }
         cachedRoomList.Clear();
+    }
+
+
+    // ------------------------------------------------------ Tutorial Methods ------------------------------------------------------
+
+    public void StartTutorialScene()
+    {
+        tutorial = true;
+        PhotonNetwork.Disconnect();
     }
 }
 
