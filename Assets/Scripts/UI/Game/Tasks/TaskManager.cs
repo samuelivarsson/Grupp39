@@ -7,6 +7,13 @@ public class TaskManager : MonoBehaviour
 {
     public static TaskManager Instance;
 
+    public static bool gameStarted {get; set;} = false;
+
+    public static bool startCountDown {get; set;} = false;
+
+    const float countDownStartTime = 5.5f;
+    float countDownTimeLeft = countDownStartTime;
+
     // Maximum amount of products per task
     const int maxProducts = 3;
 
@@ -52,6 +59,20 @@ public class TaskManager : MonoBehaviour
     void FixedUpdate()
     {
         if (!PhotonNetwork.IsMasterClient) return;
+
+        if (startCountDown)
+        {
+            countDownTimeLeft -= Time.fixedDeltaTime;
+            int n = (int) countDownTimeLeft;
+            CanvasManager.Instance.countDownText.text = (n == 0) ? "Spela!" : ""+n;
+            if (countDownTimeLeft <= 0.25f)
+            {
+                startCountDown = false;
+                CanvasManager.Instance.countDownObj.SetActive(false);
+            }
+            else if (countDownTimeLeft < 1) gameStarted = true;
+            return;
+        }
 
         for (int i = 0; i < maxTasks; i++)
         {

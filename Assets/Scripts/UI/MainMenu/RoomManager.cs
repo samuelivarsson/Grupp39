@@ -6,6 +6,11 @@ using System.IO;
 public class RoomManager : MonoBehaviourPunCallbacks
 {
     public static RoomManager Instance;
+
+    PhotonView PV;
+
+    bool hasStartedCountDown = false;
+    int playersLoaded = 0;
     
     void Awake()
     {
@@ -16,6 +21,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         }
         DontDestroyOnLoad(gameObject);
         Instance = this;
+        PV = GetComponent<PhotonView>();
     }
 
     public override void OnEnable()
@@ -40,7 +46,19 @@ public class RoomManager : MonoBehaviourPunCallbacks
             if (PhotonNetwork.IsMasterClient) 
             {
                 PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "ObjectManager"), Vector3.zero, Quaternion.identity);
+                playersLoaded++;
             }
+            else PV.RPC("OnLoaded", RpcTarget.MasterClient);
+            if (playersLoaded == PhotonNetwork.CurrentRoom.PlayerCount) TaskManager.startCountDown = true;
         }
+    }
+
+    [PunRPC]
+    void OnLoaded()
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        playersLoaded++;
+        if (playersLoaded == PhotonNetwork.CurrentRoom.PlayerCount) TaskManager.startCountDown = true;
     }
 }

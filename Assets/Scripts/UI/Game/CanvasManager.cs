@@ -9,6 +9,8 @@ public class CanvasManager : MonoBehaviourPunCallbacks
     public static CanvasManager Instance;
     
     [SerializeField] TMP_Text endScore;
+    public GameObject countDownObj;
+    public TMP_Text countDownText;
 
     Menu gameOverMenu;
     Menu escMenu;
