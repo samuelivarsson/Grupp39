@@ -51,7 +51,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (!PV.IsMine || !TaskManager.gameStarted) return;
+        if (!PV.IsMine || TaskManager.Instance == null || !TaskManager.Instance.gameStarted) return;
         
         if (playerPC.isTaping || playerCC.isCrouching)
         {

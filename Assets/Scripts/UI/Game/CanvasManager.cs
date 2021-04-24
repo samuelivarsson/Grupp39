@@ -16,7 +16,7 @@ public class CanvasManager : MonoBehaviourPunCallbacks
     Menu escMenu;
     PhotonView PV;
 
-    public bool intentionalLeave {get; set;} = false;
+    bool intentionalLeave = false;
 
     public static KeyCode escButton = KeyCode.Escape;
 

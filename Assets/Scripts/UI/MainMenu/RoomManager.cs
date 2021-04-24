@@ -9,7 +9,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     PhotonView PV;
 
-    bool hasStartedCountDown = false;
     int playersLoaded = 0;
     
     void Awake()
@@ -47,9 +46,9 @@ public class RoomManager : MonoBehaviourPunCallbacks
             {
                 PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "ObjectManager"), Vector3.zero, Quaternion.identity);
                 playersLoaded++;
+                if (playersLoaded == PhotonNetwork.CurrentRoom.PlayerCount) PV.RPC("OnAllLoaded", RpcTarget.AllViaServer);
             }
             else PV.RPC("OnLoaded", RpcTarget.MasterClient);
-            if (playersLoaded == PhotonNetwork.CurrentRoom.PlayerCount) TaskManager.startCountDown = true;
         }
     }
 
@@ -59,6 +58,12 @@ public class RoomManager : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsMasterClient) return;
 
         playersLoaded++;
-        if (playersLoaded == PhotonNetwork.CurrentRoom.PlayerCount) TaskManager.startCountDown = true;
+        if (playersLoaded == PhotonNetwork.CurrentRoom.PlayerCount) PV.RPC("OnAllLoaded", RpcTarget.AllViaServer);
+    }
+
+    [PunRPC]
+    void OnAllLoaded()
+    {
+        TaskManager.Instance.startCountDown = true;
     }
 }

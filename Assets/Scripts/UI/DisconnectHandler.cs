@@ -10,6 +10,7 @@ public class DisconnectHandler : MonoBehaviourPunCallbacks
     bool rejoinCalled = false;
     bool reconnectCalled = false;
     bool inRoom = false;
+    bool rejoinFailed = false;
     DisconnectCause previousDisconnectCause;
 
     public override void OnDisconnected(DisconnectCause cause)
@@ -50,11 +51,12 @@ public class DisconnectHandler : MonoBehaviourPunCallbacks
             case DisconnectCause.OperationNotAllowedInCurrentState:
             case DisconnectCause.CustomAuthenticationFailed:
             case DisconnectCause.DisconnectByClientLogic:
-                if (inGame && CanvasManager.Instance != null && !CanvasManager.Instance.intentionalLeave)
+                if (inGame && rejoinFailed)
                 {
                     Destroy(RoomManager.Instance.gameObject);
                     UnityEngine.SceneManagement.SceneManager.LoadScene(0);
-                    DisconnectHandler.inGame = false;
+                    inGame = false;
+                    rejoinFailed = false;
                 }
                 break;
             case DisconnectCause.InvalidAuthentication:
@@ -108,6 +110,7 @@ public class DisconnectHandler : MonoBehaviourPunCallbacks
             if (inGame)
             {
                 PhotonNetwork.Disconnect();
+                rejoinFailed = true;
             }
             Debug.LogErrorFormat("Quick rejoin failed with error code: {0} & error message: {1}", returnCode, message);
             rejoinCalled = false;

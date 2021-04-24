@@ -8,10 +8,10 @@ public class TaskManager : MonoBehaviour
     public static TaskManager Instance;
 
     // Set to true when countDownTimeLeft is less than 1.
-    public static bool gameStarted {get; set;} = false;
+    public bool gameStarted {get; set;} = false;
 
     // Will be set to true when all players has loaded to the game scene.
-    public static bool startCountDown {get; set;} = false;
+    public bool startCountDown {get; set;} = false;
 
     // Game starts when time left is less than 1, therefore 5.99 will result in a 5 second count down.
     float countDownTimeLeft = 5.99f;
@@ -60,8 +60,6 @@ public class TaskManager : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!PhotonNetwork.IsMasterClient) return;
-
         if (startCountDown)
         {
             countDownTimeLeft -= Time.fixedDeltaTime;
@@ -72,9 +70,11 @@ public class TaskManager : MonoBehaviour
                 startCountDown = false;
                 CanvasManager.Instance.countDownObj.SetActive(false);
             }
-            else if (countDownTimeLeft < 1) gameStarted = true;
+            else if (countDownTimeLeft < 1 && PhotonNetwork.IsMasterClient) PV.RPC("OnGameStart", RpcTarget.AllBufferedViaServer);
             return;
         }
+
+        if (!PhotonNetwork.IsMasterClient) return;
 
         for (int i = 0; i < maxTasks; i++)
         {
@@ -88,6 +88,12 @@ public class TaskManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    [PunRPC]
+    void OnGameStart()
+    {
+        gameStarted = true;
     }
 
     void CreateTasks()

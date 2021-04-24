@@ -30,7 +30,7 @@ public class TaskTimer : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!timerActive || !TaskManager.gameStarted) return;
+        if (!timerActive || !TaskManager.Instance.gameStarted) return;
 
         if (timeLeft > 0)
         {
