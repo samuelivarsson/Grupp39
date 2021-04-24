@@ -7,12 +7,14 @@ public class TaskManager : MonoBehaviour
 {
     public static TaskManager Instance;
 
+    // Set to true when countDownTimeLeft is less than 1.
     public static bool gameStarted {get; set;} = false;
 
+    // Will be set to true when all players has loaded to the game scene.
     public static bool startCountDown {get; set;} = false;
 
-    const float countDownStartTime = 5.5f;
-    float countDownTimeLeft = countDownStartTime;
+    // Game starts when time left is less than 1, therefore 5.99 will result in a 5 second count down.
+    float countDownTimeLeft = 5.99f;
 
     // Maximum amount of products per task
     const int maxProducts = 3;
