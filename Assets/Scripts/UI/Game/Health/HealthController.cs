@@ -42,6 +42,6 @@ public class HealthController : MonoBehaviourPunCallbacks, IPunInstantiateMagicC
         object[] initData = info.photonView.InstantiationData;
         int i = (int) initData[0];
         healthNr = i;
-        HealthManager.Instance.healthObjects[i] = gameObject;
+        HealthManager.Instance.healthObjects.Add(gameObject);
     }
 }
