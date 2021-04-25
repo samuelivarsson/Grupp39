@@ -6,10 +6,10 @@ public class HealthManager : MonoBehaviour
 {
     public static HealthManager Instance;
 
-    public const int maxHealth = 7;
+    public int maxHealth {get; set;}
     int healthLeft;
 
-    public GameObject[] healthObjects = new GameObject[maxHealth];
+    public GameObject[] healthObjects {get; set;}
 
     GameObject canvasManager;
     PhotonView PV;
@@ -31,6 +31,8 @@ public class HealthManager : MonoBehaviour
         
     void Start()
     {
+        maxHealth = RoomSettings.Instance.maxHealth;
+        healthObjects = new GameObject[maxHealth];
         healthLeft = maxHealth;
         if (PhotonNetwork.IsMasterClient)
         {

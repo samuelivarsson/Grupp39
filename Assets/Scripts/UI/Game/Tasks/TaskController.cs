@@ -2,6 +2,7 @@
 using Photon.Pun;
 using String = System.String;
 using UnityEngine.UI;
+using TMPro;
 
 public class TaskController : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
 {
@@ -10,7 +11,7 @@ public class TaskController : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
 
     [SerializeField] Material[] materials;
     [SerializeField] Image bg;
-    [SerializeField] Text textProducts;
+    [SerializeField] TMP_Text textProducts;
 
     GameObject canvasManager;
     TaskTimer taskTimer;
@@ -30,7 +31,7 @@ public class TaskController : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
     void Start()
     {
         RectTransform rectTransform = GetComponent<RectTransform>();
-        rectTransform.anchoredPosition3D = new Vector3(-160, -110 - 250 * taskNr, 0);
+        rectTransform.anchoredPosition3D = new Vector3(-50, -50 - 250 * taskNr, 0);
         rectTransform.localScale = new Vector3(1, 1, 1);
         bg.color = materials[taskNr].color;
     }
@@ -68,6 +69,7 @@ public class TaskController : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
         int time = (int) initData[4];
         taskTimer.maxTime = time;
         taskTimer.timeLeft = time;
+        taskTimer.lastUpdate = time;
         taskTimer.timerActive = true;
     }
 

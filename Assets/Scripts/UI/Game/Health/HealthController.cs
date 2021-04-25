@@ -24,7 +24,7 @@ public class HealthController : MonoBehaviourPunCallbacks, IPunInstantiateMagicC
 
     int GetX()
     {
-        int maxHealth = HealthManager.maxHealth;
+        int maxHealth = HealthManager.Instance.maxHealth;
         if (maxHealth % 2 == 0)
         {
             int offset = maxHealth/2 - 1;

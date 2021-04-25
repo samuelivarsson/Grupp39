@@ -59,7 +59,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        if (PhotonNetwork.InRoom) currPlayersInRoom.text = PhotonNetwork.PlayerList.Length.ToString();
+        if (PhotonNetwork.InRoom) currPlayersInRoom.text = PhotonNetwork.PlayerList.Length.ToString()+" / "+maxPlayers;
         if (!connectedAfterStartup)
         {
             connectAgainTimer -= Time.deltaTime;

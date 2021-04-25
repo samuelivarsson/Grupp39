@@ -1,15 +1,18 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
+using TMPro;
 
 public class TaskTimer : MonoBehaviour
 {
     [SerializeField] Image timerBar;
     [SerializeField] GameObject timesUpText;
+    [SerializeField] TMP_Text timeInt;
 
     public bool timerActive {get; set;} = false;
     public float maxTime {get; set;}
     public float timeLeft {get; set;}
+    public float lastUpdate {get; set;}
 
     public bool hasDecreasedHealth {get; set;} = false;
 
@@ -36,6 +39,12 @@ public class TaskTimer : MonoBehaviour
         {
             timeLeft -= Time.fixedDeltaTime;
             timerBar.fillAmount = timeLeft / maxTime;
+            timeInt.text = ""+(int)timeLeft;
+            if (lastUpdate - timeLeft > 2 && PhotonNetwork.IsMasterClient)
+            {
+                PV.RPC("OnUpdate", RpcTarget.Others, timeLeft, PhotonNetwork.ServerTimestamp);
+                lastUpdate = timeLeft;
+            }
         }
         else if (timeLeft > -1)
         {
@@ -56,5 +65,13 @@ public class TaskTimer : MonoBehaviour
                 TaskManager.Instance.GenerateNewTask(taskController.taskNr);
             }
         }
+    }
+
+    [PunRPC]
+    void OnUpdate(float _timeLeft, int serverTimeStamp)
+    {
+        // Difference (lag) in milliseconds
+        int diff = Mathf.Abs(PhotonNetwork.ServerTimestamp - serverTimeStamp);
+        timeLeft = _timeLeft - diff/1000;
     }
 }

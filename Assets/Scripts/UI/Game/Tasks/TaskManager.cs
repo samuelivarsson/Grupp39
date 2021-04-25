@@ -23,11 +23,11 @@ public class TaskManager : MonoBehaviour
     const int maxTasks = 4;
 
     // Delay in seconds before a new tasks spawns
-    const float taskDelay = 5f;
+    float taskDelay;
 
     // Time in seconds
-    const int baseTime = 60;
-    const int amountMultiplier = 20;
+    int baseTime;
+    int amountMultiplier;
 
     // The different products the task can require
     static List<string> possibleProducts = new List<string>() {"Blue", "Red", "Cyan", "Green", "Yellow", "Pink"};
@@ -50,6 +50,7 @@ public class TaskManager : MonoBehaviour
     {
         if (!PhotonNetwork.IsMasterClient) return;
 
+        SetDifficulty();
         CreateTasks();
         for (int i = 0; i < maxTasks; i++)
         {
@@ -128,5 +129,12 @@ public class TaskManager : MonoBehaviour
             requiredProducts[i] = possibleProducts[Random.Range(0, possibleProducts.Count)];
         }
         return requiredProducts;
+    }
+
+    void SetDifficulty()
+    {
+        taskDelay = RoomSettings.Instance.taskDelay;
+        baseTime = RoomSettings.Instance.baseTime;
+        amountMultiplier = RoomSettings.Instance.amountMultiplier;
     }
 }
