@@ -63,6 +63,7 @@ public class PackageController : MonoBehaviour, LiftablePackage
         {
             // Task was already destroyed and no new task has spawned yet
             print("No task was found with name Task"+num);
+            PopupInfo.Instance.Popup("Denna lastbilen förväntar sig ingen order just nu", 7);
             return false;
         }
         TaskTimer taskTimer = taskObj.GetComponent<TaskTimer>();
@@ -77,17 +78,9 @@ public class PackageController : MonoBehaviour, LiftablePackage
         PhotonView taskPV = taskObj.GetComponent<PhotonView>();
         if (HasRequiredProducts(taskController))
         {
+            // The order was delivered -> Increment score and destroy products, package and task.
             ScoreController.Instance.IncrementScore(taskController.productAmount * scoreMultiplier);
-            foreach (ProductController productController in GetComponentsInChildren<ProductController>())
-            {
-                PhotonView productPV = productController.GetComponent<PhotonView>();
-                if (productPV.IsMine)
-                {
-                    // Destroy product
-                    PhotonNetwork.Destroy(productController.gameObject);
-                }
-                else productPV.RPC("DestroyProduct", RpcTarget.OthersBuffered);
-            }
+            DestroyProducts();
             if (PV.IsMine)
             {
                 // Destroy package
@@ -109,6 +102,20 @@ public class PackageController : MonoBehaviour, LiftablePackage
             print("The package did not contain the required products!");
             PopupInfo.Instance.Popup("Paketet innehöll inte alla produkter", 7);
             return false;
+        }
+    }
+
+    void DestroyProducts()
+    {
+        foreach (ProductController productController in GetComponentsInChildren<ProductController>())
+        {
+            PhotonView productPV = productController.GetComponent<PhotonView>();
+            if (productPV.IsMine)
+            {
+                // Destroy product
+                PhotonNetwork.Destroy(productController.gameObject);
+            }
+            else productPV.RPC("DestroyProduct", RpcTarget.OthersBuffered);
         }
     }
 
@@ -141,5 +148,12 @@ public class PackageController : MonoBehaviour, LiftablePackage
         }
 
         return packageProducts;
+    }
+
+    public static Vector3 GetTileOffset(GameObject tile)
+    {
+        if (tile.CompareTag("TableTile")) return tableOffset;
+        else if (tile.CompareTag("TapeTile")) return tapeOffset;
+        else return tileOffset;
     }
 }

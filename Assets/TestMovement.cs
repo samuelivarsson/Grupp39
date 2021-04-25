@@ -13,12 +13,8 @@ public class TestMovement : MonoBehaviour
     float movementSpeed = 3;
     float rotateSpeed = 15;
 
+    [SerializeField] GameObject head2;
     [SerializeField] Rigidbody player2;
-    [SerializeField] GameObject hand1;
-    [SerializeField] GameObject hand2;
-    [SerializeField] Transform box;
-    [SerializeField] Rigidbody handle1;
-    [SerializeField] Rigidbody handle2;
 
     Rigidbody rb;
     // Start is called before the first frame update
@@ -31,7 +27,7 @@ public class TestMovement : MonoBehaviour
     void Update()
     {
         Move();
-        //if (Input.GetKeyDown(KeyCode.Space)) Space();
+        if (Input.GetKeyDown(KeyCode.Space)) Space();
     }
 
     void FixedUpdate()
@@ -67,12 +63,10 @@ public class TestMovement : MonoBehaviour
 
     void Space()
     {
-        box.parent = null;
         player2.isKinematic = false;
-        hand1.GetComponent<HingeJoint>().connectedBody = handle1;
-        hand2.GetComponent<HingeJoint>().connectedBody = handle2;
-        hand1.SetActive(true);
-        hand2.SetActive(true);
+        HingeJoint hingeJoint = head2.GetComponent<HingeJoint>();
+        SetHingeJoint(hingeJoint, rb);
+        head2.SetActive(true);
     }
 
     void SetHingeJoint(HingeJoint hingeJoint, Rigidbody conBody)

@@ -7,6 +7,9 @@ public class PackageMultiLiftController : MonoBehaviour
     public List<int> lifters {get; set;} = new List<int>(Launcher.maxPlayers);
     public bool tooHeavy {get; set;} = false;
 
+    // 4 sides of a package.
+    public List<Vector3> takenAnchors {get; set;} = new List<Vector3>(4);
+
     PhotonView PV;
     Rigidbody rb;
     PackageController packageController;
@@ -157,7 +160,7 @@ public class PackageMultiLiftController : MonoBehaviour
             else
             {
                 // I'm not owner of package -> I have disabled the removed player's transform view -> enable it again.
-                removedPlayerPV.GetComponent<PhotonTransformViewClassic>().enabled = true;
+                removedPlayerPV.GetComponent<PhotonTransformView>().enabled = true;
             }
             // Not my player -> Set kinematic true for the removed player.
             removedPlayerPV.GetComponent<Rigidbody>().isKinematic = true;
@@ -171,10 +174,12 @@ public class PackageMultiLiftController : MonoBehaviour
                 if (!iAmPackageOwner)
                 {
                     // My player was removed and I am not the owner of the package.
+
                     // Enable transform views on all lifters for me
                     SetLiftersTransformView(true);
+
                     // Also enable the transform view on yourself
-                    removedPlayerPV.GetComponent<PhotonTransformViewClassic>().enabled = true;
+                    removedPlayerPV.GetComponent<PhotonTransformView>().enabled = true;
                 }
             }
             else
@@ -290,7 +295,7 @@ public class PackageMultiLiftController : MonoBehaviour
         foreach (int vid in lifters)
         {
             PhotonView playerPV = PhotonView.Find(vid);
-            playerPV.GetComponent<PhotonTransformViewClassic>().enabled = b;
+            playerPV.GetComponent<PhotonTransformView>().enabled = b;
         }
     }
 

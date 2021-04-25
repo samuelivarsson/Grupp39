@@ -29,7 +29,7 @@ public class ProductManager : MonoBehaviourPunCallbacks, ICreateController
         }
     }
 
-    public bool CreateController()
+    public bool CreateController(Vector3 startPos)
     {
         if (playerLiftController.liftingID != -1)
         {
@@ -42,7 +42,7 @@ public class ProductManager : MonoBehaviourPunCallbacks, ICreateController
             return false;
         }
         object[] initData = {type};
-        GameObject obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "Products", "Controllers", "ProductController"+type), Vector3.zero,  Quaternion.identity, 0, initData);
+        GameObject obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "Products", "Controllers", "ProductController"+type), startPos,  Quaternion.identity, 0, initData);
         playerLiftController.latestCollision = obj;
         playerLiftController.canLiftID = obj.GetComponent<PhotonView>().ViewID;
 

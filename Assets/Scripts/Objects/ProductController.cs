@@ -28,4 +28,10 @@ public class ProductController : MonoBehaviour, LiftableProduct, IPunInstantiate
         object[] initData = info.photonView.InstantiationData;
         type = (string) initData[0];
     }
+
+    public static Vector3 GetTileOffset(GameObject tile)
+    {
+        if (tile.CompareTag("TableTile") || tile.CompareTag("TapeTile")) return tableOffset;
+        else return tileOffset;
+    }
 }

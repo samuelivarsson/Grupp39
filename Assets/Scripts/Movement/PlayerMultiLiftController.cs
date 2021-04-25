@@ -14,6 +14,8 @@ public class PlayerMultiLiftController : MonoBehaviour
     public bool tooHeavy {get; set;} = false;
     public bool iAmLifting {get; set;} = false;
 
+    public Vector3 myAnchor {get; set;} = Vector3.zero;
+
     float horizontalInput, verticalInput;
     Vector3 moveDir = Vector3.zero;
     Vector3 moveAmount = Vector3.zero;
@@ -25,11 +27,11 @@ public class PlayerMultiLiftController : MonoBehaviour
 
     const float farAway = 2f; // Fastest movement speed = 6u/s, Maximum lag = 400ms = 0.4s --> far away = 6/0.4 = 2.4
     const float veryClose = 0.001f;
-    const float interpolationSpeed = 20f;
+    const float interpolationSpeed = 10f;
     Vector3 interpolationStartPosition;
     bool interpolating = false;
 
-    int updateFreq = 20; // Interval in milliseconds of how often RPCs are executed
+    int updateFreq = 0; // Interval in milliseconds of how often RPCs are executed
     int latestServerSend;
     int latestClientSend;
 
@@ -69,7 +71,7 @@ public class PlayerMultiLiftController : MonoBehaviour
                 rb.MoveRotation(rotation);
                 if (PhotonNetwork.ServerTimestamp - latestServerSend > updateFreq)
                 {
-                    PV.RPC("OnSend", RpcTarget.OthersBuffered, rb.velocity, rb.position);
+                    PV.RPC("OnSend", RpcTarget.Others, rb.velocity, rb.position);
                     latestServerSend = PhotonNetwork.ServerTimestamp;
                 }
             }
@@ -101,7 +103,7 @@ public class PlayerMultiLiftController : MonoBehaviour
                 rb.MoveRotation(rotation);
                 if (PhotonNetwork.ServerTimestamp - latestClientSend > updateFreq)
                 {
-                    PV.RPC("OnSend", RpcTarget.OthersBuffered, rb.velocity, rb.position);
+                    PV.RPC("OnSend", RpcTarget.Others, rb.velocity, rb.position);
                     latestClientSend = PhotonNetwork.ServerTimestamp;
                 }
             }
