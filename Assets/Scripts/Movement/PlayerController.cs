@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
 
     Vector3 smoothMoveVelocity;
     Vector3 moveDir;
+    Vector3 rotateDir = Vector3.zero;
     Vector3 moveAmount;
     Quaternion rotation;
 
@@ -78,6 +79,7 @@ public class PlayerController : MonoBehaviour
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
         moveDir = new Vector3(horizontalInput, 0, verticalInput).normalized;
+        rotateDir = (moveDir != Vector3.zero) ? moveDir : rotateDir;
     }
 
     void Move()
@@ -93,9 +95,9 @@ public class PlayerController : MonoBehaviour
 
     void Rotate()
     {
-        if (playerCC.isCrouching || moveDir == Vector3.zero) return;
+        if (playerCC.isCrouching || rotateDir == Vector3.zero) return;
 
-        Quaternion targetRotation = Quaternion.LookRotation(moveDir);
+        Quaternion targetRotation = Quaternion.LookRotation(rotateDir);
         rotation = Quaternion.Slerp(rb.rotation, targetRotation, Time.fixedDeltaTime * rotateSpeed);
     }
 }
