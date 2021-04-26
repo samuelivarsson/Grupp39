@@ -2,13 +2,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using System.IO;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class TaskManager : MonoBehaviour
 {
     public static TaskManager Instance;
-
-    // Set to true when countDownTimeLeft is less than 1.
-    public bool gameStarted {get; set;} = false;
 
     // Will be set to true when all players has loaded to the game scene.
     public bool startCountDown {get; set;} = false;
@@ -48,15 +46,13 @@ public class TaskManager : MonoBehaviour
         
     void Start()
     {
-        if (!PhotonNetwork.IsMasterClient) return;
-
         SetDifficulty();
-        CreateTasks();
         for (int i = 0; i < maxTasks; i++)
         {
             countDownTimes[i] = taskDelay;
             countDownBools[i] = false;
         }
+        if (PhotonNetwork.IsMasterClient) CreateTasks();
     }
 
     void FixedUpdate()
@@ -71,7 +67,12 @@ public class TaskManager : MonoBehaviour
                 startCountDown = false;
                 CanvasManager.Instance.countDownObj.SetActive(false);
             }
-            else if (countDownTimeLeft < 1 && PhotonNetwork.IsMasterClient) PV.RPC("OnGameStart", RpcTarget.AllBufferedViaServer);
+            else if (countDownTimeLeft < 1 && PhotonNetwork.IsMasterClient)
+            {
+                Hashtable hash = new Hashtable();
+                hash.Add("gameStarted", true);
+                PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
+            }
             return;
         }
 
@@ -89,12 +90,6 @@ public class TaskManager : MonoBehaviour
                 }
             }
         }
-    }
-
-    [PunRPC]
-    void OnGameStart()
-    {
-        gameStarted = true;
     }
 
     void CreateTasks()
@@ -133,8 +128,8 @@ public class TaskManager : MonoBehaviour
 
     void SetDifficulty()
     {
-        taskDelay = RoomSettings.Instance.taskDelay;
-        baseTime = RoomSettings.Instance.baseTime;
-        amountMultiplier = RoomSettings.Instance.amountMultiplier;
+        taskDelay = (float) PhotonNetwork.CurrentRoom.CustomProperties["taskDelay"];
+        baseTime = (int) PhotonNetwork.CurrentRoom.CustomProperties["baseTime"];
+        amountMultiplier = (int) PhotonNetwork.CurrentRoom.CustomProperties["amountMultiplier"];
     }
 }

@@ -1,19 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class RoomSettings : MonoBehaviour
 {
-    public static RoomSettings Instance;
-
-    public int maxHealth {get; set;}
-    public int baseTime {get; set;}
-    public int amountMultiplier {get; set;}
-    public float taskDelay {get; set;}
+    int maxHealth;
+    int baseTime;
+    int amountMultiplier;
+    float taskDelay;
 
     void Awake()
     {
-        Instance = this;
         Easy();
     }
 
@@ -44,6 +43,7 @@ public class RoomSettings : MonoBehaviour
         baseTime = 60;
         amountMultiplier = 30;
         taskDelay = 15f;
+        SetProperties();
     }
 
     void Medium()
@@ -52,6 +52,7 @@ public class RoomSettings : MonoBehaviour
         baseTime = 40;
         amountMultiplier = 20;
         taskDelay = 10f;
+        SetProperties();
     }
 
     void Hard()
@@ -60,5 +61,18 @@ public class RoomSettings : MonoBehaviour
         baseTime = 30;
         amountMultiplier = 15;
         taskDelay = 5f;
+        SetProperties();
+    }
+
+    void SetProperties()
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        Hashtable hash = new Hashtable();
+        hash.Add("maxHealth", maxHealth);
+        hash.Add("baseTime", baseTime);
+        hash.Add("amountMultiplier",amountMultiplier);
+        hash.Add("taskDelay", taskDelay);
+        PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
     }
 }

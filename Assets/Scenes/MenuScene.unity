@@ -4397,7 +4397,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &331267138
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17007,6 +17007,7 @@ MonoBehaviour:
     type: 3}
   startGameButton: {fileID: 1903624262}
   rejoinContainer: {fileID: 207559912}
+  settingsContainer: {fileID: 331267137}
 --- !u!1 &1723615912
 GameObject:
   m_ObjectHideFlags: 0

@@ -65,5 +65,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
     void OnAllLoaded()
     {
         TaskManager.Instance.startCountDown = true;
+        CanvasManager.Instance.countDownObj.SetActive(true);
     }
 }

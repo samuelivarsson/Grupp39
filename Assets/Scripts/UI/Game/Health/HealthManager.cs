@@ -32,7 +32,7 @@ public class HealthManager : MonoBehaviour
         
     void Start()
     {
-        maxHealth = RoomSettings.Instance.maxHealth;
+        maxHealth = (int) PhotonNetwork.CurrentRoom.CustomProperties["maxHealth"];
         healthLeft = maxHealth;
         if (PhotonNetwork.IsMasterClient)
         {

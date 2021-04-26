@@ -52,7 +52,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (!PV.IsMine || TaskManager.Instance == null || !TaskManager.Instance.gameStarted) return;
+        bool gameStarted = (bool) PhotonNetwork.CurrentRoom.CustomProperties["gameStarted"];
+        if (!PV.IsMine || TaskManager.Instance == null || !gameStarted) return;
         
         if (playerPC.isTaping || playerCC.isCrouching)
         {

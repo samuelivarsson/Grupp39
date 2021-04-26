@@ -22,6 +22,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] GameObject playerListItemPrefab;
     [SerializeField] GameObject startGameButton;
     [SerializeField] GameObject rejoinContainer;
+    [SerializeField] GameObject settingsContainer;
 
     public const int maxPlayers = 4;
     const int playerTtl = 15000;
@@ -117,6 +118,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         Hashtable hash = new Hashtable();
         hash.Add("visible", true);
         hash.Add("gOver", false);
+        hash.Add("gameStarted", false);
         roomOptions.CustomRoomProperties = hash;
         PhotonNetwork.CreateRoom(roomNameInputField.text, roomOptions);
         PhotonNetwork.NickName = createNickNameInputField.text;
@@ -195,6 +197,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "MainMenu", "PlayerListItem"), Vector3.zero, Quaternion.identity, 0, initData);
 
         startGameButton.SetActive(PhotonNetwork.IsMasterClient);
+        settingsContainer.SetActive(PhotonNetwork.IsMasterClient);
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
@@ -234,6 +237,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
         startGameButton.SetActive(PhotonNetwork.IsMasterClient);
+        settingsContainer.SetActive(PhotonNetwork.IsMasterClient);
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
