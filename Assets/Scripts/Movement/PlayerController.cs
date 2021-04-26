@@ -23,9 +23,9 @@ public class PlayerController : MonoBehaviour
     Character character;
 
     public static KeyCode useButton = KeyCode.Space;
-    public static KeyCode tapeButton = KeyCode.E;
-    public static KeyCode packButton = KeyCode.LeftShift;
-    public static KeyCode crouchButton = KeyCode.LeftControl;
+    public static KeyCode crouchButton = KeyCode.Z;
+    public static KeyCode packButton = KeyCode.X;
+    public static KeyCode tapeButton = KeyCode.C;
 
     Vector3 networkMoveAmount = Vector3.zero;
     Quaternion networkRotation = Quaternion.identity;
