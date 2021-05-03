@@ -43,7 +43,6 @@ public class TaskTimer : MonoBehaviour
             timeInt.text = ""+(int)timeLeft;
             if (lastUpdate - timeLeft > 2 && PhotonNetwork.IsMasterClient)
             {
-                Debug.LogError("Sending");
                 PV.RPC("OnUpdate", RpcTarget.Others, timeLeft, PhotonNetwork.ServerTimestamp);
                 lastUpdate = timeLeft;
             }
@@ -75,9 +74,6 @@ public class TaskTimer : MonoBehaviour
         // Difference (lag) in milliseconds
         int diff = Mathf.Abs(PhotonNetwork.ServerTimestamp - serverTimeStamp);
         timeLeft = _timeLeft - diff/1000;
-        Debug.LogError("Recieving-.");
-        Debug.LogError("Active: "+timerActive);
         bool gameStarted = (bool) PhotonNetwork.CurrentRoom.CustomProperties["gameStarted"];
-        Debug.LogError("gamestarted: "+gameStarted);
     }
 }

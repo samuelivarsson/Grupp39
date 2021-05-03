@@ -25,11 +25,6 @@ public class CanvasManager : MonoBehaviourPunCallbacks
         PV = GetComponent<PhotonView>();
         gameOverMenu = transform.GetChild(0).GetComponent<Menu>();
         escMenu = transform.GetChild(1).GetComponent<Menu>();
-        if(Instance)
-        {
-            Destroy(gameObject);
-            return;
-        }
         Instance = this;
     }
         

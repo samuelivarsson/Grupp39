@@ -39,27 +39,27 @@ public class RoomSettings : MonoBehaviour
 
     void Easy()
     {
-        maxHealth = 5;
+        maxHealth = 9;
         baseTime = 60;
-        amountMultiplier = 30;
+        amountMultiplier = 40;
         taskDelay = 15f;
         SetProperties();
     }
 
     void Medium()
     {
-        maxHealth = 4;
-        baseTime = 40;
-        amountMultiplier = 20;
+        maxHealth = 7;
+        baseTime = 50;
+        amountMultiplier = 30;
         taskDelay = 10f;
         SetProperties();
     }
 
     void Hard()
     {
-        maxHealth = 3;
-        baseTime = 30;
-        amountMultiplier = 15;
+        maxHealth = 4;
+        baseTime = 40;
+        amountMultiplier = 20;
         taskDelay = 5f;
         SetProperties();
     }
@@ -71,7 +71,7 @@ public class RoomSettings : MonoBehaviour
         Hashtable hash = new Hashtable();
         hash.Add("maxHealth", maxHealth);
         hash.Add("baseTime", baseTime);
-        hash.Add("amountMultiplier",amountMultiplier);
+        hash.Add("amountMultiplier", amountMultiplier);
         hash.Add("taskDelay", taskDelay);
         PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
     }

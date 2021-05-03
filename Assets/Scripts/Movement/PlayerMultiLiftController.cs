@@ -60,70 +60,33 @@ public class PlayerMultiLiftController : MonoBehaviour
     {
         if (!isMultiLifting || !iAmLifting) return;
 
-        // We are multi lifting and we are the owner or the creator (or both)
-        if (PV.IsMine)
+        if (PV.CreatorActorNr == PhotonNetwork.LocalPlayer.ActorNumber)
         {
-            // Owner
-            if (PV.CreatorActorNr == PhotonNetwork.LocalPlayer.ActorNumber)
+            // Creator
+            rb.velocity = new Vector3(moveAmount.x, rb.velocity.y, moveAmount.z);
+            rb.MoveRotation(rotation);
+            if (PhotonNetwork.ServerTimestamp - latestServerSend > updateFreq)
             {
-                // Owner and creator
-                rb.velocity = new Vector3(moveAmount.x, rb.velocity.y, moveAmount.z);
-                rb.MoveRotation(rotation);
-                if (PhotonNetwork.ServerTimestamp - latestServerSend > updateFreq)
-                {
-                    PV.RPC("OnSend", RpcTarget.Others, rb.velocity, rb.position);
-                    latestServerSend = PhotonNetwork.ServerTimestamp;
-                }
-            }
-            else
-            {
-                // Owner but not creator
-                if (interpolating)
-                {
-                    float alpha = Time.fixedDeltaTime * interpolationSpeed;
-                    rb.position = Vector3.Lerp(interpolationStartPosition, networkPosition, alpha);
-                    if (Vector3.Distance(rb.position, networkPosition) < veryClose)
-                    {
-                        // Interpolation is finished
-                        rb.position = networkPosition;
-                        interpolating = false;
-                    }
-                }
-                rb.velocity = networkVelocity;
-                rb.MoveRotation(rotation);
+                PV.RPC("OnSend", RpcTarget.Others, rb.velocity, rb.position);
+                latestServerSend = PhotonNetwork.ServerTimestamp;
             }
         }
         else
         {
-            // Not owner
-            if (PV.CreatorActorNr == PhotonNetwork.LocalPlayer.ActorNumber)
+            // Not creator
+            if (interpolating)
             {
-                // Not owner but creator
-                rb.velocity = new Vector3(moveAmount.x, rb.velocity.y, moveAmount.z);
-                rb.MoveRotation(rotation);
-                if (PhotonNetwork.ServerTimestamp - latestClientSend > updateFreq)
+                float alpha = Time.fixedDeltaTime * interpolationSpeed;
+                rb.position = Vector3.Lerp(interpolationStartPosition, networkPosition, alpha);
+                if (Vector3.Distance(rb.position, networkPosition) < veryClose)
                 {
-                    PV.RPC("OnSend", RpcTarget.Others, rb.velocity, rb.position);
-                    latestClientSend = PhotonNetwork.ServerTimestamp;
+                    // Interpolation is finished
+                    rb.position = networkPosition;
+                    interpolating = false;
                 }
             }
-            else
-            {
-                // Not owner and not creator
-                if (interpolating)
-                {
-                    float alpha = Time.fixedDeltaTime * interpolationSpeed;
-                    rb.position = Vector3.Lerp(interpolationStartPosition, networkPosition, alpha);
-                    if (Vector3.Distance(rb.position, networkPosition) < veryClose)
-                    {
-                        // Interpolation is finished
-                        rb.position = networkPosition;
-                        interpolating = false;
-                    }
-                }
-                rb.velocity = networkVelocity;
-                rb.MoveRotation(rotation);
-            }
+            rb.velocity = networkVelocity;
+            rb.MoveRotation(rotation);
         }
     }
 

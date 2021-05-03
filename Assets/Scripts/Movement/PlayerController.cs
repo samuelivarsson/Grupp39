@@ -12,9 +12,9 @@ public class PlayerController : MonoBehaviour
 
     Vector3 smoothMoveVelocity;
     Vector3 moveDir;
-    Vector3 rotateDir = Vector3.zero;
+    public Vector3 rotateDir {get; set;} = Vector3.zero;
     Vector3 moveAmount;
-    Quaternion rotation;
+    public Quaternion rotation {get; set;} 
 
     PlayerLiftController playerLC;
     PlayerPackController playerPC;

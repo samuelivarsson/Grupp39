@@ -24,8 +24,11 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] GameObject rejoinContainer;
     [SerializeField] GameObject settingsContainer;
 
+    // 10 seconds before the room gets removed after there are no players left.
+    const int roomTtl = 10000;
     public const int maxPlayers = 4;
-    const int playerTtl = 15000;
+    
+    bool rejoinCalled = false;
     string latestRoomName;
 
     bool connectedAfterStartup = false;
@@ -105,8 +108,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = maxPlayers;
         roomOptions.PublishUserId = true;
-        roomOptions.PlayerTtl = playerTtl;
-        roomOptions.EmptyRoomTtl = playerTtl;
+        roomOptions.EmptyRoomTtl = roomTtl;
         string[] roomPropsLobby = new string[maxPlayers+2];
         for (int i = 0; i < maxPlayers; i++)
         {
@@ -169,6 +171,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.JoinRoom(latestRoomName);
         MenuManager.Instance.OpenMenu("loading");
+        rejoinCalled = true;
     }
 
     public void AbandonGame()
@@ -189,6 +192,14 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
+        if (rejoinCalled)
+        {
+            // UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+            // if (PhotonNetwork.IsMasterClient) PhotonNetwork.LoadLevel(1);
+            if (PhotonNetwork.IsMasterClient) UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+            print("Nick: "+PhotonNetwork.LocalPlayer.NickName);
+            return;
+        }
         roomNameText.text = PhotonNetwork.CurrentRoom.Name;
         MenuManager.Instance.OpenMenu("room");
 
