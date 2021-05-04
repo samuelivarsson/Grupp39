@@ -164,6 +164,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
     {
         if (!PhotonNetwork.IsMasterClient) return;
+        if (tutorial) return;
 
         // When the last player has updated the room properties -> Start the game.
         string lastPlayerUserID = PhotonNetwork.PlayerList[PhotonNetwork.PlayerList.Length-1].UserId;
@@ -198,6 +199,15 @@ public class Launcher : MonoBehaviourPunCallbacks
         if(PhotonNetwork.OfflineMode)
         {
             MenuManager.Instance.OpenMenu("loading");
+
+            Hashtable hash = new Hashtable();
+            hash.Add("maxHealth", 5);
+            hash.Add("baseTime", 10000);
+            hash.Add("amountMultiplier", 5000);
+            hash.Add("taskDelay", 5000f);
+            hash.Add("gameStarted", true);
+            PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
+
             PhotonNetwork.LoadLevel(2);
             return;
         }
