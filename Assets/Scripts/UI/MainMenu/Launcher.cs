@@ -101,10 +101,18 @@ public class Launcher : MonoBehaviourPunCallbacks
   
     public void CreateRoom()
     {
-        if(string.IsNullOrEmpty(roomNameInputField.text) || string.IsNullOrEmpty(createNickNameInputField.text))
+        if(string.IsNullOrEmpty(roomNameInputField.text))
         {
-          return;
+            PopupInfo.Instance.Popup("Du måste ange ett namn till rummet innan du kan skapa det", 5);
+            return;
         }
+
+        if (string.IsNullOrEmpty(createNickNameInputField.text))
+        {
+            PopupInfo.Instance.Popup("Du måste ange ett smeknamn innan du kan skapa ett rum", 5);
+            return;
+        }
+
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = maxPlayers;
         roomOptions.PublishUserId = true;
@@ -183,7 +191,12 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void JoinRoom(RoomInfo info)
     {        
-        if (string.IsNullOrEmpty(findNickNameInputField.text)) return;
+        if (string.IsNullOrEmpty(findNickNameInputField.text))
+        {
+            PopupInfo.Instance.Popup("Du måste ange ett smeknamn innan du går med i ett rum", 7);
+            Debug.Log("NUUUUUUU");
+            return;
+        }
         
         PhotonNetwork.JoinRoom(info.Name);
         PhotonNetwork.NickName = findNickNameInputField.text;       
