@@ -27,7 +27,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     // 10 seconds before the room gets removed after there are no players left.
     const int roomTtl = 10000;
     public const int maxPlayers = 4;
-    
+    int playersLeftToFillRoom;
+
     bool rejoinCalled = false;
     string latestRoomName;
 
@@ -143,8 +144,12 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void StartGame()
     {
-        //if (PhotonNetwork.CurrentRoom.PlayerCount != maxPlayers) return;
-
+     /*   if (PhotonNetwork.CurrentRoom.PlayerCount != maxPlayers)
+        {
+            playersLeftToFillRoom = maxPlayers- PhotonNetwork.CurrentRoom.PlayerCount;
+            PopupInfo.Instance.Popup("Det saknas " + playersLeftToFillRoom + " spelare för att kunna starta spelet", 5);
+            return;
+        } */
         for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
             Hashtable hash = new Hashtable();

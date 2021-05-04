@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657815, g: 0.49641192, b: 0.57481617, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1602,7 +1602,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 35
-    m_FontStyle: 0
+    m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 1
     m_MaxSize: 40
@@ -2055,7 +2055,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 35
-    m_FontStyle: 0
+    m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 1
     m_MaxSize: 40
@@ -2066,9 +2066,9 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "F\xF6r att n\xE5 vissa varor kommer ni beh\xF6va kl\xE4ttra p\xE5 varandra.
-    Detta sker d\xE5 ena duckar genom att trycka LeftControl. D\xE5 kan en lagkamrat
-    kl\xE4ttra genom att trycka p\xE5 mellanslagstangenten. Man kl\xE4ttrar ner och
-    reser sig genom att trycka p\xE5 LeftControl."
+    Detta sker d\xE5 ena duckar genom att trycka Z. D\xE5 kan en lagkamrat kl\xE4ttra
+    genom att trycka p\xE5 mellanslagstangenten. Man kl\xE4ttrar ner och reser sig
+    genom att trycka p\xE5 Z."
 --- !u!222 &190251149
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2426,7 +2426,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 35
-    m_FontStyle: 0
+    m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 1
     m_MaxSize: 40
@@ -4022,7 +4022,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 35
-    m_FontStyle: 0
+    m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 1
     m_MaxSize: 40
@@ -4032,12 +4032,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Olika karakt\xE4rer har olika f\xF6rm\xE5gor. En karakt\xE4r \xE4r starkare
-    och kan d\xE4rf\xF6r b\xE4ra l\xE5dor med fler varor i men f\xF6rflyttar sig
-    lite l\xE5ngsammare \xE4n sina v\xE4nner. En karakt\xE4r \xE4r liten och kan
-    inte b\xE4ra paket med m\xE5nga varor i sj\xE4lv, men kan f\xF6rflytta sig snabbare
-    \xE4n sina v\xE4nner.  En karakt\xE4r \xE4r l\xE5ng och kan n\xE5 varor p\xE5
-    den \xF6versta hyllan. En karakt\xE4r har medelstyrka och medelhastighet. \r"
+  m_Text: "Olika karakt\xE4rer har olika f\xF6rm\xE5gor.\n- 1 \xE4r stark och kan
+    b\xE4ra tunga l\xE5dor, men g\xE5r lite l\xE5ngsammare \n- 2 \xE4r liten  och
+    snabb, men kan inte b\xE4ra s\xE5 tunga paket\n- 3 \xE4r l\xE5ng och kan n\xE5
+    varor p\xE5 den \xF6versta hyllan \n - 4 har medelstyrka och medelhastighet \r"
 --- !u!222 &289014082
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4228,7 +4226,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 35
-    m_FontStyle: 0
+    m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 1
     m_MaxSize: 40
@@ -8721,11 +8719,11 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 35
-    m_FontStyle: 0
+    m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 1
     m_MaxSize: 40
-    m_Alignment: 0
+    m_Alignment: 1
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
@@ -11052,7 +11050,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 35
-    m_FontStyle: 0
+    m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 1
     m_MaxSize: 40
@@ -13065,7 +13063,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 35
-    m_FontStyle: 0
+    m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 1
     m_MaxSize: 40
@@ -13076,7 +13074,7 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "F\xF6r att tejpa l\xE5dan m\xE5ste du placera paketet p\xE5 ett av borden
-    under hyllan med en tejprulle och sedan trycka p\xE5 E.\r"
+    under hyllan med en tejprulle och sedan trycka p\xE5 C.\r"
 --- !u!222 &1367125581
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13144,7 +13142,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 35
-    m_FontStyle: 0
+    m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 1
     m_MaxSize: 40
@@ -15247,7 +15245,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 35
-    m_FontStyle: 0
+    m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 1
     m_MaxSize: 40
@@ -15257,7 +15255,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "F\xF6r att l\xE4gga ner en vara i ett paket trycker du p\xE5 shift."
+  m_Text: "F\xF6r att l\xE4gga ner en vara i ett paket trycker du p\xE5 X."
 --- !u!222 &1531359508
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -18364,7 +18362,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 60
-    m_FontStyle: 0
+    m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 1
     m_MaxSize: 60
@@ -20362,7 +20360,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 35
-    m_FontStyle: 0
+    m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 1
     m_MaxSize: 40
