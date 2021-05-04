@@ -12,8 +12,9 @@ public class PlayerController : MonoBehaviour
 
     Vector3 smoothMoveVelocity;
     Vector3 moveDir;
+    public Vector3 rotateDir {get; set;} = Vector3.zero;
     Vector3 moveAmount;
-    Quaternion rotation;
+    public Quaternion rotation {get; set;} 
 
     PlayerLiftController playerLC;
     PlayerPackController playerPC;
@@ -22,9 +23,9 @@ public class PlayerController : MonoBehaviour
     Character character;
 
     public static KeyCode useButton = KeyCode.Space;
-    public static KeyCode tapeButton = KeyCode.E;
-    public static KeyCode packButton = KeyCode.LeftShift;
-    public static KeyCode crouchButton = KeyCode.LeftControl;
+    public static KeyCode crouchButton = KeyCode.Z;
+    public static KeyCode packButton = KeyCode.X;
+    public static KeyCode tapeButton = KeyCode.C;
 
     Vector3 networkMoveAmount = Vector3.zero;
     Quaternion networkRotation = Quaternion.identity;
@@ -51,7 +52,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (!PV.IsMine) return;
+        bool gameStarted = (bool) PhotonNetwork.CurrentRoom.CustomProperties["gameStarted"];
+        if (!PV.IsMine || TaskManager.Instance == null || !gameStarted) return;
         
         if (playerPC.isTaping || playerCC.isCrouching)
         {
@@ -78,6 +80,7 @@ public class PlayerController : MonoBehaviour
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
         moveDir = new Vector3(horizontalInput, 0, verticalInput).normalized;
+        rotateDir = (moveDir != Vector3.zero) ? moveDir : rotateDir;
     }
 
     void Move()
@@ -93,9 +96,9 @@ public class PlayerController : MonoBehaviour
 
     void Rotate()
     {
-        if (playerCC.isCrouching || moveDir == Vector3.zero) return;
+        if (playerCC.isCrouching || rotateDir == Vector3.zero) return;
 
-        Quaternion targetRotation = Quaternion.LookRotation(moveDir);
+        Quaternion targetRotation = Quaternion.LookRotation(rotateDir);
         rotation = Quaternion.Slerp(rb.rotation, targetRotation, Time.fixedDeltaTime * rotateSpeed);
     }
 }

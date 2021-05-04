@@ -23,15 +23,24 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] GameObject playerListItemPrefab;
     [SerializeField] GameObject startGameButton;
     [SerializeField] GameObject rejoinContainer;
+    [SerializeField] GameObject settingsContainer;
 
+    // 10 seconds before the room gets removed after there are no players left.
+    const int roomTtl = 10000;
     public const int maxPlayers = 4;
-    const int playerTtl = 15000;
+    
+    bool rejoinCalled = false;
     string latestRoomName;
+
+    bool connectedAfterStartup = false;
+    const float timeBetweenRetries = 3f;
+    float connectAgainTimer = timeBetweenRetries;
 
     List<string> characterList = new List<string> {"Long", "Normal", "Strong", "Weak"};
     List<int> spawnPointList = new List<int>();
 
     Dictionary<string, RoomListItem> cachedRoomList = new Dictionary<string, RoomListItem>();
+    List<string> abandonedRooms = new List<string>();
 
     public static bool tutorial = false;
 
@@ -57,17 +66,27 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        if (PhotonNetwork.InRoom) currPlayersInRoom.text = PhotonNetwork.PlayerList.Length.ToString();
+        if (PhotonNetwork.InRoom) currPlayersInRoom.text = PhotonNetwork.PlayerList.Length.ToString()+" / "+maxPlayers;
+        if (!connectedAfterStartup)
+        {
+            connectAgainTimer -= Time.deltaTime;
+            if (connectAgainTimer <= 0)
+            {
+                print("Retrying...");
+                connectAgainTimer = timeBetweenRetries;
+                PhotonNetwork.ConnectUsingSettings();
+            }
+        }
     }
 
     public override void OnConnectedToMaster()
     {
+        connectedAfterStartup = true;
         if (PhotonNetwork.InLobby) return;
 
         PhotonNetwork.JoinLobby();
         Debug.Log("Connected to the " + PhotonNetwork.CloudRegion + " server!");
         PlayerPrefs.SetString("userid", PhotonNetwork.LocalPlayer.UserId);
-        print(PhotonNetwork.LocalPlayer.UserId);
         PhotonNetwork.AutomaticallySyncScene = true;
     }
 
@@ -92,17 +111,19 @@ public class Launcher : MonoBehaviourPunCallbacks
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = maxPlayers;
         roomOptions.PublishUserId = true;
-        roomOptions.PlayerTtl = playerTtl;
-        roomOptions.EmptyRoomTtl = playerTtl;
-        string[] roomPropsLobby = new string[maxPlayers+1];
+        roomOptions.EmptyRoomTtl = roomTtl;
+        string[] roomPropsLobby = new string[maxPlayers+2];
         for (int i = 0; i < maxPlayers; i++)
         {
             roomPropsLobby[i] = "p"+i;
         }
         roomPropsLobby[maxPlayers] = "visible";
+        roomPropsLobby[maxPlayers+1] = "gOver";
         roomOptions.CustomRoomPropertiesForLobby = roomPropsLobby;
         Hashtable hash = new Hashtable();
         hash.Add("visible", true);
+        hash.Add("gOver", false);
+        hash.Add("gameStarted", false);
         roomOptions.CustomRoomProperties = hash;
         PhotonNetwork.CreateRoom(roomNameInputField.text, roomOptions);
         PhotonNetwork.NickName = createNickNameInputField.text;
@@ -153,11 +174,13 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.JoinRoom(latestRoomName);
         MenuManager.Instance.OpenMenu("loading");
+        rejoinCalled = true;
     }
 
     public void AbandonGame()
     {
         rejoinContainer.SetActive(false);
+        abandonedRooms.Add(latestRoomName);
         latestRoomName = "";
     }
 
@@ -178,6 +201,14 @@ public class Launcher : MonoBehaviourPunCallbacks
             PhotonNetwork.LoadLevel(2);
             return;
         }
+        if (rejoinCalled)
+        {
+            // UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+            // if (PhotonNetwork.IsMasterClient) PhotonNetwork.LoadLevel(1);
+            if (PhotonNetwork.IsMasterClient) UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+            print("Nick: "+PhotonNetwork.LocalPlayer.NickName);
+            return;
+        }
         roomNameText.text = PhotonNetwork.CurrentRoom.Name;
         MenuManager.Instance.OpenMenu("room");
 
@@ -186,10 +217,23 @@ public class Launcher : MonoBehaviourPunCallbacks
         PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "MainMenu", "PlayerListItem"), Vector3.zero, Quaternion.identity, 0, initData);
 
         startGameButton.SetActive(PhotonNetwork.IsMasterClient);
+        settingsContainer.SetActive(PhotonNetwork.IsMasterClient);
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
+        switch (returnCode)
+        {
+            // User does not exist in this game. (Rejoin error)
+            case 32748:
+                PhotonNetwork.JoinRoom(latestRoomName);
+                return;
+
+            // User already in game but not rejoining.
+            case 32749:
+                PhotonNetwork.RejoinRoom(latestRoomName);
+                return;
+        }
         errorText.text = "Join Room Failed: " + message;
         MenuManager.Instance.OpenMenu("error");
     }
@@ -213,6 +257,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
         startGameButton.SetActive(PhotonNetwork.IsMasterClient);
+        settingsContainer.SetActive(PhotonNetwork.IsMasterClient);
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -233,6 +278,7 @@ public class Launcher : MonoBehaviourPunCallbacks
                     Destroy(cachedRoomList[info.Name].gameObject);
                     cachedRoomList.Remove(info.Name);
                 }
+                if (abandonedRooms.Contains(info.Name)) abandonedRooms.Remove(info.Name);
             }
             else
             {
@@ -256,8 +302,6 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         foreach (RoomListItem item in roomList.Values)
         {
-            print("Room: "+item.info.Name);
-            // if (item.info.RemovedFromList) continue;
             if (CanRejoinRoom(item.info)) return true;
         }
         return false;
@@ -265,10 +309,14 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     bool CanRejoinRoom(RoomInfo info)
     {
+        if (abandonedRooms.Contains(info.Name)) return false;
+
+        bool gameOver = (bool) info.CustomProperties["gOver"];
+        if (gameOver == true) return false;
+
         for (int i = 0; i < maxPlayers; i++)
         {
             string userID = (string) info.CustomProperties["p"+i];
-            if (userID == null) print("userid is null for p"+i);
             if (userID == PhotonNetwork.LocalPlayer.UserId)
             {
                 latestRoomName = info.Name;
@@ -308,7 +356,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     void ClearCachedRooms()
     {
-        print("Clearing...");
         foreach (RoomListItem item in cachedRoomList.Values)
         {
             Destroy(item.gameObject);

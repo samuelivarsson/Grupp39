@@ -14,6 +14,8 @@ public class PlayerMultiLiftController : MonoBehaviour
     public bool tooHeavy {get; set;} = false;
     public bool iAmLifting {get; set;} = false;
 
+    public Vector3 myAnchor {get; set;} = Vector3.zero;
+
     float horizontalInput, verticalInput;
     Vector3 moveDir = Vector3.zero;
     Vector3 moveAmount = Vector3.zero;
@@ -25,11 +27,11 @@ public class PlayerMultiLiftController : MonoBehaviour
 
     const float farAway = 2f; // Fastest movement speed = 6u/s, Maximum lag = 400ms = 0.4s --> far away = 6/0.4 = 2.4
     const float veryClose = 0.001f;
-    const float interpolationSpeed = 20f;
+    const float interpolationSpeed = 10f;
     Vector3 interpolationStartPosition;
     bool interpolating = false;
 
-    int updateFreq = 20; // Interval in milliseconds of how often RPCs are executed
+    int updateFreq = 0; // Interval in milliseconds of how often RPCs are executed
     int latestServerSend;
     int latestClientSend;
 
@@ -58,70 +60,33 @@ public class PlayerMultiLiftController : MonoBehaviour
     {
         if (!isMultiLifting || !iAmLifting) return;
 
-        // We are multi lifting and we are the owner or the creator (or both)
-        if (PV.IsMine)
+        if (PV.CreatorActorNr == PhotonNetwork.LocalPlayer.ActorNumber)
         {
-            // Owner
-            if (PV.CreatorActorNr == PhotonNetwork.LocalPlayer.ActorNumber)
+            // Creator
+            rb.velocity = new Vector3(moveAmount.x, rb.velocity.y, moveAmount.z);
+            rb.MoveRotation(rotation);
+            if (PhotonNetwork.ServerTimestamp - latestServerSend > updateFreq)
             {
-                // Owner and creator
-                rb.velocity = new Vector3(moveAmount.x, rb.velocity.y, moveAmount.z);
-                rb.MoveRotation(rotation);
-                if (PhotonNetwork.ServerTimestamp - latestServerSend > updateFreq)
-                {
-                    PV.RPC("OnSend", RpcTarget.OthersBuffered, rb.velocity, rb.position);
-                    latestServerSend = PhotonNetwork.ServerTimestamp;
-                }
-            }
-            else
-            {
-                // Owner but not creator
-                if (interpolating)
-                {
-                    float alpha = Time.fixedDeltaTime * interpolationSpeed;
-                    rb.position = Vector3.Lerp(interpolationStartPosition, networkPosition, alpha);
-                    if (Vector3.Distance(rb.position, networkPosition) < veryClose)
-                    {
-                        // Interpolation is finished
-                        rb.position = networkPosition;
-                        interpolating = false;
-                    }
-                }
-                rb.velocity = networkVelocity;
-                rb.MoveRotation(rotation);
+                PV.RPC("OnSend", RpcTarget.Others, rb.velocity, rb.position);
+                latestServerSend = PhotonNetwork.ServerTimestamp;
             }
         }
         else
         {
-            // Not owner
-            if (PV.CreatorActorNr == PhotonNetwork.LocalPlayer.ActorNumber)
+            // Not creator
+            if (interpolating)
             {
-                // Not owner but creator
-                rb.velocity = new Vector3(moveAmount.x, rb.velocity.y, moveAmount.z);
-                rb.MoveRotation(rotation);
-                if (PhotonNetwork.ServerTimestamp - latestClientSend > updateFreq)
+                float alpha = Time.fixedDeltaTime * interpolationSpeed;
+                rb.position = Vector3.Lerp(interpolationStartPosition, networkPosition, alpha);
+                if (Vector3.Distance(rb.position, networkPosition) < veryClose)
                 {
-                    PV.RPC("OnSend", RpcTarget.OthersBuffered, rb.velocity, rb.position);
-                    latestClientSend = PhotonNetwork.ServerTimestamp;
+                    // Interpolation is finished
+                    rb.position = networkPosition;
+                    interpolating = false;
                 }
             }
-            else
-            {
-                // Not owner and not creator
-                if (interpolating)
-                {
-                    float alpha = Time.fixedDeltaTime * interpolationSpeed;
-                    rb.position = Vector3.Lerp(interpolationStartPosition, networkPosition, alpha);
-                    if (Vector3.Distance(rb.position, networkPosition) < veryClose)
-                    {
-                        // Interpolation is finished
-                        rb.position = networkPosition;
-                        interpolating = false;
-                    }
-                }
-                rb.velocity = networkVelocity;
-                rb.MoveRotation(rotation);
-            }
+            rb.velocity = networkVelocity;
+            rb.MoveRotation(rotation);
         }
     }
 

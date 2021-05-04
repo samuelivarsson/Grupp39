@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using Photon.Pun;
 using System.IO;
 
@@ -6,10 +7,10 @@ public class HealthManager : MonoBehaviour
 {
     public static HealthManager Instance;
 
-    public const int maxHealth = 7;
+    public int maxHealth {get; set;}
     int healthLeft;
 
-    public GameObject[] healthObjects = new GameObject[maxHealth];
+    public List<GameObject> healthObjects {get; set;} = new List<GameObject>();
 
     GameObject canvasManager;
     PhotonView PV;
@@ -31,6 +32,7 @@ public class HealthManager : MonoBehaviour
         
     void Start()
     {
+        maxHealth = (int) PhotonNetwork.CurrentRoom.CustomProperties["maxHealth"];
         healthLeft = maxHealth;
         if (PhotonNetwork.IsMasterClient)
         {

@@ -1,4 +1,6 @@
-﻿public interface ICreateController
+﻿using UnityEngine;
+
+public interface ICreateController
 {
-    bool CreateController();
+    bool CreateController(Vector3 startPos);
 }

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using TMPro;
 using Photon.Pun;
-using Photon.Realtime;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 using System.IO;
 
 public class CanvasManager : MonoBehaviourPunCallbacks
@@ -9,6 +9,8 @@ public class CanvasManager : MonoBehaviourPunCallbacks
     public static CanvasManager Instance;
     
     [SerializeField] TMP_Text endScore;
+    public GameObject countDownObj;
+    public TMP_Text countDownText;
 
     Menu gameOverMenu;
     Menu escMenu;
@@ -23,11 +25,6 @@ public class CanvasManager : MonoBehaviourPunCallbacks
         PV = GetComponent<PhotonView>();
         gameOverMenu = transform.GetChild(0).GetComponent<Menu>();
         escMenu = transform.GetChild(1).GetComponent<Menu>();
-        if(Instance)
-        {
-            Destroy(gameObject);
-            return;
-        }
         Instance = this;
     }
         
@@ -86,6 +83,9 @@ public class CanvasManager : MonoBehaviourPunCallbacks
     public void GameOver()
     {
         _GameOver();
+        Hashtable hash = new Hashtable();
+        hash.Add("gOver", true);
+        PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
         PV.RPC("OnGameOver", RpcTarget.OthersBuffered);
     }
 

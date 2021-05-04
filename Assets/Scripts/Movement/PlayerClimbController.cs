@@ -3,34 +3,41 @@ using Photon.Pun;
 
 public class PlayerClimbController : MonoBehaviour
 {
+    // View ID of a player this player can climb right now.
     public int canClimbID {get; set;} = -1;
+
+    // Is this player crouching?
     public bool isCrouching {get; set;} = false;
-    public bool isClimbing {get; set;} = false;     //när jag klättrat upp på någon
-    public bool isClimbed {get; set;} = false;      //när nån klättrat upp på mig
 
-    public GameObject latestTile {get; set;}
+    // Is this player climbing?
+    public bool isClimbing {get; set;} = false;
 
-    Vector3 posPreClimb;                            //positionen man hade innan man klättrade upp på någon
+    // Does this player have another player on him?
+    public bool isClimbed {get; set;} = false;
+
+    // Position before climbing
+    Vector3 posPreClimb;
+
+    // Latest player this player could climb.
     public GameObject latestCollision {get; set;} 
     
-    GameObject playerClimbed;                       //spelaren man klättrar upp på
+    // Latest player this player has climbed upon.
+    PlayerClimbController latestPlayerClimbed;
 
-    [SerializeField] GameObject head;                                 //positionen på spelaren man ställer sig
+    [SerializeField] GameObject head;
     
     PlayerLiftController playerLiftController;
     PhotonView PV;
-    Rigidbody RB;
+    Rigidbody rb;
 
     Vector3 heightChange; 
     Vector3 yPosChange;
 
-
     void Awake()
     {
         PV = GetComponent<PhotonView>();
-        RB = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
         playerLiftController = GetComponent<PlayerLiftController>();
-        //head = gameObject.transform.GetChild(1);
         heightChange = new Vector3(-0.1f, gameObject.transform.localScale.y*0.5f, -0.1f);
         yPosChange = new Vector3(0, gameObject.transform.localScale.y*0.5f, 0);
     }
@@ -50,7 +57,7 @@ public class PlayerClimbController : MonoBehaviour
             Crouch();
             return;
         }
-        if (Input.GetKeyDown(PlayerController.crouchButton) && isCrouching && !isClimbed)
+        if (Input.GetKeyDown(PlayerController.crouchButton) && isCrouching)
         {
             Stand();
         }
@@ -62,22 +69,18 @@ public class PlayerClimbController : MonoBehaviour
 
         if (Input.GetKeyDown(PlayerController.useButton) && !isClimbing && CanClimb(latestCollision.GetComponent<PhotonView>().ViewID))
         {
-            ClimbRequest();
+            Climb();
             return;
         }
         if (Input.GetKeyDown(PlayerController.crouchButton) && isClimbing)
         {
-            ClimbDownRequest();
+            ClimbDown();
         }
     }
 
     void Crouch()
     {
-        gameObject.transform.localScale -= heightChange;
-        gameObject.transform.localPosition -= yPosChange;
-        isCrouching = true;
-        RB.isKinematic = true;
-        PV.RPC("OnCrouch", RpcTarget.OthersBuffered);
+        PV.RPC("OnCrouch", RpcTarget.AllBufferedViaServer);
     }
 
     [PunRPC]
@@ -85,115 +88,68 @@ public class PlayerClimbController : MonoBehaviour
     {
         gameObject.transform.localScale -= heightChange;
         gameObject.transform.localPosition -= yPosChange;
-        
+        isCrouching = true;
+        rb.isKinematic = true;
     }
 
     void Stand() 
     {
-        gameObject.transform.localScale += heightChange;
-        gameObject.transform.localPosition += yPosChange;
-        isCrouching = false;
-        RB.isKinematic = false;
-        PV.RPC("OnStand", RpcTarget.OthersBuffered);
+        PV.RPC("OnStand", RpcTarget.AllBufferedViaServer);
     }
 
     [PunRPC]
     void OnStand()
     {
+        if (isClimbed) return;
+
         gameObject.transform.localScale += heightChange;
         gameObject.transform.localPosition += yPosChange;
-        
+        isCrouching = false;
+        if (PV.IsMine) rb.isKinematic = false;
     }
 
-    
-
-    void ClimbRequest()
+    void Climb()
     {
-        playerClimbed = latestCollision;
+        PV.RPC("OnClimb", RpcTarget.AllBufferedViaServer, latestCollision.GetComponent<PhotonView>().ViewID);
+    }
+
+    [PunRPC]
+    void OnClimb(int crouchingPlayerID) 
+    {
+        PlayerClimbController crouchingPCC = PhotonView.Find(crouchingPlayerID).GetComponent<PlayerClimbController>();
+        if(!crouchingPCC.isCrouching || crouchingPCC.isClimbed) return;
+        
+        // Save climbed player and position
+        latestPlayerClimbed = crouchingPCC;
         posPreClimb = gameObject.transform.position;
-        playerClimbed.GetPhotonView().RPC("OnClimbRequest", RpcTarget.OthersBuffered, PV.ViewID);
-    }
 
-    [PunRPC]
-    void OnClimbRequest(int playerToClimbID) 
-    {
-        if(!PV.IsMine) return;
-        
-        if(isCrouching && !isClimbed)
-        {
-            
-            PhotonView playerToClimbPV = PhotonView.Find(playerToClimbID);
-            _OnClimb(playerToClimbPV);
-            playerToClimbPV.GetComponent<Rigidbody>().isKinematic = false;
-                      
-            isClimbed = true;
-            
-            PV.RPC("OnClimb", RpcTarget.OthersBuffered, playerToClimbID);
-            playerToClimbPV.RPC("OnClimbSuccess", RpcTarget.OthersBuffered, PV.ViewID);
-        }
-    }
-    
-    [PunRPC]
-    void OnClimb(int viewID)
-    {
-        PhotonView obj = PhotonView.Find(viewID);
-        _OnClimb(obj);
+        // Set parent and new position
+        gameObject.transform.parent = latestPlayerClimbed.transform;
+        Vector3 halfOfHeight = new Vector3(0, GetComponent<CapsuleCollider>().height*gameObject.transform.localScale.y/2, 0);
+        gameObject.transform.localPosition = latestPlayerClimbed.head.transform.localPosition + halfOfHeight;
 
-    }
-
-    void _OnClimb (PhotonView playerToClimbPV)
-    {
-        RB.isKinematic = true; 
-        ActivateHeadJoint(playerToClimbPV.GetComponent<Rigidbody>());
-    }
-
-    [PunRPC]
-    void OnClimbSuccess(int _viewID)
-    {
-        if(!PV.IsMine) return;
-
+        // Set booleans
+        rb.isKinematic = true;
+        crouchingPCC.isClimbed = true;
         isClimbing = true;
     }
 
-    void ClimbDownRequest()
-    {        
-        playerClimbed.GetPhotonView().RPC("OnClimbDownRequest", RpcTarget.OthersBuffered, PV.ViewID);
-    }
-
-
-    [PunRPC]
-    void OnClimbDownRequest(int _viewID)
+    void ClimbDown()
     {
-        if(!PV.IsMine) return;
-
-        PhotonView playerClimbingPV = PhotonView.Find(_viewID);
-        
-        _ClimbDown();
-        playerClimbingPV.GetComponent<Rigidbody>().isKinematic = true;
-        PV.RPC("OnClimbDown", RpcTarget.OthersBuffered);
-        playerClimbingPV.RPC("OnClimbDownSuccess", RpcTarget.OthersBuffered);
+        PV.RPC("OnClimbDown", RpcTarget.AllBufferedViaServer);
     }
 
     [PunRPC]
     void OnClimbDown()
-    {       
-        _ClimbDown();        
-    }
-
-    void _ClimbDown()
     {
-        DeactivateHeadJoint();
-        isClimbed = false;
-    }
+        // Remove parent and reset position
+        gameObject.transform.parent = null;
+        gameObject.transform.position = posPreClimb;
+        if (PV.IsMine) rb.isKinematic = false;
 
-    [PunRPC]
-    void OnClimbDownSuccess()
-    {    
-        if(!PV.IsMine) return;
-
-        RB.isKinematic = false;  
-        RB.position = posPreClimb;
+        // Set booleans
         isClimbing = false;
+        latestPlayerClimbed.isClimbed = false;
     }
 
     bool CanClimb(int _canClimbID)
@@ -201,26 +157,25 @@ public class PlayerClimbController : MonoBehaviour
         return canClimbID == _canClimbID;
     }
 
-    void SetHingeJoint(HingeJoint hingeJoint, Rigidbody conBody, Vector3 _head)
-    {
-        hingeJoint.anchor = _head;
-        hingeJoint.autoConfigureConnectedAnchor = false;
-        hingeJoint.connectedAnchor = Vector3.zero;
-        hingeJoint.connectedBody = conBody;
-    }
+    // public void ActivateHeadJoint(Rigidbody conBody)
+    // {
+    //     HingeJoint hingeJoint = head.GetComponent<HingeJoint>();        
+    //     SetHingeJoint(hingeJoint, conBody);
+    //     head.SetActive(true);
+    // }
 
-    void ActivateHeadJoint(Rigidbody conBody)
-    {
-        HingeJoint hingeJoint = head.GetComponent<HingeJoint>();        
-        hingeJoint.connectedBody = conBody;
-        head.SetActive(true);
-    }
+    // public void DeactivateHeadJoint()
+    // {
+    //     HingeJoint hingeJoint = head.GetComponent<HingeJoint>();        
+    //     SetHingeJoint(hingeJoint, null);
+    //     head.SetActive(false);
+    // }
 
-    void DeactivateHeadJoint()
-    {
-        HingeJoint hingeJoint = head.GetComponent<HingeJoint>();        
-        hingeJoint.connectedBody = null;
-        head.SetActive(false);
-    }
-
+    // void SetHingeJoint(HingeJoint hingeJoint, Rigidbody conBody)
+    // {
+    //     hingeJoint.anchor = head.transform.localPosition;
+    //     hingeJoint.autoConfigureConnectedAnchor = false;
+    //     hingeJoint.connectedAnchor = Vector3.zero;
+    //     hingeJoint.connectedBody = conBody;
+    // }
 }

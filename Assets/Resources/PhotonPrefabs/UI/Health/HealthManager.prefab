@@ -71,11 +71,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42ffadc7fc6936744a6937216ec5859c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthObjects:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}

@@ -9,7 +9,6 @@ public class DisconnectHandler : MonoBehaviourPunCallbacks
     
     bool rejoinCalled = false;
     bool reconnectCalled = false;
-    bool inRoom = false;
     DisconnectCause previousDisconnectCause;
 
     public override void OnDisconnected(DisconnectCause cause)
@@ -29,7 +28,6 @@ public class DisconnectHandler : MonoBehaviourPunCallbacks
             reconnectCalled = false;
         }
         HandleDisconnect(cause); // add attempts counter? to avoid infinite retries?
-        inRoom = false;
         previousDisconnectCause = cause;
     }
 
@@ -70,24 +68,30 @@ public class DisconnectHandler : MonoBehaviourPunCallbacks
 
     void TryReconnectAndRejoin()
     {
-        if (inRoom || inGame)
+        if (inGame)
         {
-            Debug.Log("calling PhotonNetwork.ReconnectAndRejoin()");
-            rejoinCalled = PhotonNetwork.ReconnectAndRejoin();
-            if (!rejoinCalled)
-            {
-                Debug.LogWarning("PhotonNetwork.ReconnectAndRejoin returned false, PhotonNetwork.Reconnect is called instead.");
-                reconnectCalled = PhotonNetwork.Reconnect();
-            }
+            Destroy(RoomManager.Instance.gameObject);
+            // UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+            PhotonNetwork.LoadLevel(0);
+            inGame = false;
         }
         else
         {
             Debug.Log("calling PhotonNetwork.Reconnect()");
             reconnectCalled = PhotonNetwork.Reconnect();
         }
-        if (!rejoinCalled && !reconnectCalled)
+        if (!reconnectCalled)
         {
-            Debug.LogError("PhotonNetwork.ReconnectAndRejoin() or PhotonNetwork.Reconnect() returned false, client stays disconnected.");
+            Debug.LogError("PhotonNetwork.Reconnect() returned false, client stays disconnected.");
+        }
+    }
+
+    public override void OnJoinedRoom()
+    {
+        if (rejoinCalled)
+        {
+            Debug.Log("Rejoin successful");
+            rejoinCalled = false;
         }
     }
 
@@ -97,28 +101,11 @@ public class DisconnectHandler : MonoBehaviourPunCallbacks
         {
             if (inGame)
             {
-                UnityEngine.SceneManagement.SceneManager.LoadScene(0);
-                DisconnectHandler.inGame = false;
+                PhotonNetwork.Disconnect();
             }
             Debug.LogErrorFormat("Quick rejoin failed with error code: {0} & error message: {1}", returnCode, message);
             rejoinCalled = false;
         }
-    }
-
-    public override void OnJoinedRoom()
-    {
-        inRoom = true;
-        if (rejoinCalled)
-        {
-            Debug.Log("Rejoin successful");
-            rejoinCalled = false;
-        }
-    }
-    
-    public override void OnLeftRoom()
-    {
-        Debug.Log("Left room");
-        inRoom = false;
     }
     
     public override void OnConnectedToMaster()
@@ -127,11 +114,11 @@ public class DisconnectHandler : MonoBehaviourPunCallbacks
         {
             Debug.Log("Reconnect successful");
             reconnectCalled = false;
-            if (inGame)
-            {
-                PhotonNetwork.RejoinRoom(DisconnectHandler.latestRoomName);
-                rejoinCalled = true;
-            }
+            // if (inGame)
+            // {
+            //     PhotonNetwork.JoinRoom(DisconnectHandler.latestRoomName);
+            //     rejoinCalled = true;
+            // }
         }
     }
 }

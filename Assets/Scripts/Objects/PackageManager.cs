@@ -11,14 +11,14 @@ public class PackageManager : MonoBehaviour, ICreateController
         playerLiftController = PlayerManager.myPlayerLiftController;
     }
 
-    public bool CreateController()
+    public bool CreateController(Vector3 startPos)
     {
         if (playerLiftController.liftingID != -1)
         {
             Debug.Log("You are already lifting something!");
             return false;
         }
-        GameObject obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "PackageController"), Vector3.zero,  Quaternion.identity);
+        GameObject obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "PackageController"), startPos,  Quaternion.identity);
         playerLiftController.latestCollision = obj;
         playerLiftController.canLiftID = obj.GetComponent<PhotonView>().ViewID;
 

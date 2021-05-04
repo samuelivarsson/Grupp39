@@ -3,8 +3,8 @@ using Photon.Pun;
 
 public class ObjectTriggerCheck : MonoBehaviour
 {
-    Material standardTile;
-    Material standardDropZone;
+    [SerializeField] Material standardTile;
+    [SerializeField] Material standardDropZone;
     PhotonView PV;
 
     void Awake()
@@ -22,12 +22,10 @@ public class ObjectTriggerCheck : MonoBehaviour
             Renderer renderer = other.GetComponent<Renderer>();
             if (other.CompareTag("PlaceableTile"))
             {
-                if (standardTile == null) standardTile = renderer.material;
                 Highlight(renderer, standardTile);
             }
             else if (other.CompareTag("DropZone"))
             {
-                if (standardDropZone == null) standardDropZone = renderer.material;
                 Highlight(renderer, standardDropZone);
             }
         }

@@ -24,7 +24,7 @@ public class HealthController : MonoBehaviourPunCallbacks, IPunInstantiateMagicC
 
     int GetX()
     {
-        int maxHealth = HealthManager.maxHealth;
+        int maxHealth = HealthManager.Instance.maxHealth;
         if (maxHealth % 2 == 0)
         {
             int offset = maxHealth/2 - 1;
@@ -42,6 +42,6 @@ public class HealthController : MonoBehaviourPunCallbacks, IPunInstantiateMagicC
         object[] initData = info.photonView.InstantiationData;
         int i = (int) initData[0];
         healthNr = i;
-        HealthManager.Instance.healthObjects[i] = gameObject;
+        HealthManager.Instance.healthObjects.Add(gameObject);
     }
 }
