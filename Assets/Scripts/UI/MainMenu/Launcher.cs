@@ -193,8 +193,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     {        
         if (string.IsNullOrEmpty(findNickNameInputField.text))
         {
-            PopupInfo.Instance.Popup("Du måste ange ett smeknamn innan du går med i ett rum", 7);
-            Debug.Log("NUUUUUUU");
+            PopupInfo.Instance.Popup("Du måste ange ett smeknamn innan du kan gå med i rummet", 5);
             return;
         }
         
