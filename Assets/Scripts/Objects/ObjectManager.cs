@@ -14,7 +14,7 @@ public class ObjectManager : MonoBehaviour
     static int productCount = possibleProducts.Length;
 
     // The amount of package spawn points
-    const int packageCount = 1;
+    const int packageCount = 2;
 
     List<int> productSpawnPointList = new List<int>();
     List<int> packageSpawnPointList = new List<int>();
