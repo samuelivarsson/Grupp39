@@ -101,6 +101,7 @@ public class TutorialController : MonoBehaviour
         {
             basicInformation = false;
             movement = true;
+            return;
         }
         PopupInfo.Instance.Popup(basicInformationStrings[basicIndex], 10000);
     }
