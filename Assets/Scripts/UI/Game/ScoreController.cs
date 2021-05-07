@@ -10,6 +10,11 @@ public class ScoreController : MonoBehaviourPunCallbacks
     [SerializeField] Text text;
 
     public int score {get; set;}
+
+    // Every time the score reaches a score that is divisible by this number the game should become harder
+    const int intLimit = 500;
+    const float floatLimit = 500f;
+    float latestLimit = 0f;
     
     Vector3 startPos = new Vector3(50, -25, 0);
 
@@ -37,6 +42,13 @@ public class ScoreController : MonoBehaviourPunCallbacks
         hash.Add("score", score);
         PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
         text.text = score.ToString();
+        float floatScore = score;
+        if (floatScore/latestLimit >= 1)
+        {
+            if (TaskManager.Instance.amountMultiplier > 0) TaskManager.Instance.amountMultiplier -= 5;
+            if (TaskManager.Instance.amountMultiplier < 0) TaskManager.Instance.amountMultiplier = 0;
+            latestLimit = FindLimit(floatScore);
+        }
     }
 
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
@@ -46,5 +58,11 @@ public class ScoreController : MonoBehaviourPunCallbacks
             score = (int)propertiesThatChanged["score"];
             text.text = score.ToString();
         }
+    }
+
+    float FindLimit(float n)
+    {
+        int temp = (int) n/intLimit;
+        return (float) temp*500;
     }
 }
