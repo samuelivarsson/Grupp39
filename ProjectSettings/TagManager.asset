@@ -22,6 +22,10 @@ TagManager:
   - TableTile
   - PlayerController
   - Task0
+  - TrashTile
+  - TapeTable
+  - Trash
+  - PlaceableOutsideTile
   layers:
   - Default
   - TransparentFX

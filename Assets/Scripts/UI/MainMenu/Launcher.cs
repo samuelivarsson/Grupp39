@@ -36,7 +36,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     const float timeBetweenRetries = 3f;
     float connectAgainTimer = timeBetweenRetries;
 
-    List<string> characterList = new List<string> {"Long", "Normal", "Strong", "Weak"};
+    List<string> characterList = new List<string> {"Long", "Normal", "Strong", "Fast"};
     List<int> spawnPointList = new List<int>();
 
     Dictionary<string, RoomListItem> cachedRoomList = new Dictionary<string, RoomListItem>();
@@ -59,8 +59,8 @@ public class Launcher : MonoBehaviourPunCallbacks
 
         // Connecting to master server (Set to eu in PhotonServerSettings)
         Debug.Log("Connecting to the master server...");
-        AuthenticationValues authValues = new AuthenticationValues(PlayerPrefs.GetString("userid", ""));
-        PhotonNetwork.AuthValues = authValues;
+        // AuthenticationValues authValues = new AuthenticationValues(PlayerPrefs.GetString("userid", ""));
+        // PhotonNetwork.AuthValues = authValues;
         PhotonNetwork.ConnectUsingSettings();
     }
 

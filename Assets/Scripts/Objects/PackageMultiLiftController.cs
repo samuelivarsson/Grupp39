@@ -150,10 +150,8 @@ public class PackageMultiLiftController : MonoBehaviour
             PhotonView lastPlayerPV = lastPlayerLC.GetComponent<PhotonView>();
 
             // Lift the package normally with the last player.
-            // float eulerY = PlayerLiftController.ClosestAngle(gameObject.transform.rotation.eulerAngles.y - lastPlayerLC.transform.rotation.eulerAngles.y);
             gameObject.transform.parent = lastPlayerLC.gameObject.transform;
             gameObject.transform.localPosition = lastPlayerLC.hand.transform.localPosition;
-            // gameObject.transform.localRotation = Quaternion.Euler(0, eulerY, 0);
             lastPlayerLC.GetComponent<PlayerController>().rotateDir = lastPlayerLC.transform.rotation * Vector3.forward;
             lastPlayerLC.GetComponent<PlayerController>().rotation = lastPlayerLC.transform.rotation;
         }
@@ -193,7 +191,7 @@ public class PackageMultiLiftController : MonoBehaviour
         confJoint.anchor = anchor;
         confJoint.axis = Vector3.zero;
         confJoint.autoConfigureConnectedAnchor = false;
-        confJoint.connectedAnchor = new Vector3(0, 0.5f, 0.5f);
+        confJoint.connectedAnchor = new Vector3(0, 0.8f, 0.5f);
         confJoint.xMotion = ConfigurableJointMotion.Locked;
         confJoint.yMotion = ConfigurableJointMotion.Limited;
         confJoint.zMotion = ConfigurableJointMotion.Locked;

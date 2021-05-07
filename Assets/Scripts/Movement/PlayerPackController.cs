@@ -61,7 +61,7 @@ public class PlayerPackController : MonoBehaviour
     {
         // Make child and set scale & rotation
         prd.transform.parent = pkg.transform;
-        prd.transform.localScale = packScale;
+        prd.transform.localScale = prd.transform.localScale*prd.scaleMultiplier;
         prd.transform.rotation = Quaternion.Euler(0, eulerY, 0);
 
         // Set position based on what's open and increment productCount

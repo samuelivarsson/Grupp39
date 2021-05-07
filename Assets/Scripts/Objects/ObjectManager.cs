@@ -8,10 +8,10 @@ public class ObjectManager : MonoBehaviour
     PhotonView PV;
 
     // The different products
-    static string[] possibleProducts = {"Blue", "Red", "Cyan", "Green", "Yellow", "Pink"};
+    public static List<string> possibleProducts = new List<string>() {"Boat", "Laptop", "Ball", "Book", "Car", "Bear"};
 
     // The amount of different products
-    static int productCount = possibleProducts.Length;
+    static int productCount = possibleProducts.Count;
 
     // The amount of package spawn points
     const int packageCount = 1;

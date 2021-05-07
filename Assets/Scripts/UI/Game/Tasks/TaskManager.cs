@@ -27,9 +27,6 @@ public class TaskManager : MonoBehaviour
     int baseTime;
     int amountMultiplier;
 
-    // The different products the task can require
-    static List<string> possibleProducts = new List<string>() {"Blue", "Red", "Cyan", "Green", "Yellow", "Pink"};
-
     float[] countDownTimes = new float[maxTasks];
     bool[] countDownBools = new bool[maxTasks];
 
@@ -121,7 +118,7 @@ public class TaskManager : MonoBehaviour
         string[] requiredProducts = new string[productAmount];
         for(int i = 0; i < productAmount; i++)
         {
-            requiredProducts[i] = possibleProducts[Random.Range(0, possibleProducts.Count)];
+            requiredProducts[i] = ObjectManager.possibleProducts[Random.Range(0, ObjectManager.possibleProducts.Count)];
         }
         return requiredProducts;
     }

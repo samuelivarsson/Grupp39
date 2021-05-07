@@ -16,8 +16,11 @@ public class PlayerLiftController : MonoBehaviour
     // Latest object the player lifted
     public GameObject latestObject {get; set;}
 
-    // A static offset where the player's "hand" is, used as object's localPosition when lifting
-    public Transform hand {get; set;}
+    // A static offset where the player's "hand" is, used as object's localPosition when lifting products
+    public Transform hand;
+
+    // Offset where the player's "hand" is, used as object's localPosition when lifting packages
+    [SerializeField] Transform packageHand;
 
     // This player's PhotonView.
     PhotonView PV;
@@ -34,7 +37,6 @@ public class PlayerLiftController : MonoBehaviour
     void Awake()
     {
         PV = GetComponent<PhotonView>();
-        hand = gameObject.transform.GetChild(0);
         character = GetComponent<Character>();
         playerCC = GetComponent<PlayerClimbController>();
         playerMLC = GetComponent<PlayerMultiLiftController>();
@@ -58,7 +60,7 @@ public class PlayerLiftController : MonoBehaviour
         if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && (latestCollision.CompareTag("ProductManager") || latestCollision.CompareTag("PackageManager")))
         {
             ICreateController manager = GetManager(latestCollision);
-            if (manager.CreateController(hand.position)) Lift();
+            if (manager.CreateController(hand.position)) Lift(0);
             return;
         }
         if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && IsLifting(-1) && CanHelp(packageMLC) && !playerCC.isCrouching)
@@ -89,6 +91,11 @@ public class PlayerLiftController : MonoBehaviour
         PV.RPC("OnLift", RpcTarget.AllBufferedViaServer, latestCollision.GetComponent<PhotonView>().ViewID, eulerY);
     }
 
+    void Lift(float eulerY)
+    {
+        PV.RPC("OnLift", RpcTarget.AllBufferedViaServer, latestCollision.GetComponent<PhotonView>().ViewID, eulerY);
+    }
+
     [PunRPC]
     void OnLift(int viewID, float eulerY)
     {
@@ -99,7 +106,7 @@ public class PlayerLiftController : MonoBehaviour
 
         // Make child and change position & rotation
         obj.transform.parent = gameObject.transform;
-        obj.transform.localPosition = hand.transform.localPosition;
+        obj.transform.localPosition = obj.CompareTag("PackageController") ? packageHand.transform.localPosition : hand.transform.localPosition;
         obj.transform.localRotation = Quaternion.Euler(0, eulerY, 0);
 
         // If package -> add lifter
@@ -119,6 +126,13 @@ public class PlayerLiftController : MonoBehaviour
         if (pkgController != null)
         {
             pkgController.canTape = false;
+        }
+
+        // Disable highlight while lifting
+        if (PV.IsMine)
+        {
+            IHighlight highlighter = PickUpCheck.GetHighlighter(obj);
+            highlighter.Highlight(false);
         }
     }
 
@@ -149,18 +163,18 @@ public class PlayerLiftController : MonoBehaviour
         playerMLC.myAnchor = anchor;
         packageMLC.takenAnchors.Add(anchor);
         packageMLC.AddHelper(this, anchor);
+
+        // Disable highlight while lifting
+        if (PV.IsMine)
+        {
+            IHighlight highlighter = PickUpCheck.GetHighlighter(obj);
+            highlighter.Highlight(false);
+        }
     }
 
     void Drop()
     {
         if (latestObject == null) return;
-
-        // Not able to drop products on dropzones
-        if (latestTile.CompareTag("DropZone") && latestObject.CompareTag("ProductController"))
-        {
-            PopupInfo.Instance.Popup("Man kan inte placera en produkt i leveranszoner", 7);
-            return;
-        }
 
         // Long player unable to drop stuff on the floor
         if (latestTile.CompareTag("PlaceableTile") && character.characterType.Equals("Long"))
@@ -169,15 +183,41 @@ public class PlayerLiftController : MonoBehaviour
             return;
         }
 
-        if (latestTile.CompareTag("DropZone") && latestObject.CompareTag("PackageController"))
+        // Dropped on DropZone
+        if (latestTile.CompareTag("DropZone"))
         {
-            bool delivered = latestObject.GetComponent<PackageController>().OrderDelivery(latestTile);
-            if (delivered)
+            // Try to deliver if it's a package
+            if (latestObject.CompareTag("PackageController"))
             {
-                DropBooleans(latestObject);
+                bool delivered = latestObject.GetComponent<PackageController>().OrderDelivery(latestTile);
+                if (delivered)
+                {
+                    DropBooleans(latestObject);
+                }
+                return;
             }
+            // Not able to drop products on dropzones
+            else
+            {
+                PopupInfo.Instance.Popup("Man kan inte placera produkter i leveranszoner", 7);
+                return;
+            }
+        }
+
+        // Dropped a product on a tape table
+        if (latestTile.CompareTag("TapeTile") && latestObject.CompareTag("ProductController"))
+        {
+            PopupInfo.Instance.Popup("Man kan inte placera produkter på tejpborden", 5);
             return;
         }
+
+        // Dropped on trashcan -> trash it
+        if (latestTile.CompareTag("TrashTile"))
+        {
+            PV.RPC("OnTrash", RpcTarget.AllBuffered, latestObject.GetComponent<PhotonView>().ViewID);
+            return;
+        }
+
         float eulerY = ClosestAngle(latestObject.transform.rotation.eulerAngles.y);
         Vector3 offset = GetTileOffset(latestObject, latestTile);
         PV.RPC("OnDrop", RpcTarget.AllBuffered, latestObject.GetComponent<PhotonView>().ViewID, eulerY, latestTile.name, offset);
@@ -245,6 +285,15 @@ public class PlayerLiftController : MonoBehaviour
         packageMLC.RemoveHelper(this);
     }
 
+    [PunRPC]
+    void OnTrash(int objViewID)
+    {
+        PhotonView objPV = PhotonView.Find(objViewID);
+        if (objPV.CompareTag("PackageController")) objPV.GetComponent<PackageController>().DestroyPackage();
+        else if (objPV.CompareTag("ProductController")) objPV.GetComponent<ProductController>().DestroyProduct();
+        DropBooleans(latestObject);
+    }
+
     public static float ClosestAngle(float a)
     {
         float[] w = {-360, -270, -180, -90, 0, 90, 180, 270, 360};
@@ -293,9 +342,9 @@ public class PlayerLiftController : MonoBehaviour
         return pkg != null || prdct != null;
     }
 
-    bool DropableTile(GameObject tile)
+    public static bool DropableTile(GameObject tile)
     {
-        return tile.CompareTag("PlaceableTile") || tile.CompareTag("DropZone") || tile.CompareTag("TableTile") || tile.CompareTag("TapeTile");
+        return tile.CompareTag("PlaceableTile") || tile.CompareTag("PlaceableOutsideTile") || tile.CompareTag("DropZone") || tile.CompareTag("TableTile") || tile.CompareTag("TapeTile") || tile.CompareTag("TrashTile");
     }
 
     public bool IsLifting(int _liftingID)

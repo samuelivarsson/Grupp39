@@ -27,7 +27,6 @@ public class PopupInfo : MonoBehaviour
     IEnumerator StartPopupTimer(string text, float sec)
     {
         infoText.text = text;
-        print("Setting: "+text);
         for (float i = sec; i >= 0; i -= Time.deltaTime)
         {
             // Waiting
