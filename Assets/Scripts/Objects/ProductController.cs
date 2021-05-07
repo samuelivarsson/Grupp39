@@ -3,12 +3,14 @@ using UnityEngine;
 
 public class ProductController : MonoBehaviour, LiftableProduct, IPunInstantiateMagicCallback
 {
+    public float scaleMultiplier;
+
     public bool isLifted {get; set;} = false;
     public bool isPackaged {get; set;} = false;
     public string type {get; set;}
 
-    public static Vector3 tileOffset = new Vector3(1.5f, 0.25f, 1.5f);
-    public static Vector3 tableOffset = new Vector3(1.5f, 0.55f, 1.5f);
+    public static Vector3 tileOffset = new Vector3(1.5f, 0f, 1.5f);
+    public static Vector3 tableOffset = new Vector3(1.5f, 0.3f, 1.5f);
 
     PhotonView PV;
 
@@ -17,8 +19,7 @@ public class ProductController : MonoBehaviour, LiftableProduct, IPunInstantiate
         PV = GetComponent<PhotonView>();
     }
 
-    [PunRPC]
-    void DestroyProduct()
+    public void DestroyProduct()
     {
         if (PV.IsMine) PhotonNetwork.Destroy(gameObject);
     }

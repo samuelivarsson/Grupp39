@@ -66,5 +66,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f286389ea23c3c94598c2e29c204524e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  standardTile: {fileID: 2100000, guid: 15cb6b096bb78c7479c93c6e26153387, type: 2}
+  standardTile: {fileID: 2100000, guid: 8621dfcb3dbf229428e45425021e0875, type: 2}
+  standardOutsideTile: {fileID: 2100000, guid: e392b3db3896de742a7fe9186046092b, type: 2}
   standardDropZone: {fileID: 2100000, guid: f66625c0d638e4441aad72b0e59126c2, type: 2}
+  standardTable: {fileID: 2100000, guid: 2c0bb951fb8a2e44a9fb35bc4af3d739, type: 2}
+  standardTapeTable: {fileID: 2100000, guid: 8621dfcb3dbf229428e45425021e0875, type: 2}
+  standardTrash: {fileID: 2100000, guid: b0cfeb8b980746945a0afedcf4ec2880, type: 2}

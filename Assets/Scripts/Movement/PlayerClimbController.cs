@@ -31,7 +31,6 @@ public class PlayerClimbController : MonoBehaviour
     Rigidbody rb;
 
     Vector3 heightChange; 
-    Vector3 yPosChange;
 
     void Awake()
     {
@@ -39,7 +38,6 @@ public class PlayerClimbController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         playerLiftController = GetComponent<PlayerLiftController>();
         heightChange = new Vector3(-0.1f, gameObject.transform.localScale.y*0.5f, -0.1f);
-        yPosChange = new Vector3(0, gameObject.transform.localScale.y*0.5f, 0);
     }
 
     void Update()
@@ -87,7 +85,6 @@ public class PlayerClimbController : MonoBehaviour
     void OnCrouch()
     {
         gameObject.transform.localScale -= heightChange;
-        gameObject.transform.localPosition -= yPosChange;
         isCrouching = true;
         rb.isKinematic = true;
     }
@@ -103,7 +100,6 @@ public class PlayerClimbController : MonoBehaviour
         if (isClimbed) return;
 
         gameObject.transform.localScale += heightChange;
-        gameObject.transform.localPosition += yPosChange;
         isCrouching = false;
         if (PV.IsMine) rb.isKinematic = false;
     }
@@ -125,8 +121,7 @@ public class PlayerClimbController : MonoBehaviour
 
         // Set parent and new position
         gameObject.transform.parent = latestPlayerClimbed.transform;
-        Vector3 halfOfHeight = new Vector3(0, GetComponent<CapsuleCollider>().height*gameObject.transform.localScale.y/2, 0);
-        gameObject.transform.localPosition = latestPlayerClimbed.head.transform.localPosition + halfOfHeight;
+        gameObject.transform.localPosition = latestPlayerClimbed.head.transform.localPosition;
 
         // Set booleans
         rb.isKinematic = true;
@@ -156,26 +151,4 @@ public class PlayerClimbController : MonoBehaviour
     {
         return canClimbID == _canClimbID;
     }
-
-    // public void ActivateHeadJoint(Rigidbody conBody)
-    // {
-    //     HingeJoint hingeJoint = head.GetComponent<HingeJoint>();        
-    //     SetHingeJoint(hingeJoint, conBody);
-    //     head.SetActive(true);
-    // }
-
-    // public void DeactivateHeadJoint()
-    // {
-    //     HingeJoint hingeJoint = head.GetComponent<HingeJoint>();        
-    //     SetHingeJoint(hingeJoint, null);
-    //     head.SetActive(false);
-    // }
-
-    // void SetHingeJoint(HingeJoint hingeJoint, Rigidbody conBody)
-    // {
-    //     hingeJoint.anchor = head.transform.localPosition;
-    //     hingeJoint.autoConfigureConnectedAnchor = false;
-    //     hingeJoint.connectedAnchor = Vector3.zero;
-    //     hingeJoint.connectedBody = conBody;
-    // }
 }

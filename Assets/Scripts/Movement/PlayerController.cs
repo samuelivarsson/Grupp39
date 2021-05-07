@@ -5,7 +5,6 @@ public class PlayerController : MonoBehaviour
 {
     PhotonView PV;
     Rigidbody rb;
-    [SerializeField] GameObject myPlayerIcon;
     [SerializeField] public float smoothTime;
     [SerializeField] public float rotateSpeed;
     float horizontalInput, verticalInput;
@@ -21,6 +20,7 @@ public class PlayerController : MonoBehaviour
     PlayerClimbController playerCC;
     PlayerMultiLiftController playerMLC;
     Character character;
+    Animator anim;
 
     public static KeyCode useButton = KeyCode.Space;
     public static KeyCode crouchButton = KeyCode.Z;
@@ -34,12 +34,12 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         PV = GetComponent<PhotonView>();
-        myPlayerIcon.SetActive(PV.CreatorActorNr == PhotonNetwork.LocalPlayer.ActorNumber);
         playerLC = GetComponent<PlayerLiftController>();
         playerPC = GetComponent<PlayerPackController>();
         playerCC = GetComponent<PlayerClimbController>();
         playerMLC = GetComponent<PlayerMultiLiftController>();
         character = GetComponent<Character>();
+        anim = GetComponent<Animator>();
     }
 
     void Start()
@@ -54,10 +54,11 @@ public class PlayerController : MonoBehaviour
     {
         bool gameStarted = (bool) PhotonNetwork.CurrentRoom.CustomProperties["gameStarted"];
         if (!PV.IsMine || TaskManager.Instance == null || !gameStarted) return;
-        
+        SetCondition();
         if (playerPC.isTaping || playerCC.isCrouching)
         {
             moveAmount = Vector3.zero;
+            moveDir = Vector3.zero;
             return;
         }
         Inputs();
@@ -85,9 +86,10 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
-        if (playerMLC.tooHeavy && playerLC.liftingID != -1)
+        if (playerMLC.tooHeavy && !playerLC.IsLifting(-1))
         {
             moveAmount = Vector3.zero;
+            moveDir = Vector3.zero;
             PopupInfo.Instance.Popup("Lådan är för tung att lyfta själv", 7);
             return;
         }
@@ -100,5 +102,13 @@ public class PlayerController : MonoBehaviour
 
         Quaternion targetRotation = Quaternion.LookRotation(rotateDir);
         rotation = Quaternion.Slerp(rb.rotation, targetRotation, Time.fixedDeltaTime * rotateSpeed);
+    }
+
+    void SetCondition()
+    {
+        int condition;
+        if (playerLC.IsLifting(-1)) condition = (moveDir == Vector3.zero || playerCC.isClimbing) ? 0 : 1;
+        else condition = (moveDir == Vector3.zero || playerCC.isClimbing) ? 2 : 3;
+        anim.SetInteger("condition", condition);
     }
 }

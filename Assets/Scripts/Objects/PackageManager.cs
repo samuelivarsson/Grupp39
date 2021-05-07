@@ -9,6 +9,7 @@ public class PackageManager : MonoBehaviour, ICreateController
     void Awake()
     {
         playerLiftController = PlayerManager.myPlayerLiftController;
+        // PickUpCheck.standardPackage = GetComponentInChildren<Renderer>().materials;
     }
 
     public bool CreateController(Vector3 startPos)

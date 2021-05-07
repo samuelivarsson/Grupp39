@@ -508,7 +508,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2439032743813474722}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.15, y: 0.15, z: 0}
+  m_LocalPosition: {x: 0.15, y: 0.05, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7271022216631183784}
@@ -538,7 +538,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3705924868814851292}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.15, y: 0.15, z: -0.15}
+  m_LocalPosition: {x: -0.15, y: 0.05, z: -0.15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7271022216631183784}
@@ -1097,6 +1097,7 @@ GameObject:
   - component: {fileID: -7625432177342621375}
   - component: {fileID: 644405785046989766}
   - component: {fileID: 8882403922510208042}
+  - component: {fileID: 2525917673738973877}
   m_Layer: 10
   m_Name: PackageController
   m_TagString: PackageController
@@ -1131,7 +1132,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7271022216631183796}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 0839ff7e2a220ef41825742dccf3a043, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -1184,6 +1185,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d742aaec4fca8847903c97b65c3371b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2525917673738973877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7271022216631183796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9067a51d0f8bce448b32796ad753587f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  renderers:
+  - {fileID: 5836775657818049185}
+  - {fileID: 238493763686796144}
+  - {fileID: 4578464658148416830}
+  - {fileID: 6753500891548815047}
+  - {fileID: 2654802267738325766}
+  - {fileID: 1181586104587922949}
+  - {fileID: 5159772300060577907}
+  - {fileID: 3954576750699898475}
+  - {fileID: 8655408777790383629}
+  - {fileID: 4926570571400663137}
+  tapeRenderers:
+  - {fileID: 4255667563705432092}
+  - {fileID: 3026265814683217139}
+  - {fileID: 5752958121553682136}
 --- !u!1 &7561113992524503906
 GameObject:
   m_ObjectHideFlags: 0
@@ -1208,7 +1236,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7561113992524503906}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.15, y: 0.15, z: 0.15}
+  m_LocalPosition: {x: -0.15, y: 0.05, z: 0.15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7271022216631183784}
