@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -417,7 +417,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 1503dac5d8cde4746953447bf52a2446, type: 3}
+  m_Texture: {fileID: 2800000, guid: 2b33671ea48f4a2458f1273242a55445, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -3406,7 +3406,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 14d653275c8b19949bb299ae1cd56ca2, type: 3}
+  m_Texture: {fileID: 2800000, guid: 8fda02914e2e3e4408a091837cf77e03, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -4261,7 +4261,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: fd5e609e785cd7b4bae2bbee0c8a8e7f, type: 3}
+  m_Texture: {fileID: 2800000, guid: 9a94786d049fa8641beedf27b8c23ecb, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -5281,7 +5281,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: d41fcd8a7d42e478baa8f63963c9e750, type: 3}
+  m_Texture: {fileID: 2800000, guid: 473f29514e3ed1d4d8880fd433ef05f6, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -5496,7 +5496,8 @@ MonoBehaviour:
   m_text: X
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 40fcca4a4faeda24bb5d01a63d62beb9, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -7491266509361121700, guid: 40fcca4a4faeda24bb5d01a63d62beb9,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6922,7 +6923,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 2c336de86deed9d41913cdf7754ee5b2, type: 3}
+  m_Texture: {fileID: 2800000, guid: 6762b9a6c6b55ee4096b97a53eefeac8, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -9064,7 +9065,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 36dca2661a9eed24abb657f28ccb17d9, type: 3}
+  m_Texture: {fileID: 2800000, guid: 9fc1af60a0257d2459331efc7eed68b9, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -12858,13 +12859,14 @@ MonoBehaviour:
   m_text: "N\xE4sta"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4c143042fef502b42b8dc47c44ddab0c, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -7491266509361121700, guid: 4c143042fef502b42b8dc47c44ddab0c,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -13816,7 +13818,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 1302fe0a5c8034442a0301a6db1ec68a, type: 3}
+  m_Texture: {fileID: 2800000, guid: 7be5718299076a7448dd0ec9882c1011, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -17315,7 +17317,8 @@ MonoBehaviour:
   m_text: X
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 40fcca4a4faeda24bb5d01a63d62beb9, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -7491266509361121700, guid: 40fcca4a4faeda24bb5d01a63d62beb9,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -17745,13 +17748,14 @@ MonoBehaviour:
   m_text: Tillbaka
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4c143042fef502b42b8dc47c44ddab0c, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -7491266509361121700, guid: 4c143042fef502b42b8dc47c44ddab0c,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -19712,7 +19716,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 5930a80d5889a5e4783fed12476cc78a, type: 3}
+  m_Texture: {fileID: 2800000, guid: f6bdadfdc9d43c24ea8c5aaef69a7afb, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -20102,13 +20106,14 @@ MonoBehaviour:
   m_text: Tillbaka
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4c143042fef502b42b8dc47c44ddab0c, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -7491266509361121700, guid: 4c143042fef502b42b8dc47c44ddab0c,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -21172,7 +21177,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: ef0fbb8dce719c64db5b25e9b9b213a4, type: 3}
+  m_Texture: {fileID: 2800000, guid: ba04b0c1a2222e448a3df98af4fb838c, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
