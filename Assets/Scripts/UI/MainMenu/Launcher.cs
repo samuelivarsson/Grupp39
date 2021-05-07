@@ -202,8 +202,8 @@ public class Launcher : MonoBehaviourPunCallbacks
 
             Hashtable hash = new Hashtable();
             hash.Add("maxHealth", 5);
-            hash.Add("baseTime", 10000);
-            hash.Add("amountMultiplier", 5000);
+            hash.Add("baseTime", 360);
+            hash.Add("amountMultiplier", 100);
             hash.Add("taskDelay", 5000f);
             hash.Add("gameStarted", true);
             PhotonNetwork.CurrentRoom.SetCustomProperties(hash);

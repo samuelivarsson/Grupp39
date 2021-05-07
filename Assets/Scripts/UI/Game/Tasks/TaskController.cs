@@ -11,7 +11,7 @@ public class TaskController : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
 
     [SerializeField] Material[] materials;
     [SerializeField] Image bg;
-    [SerializeField] TMP_Text textProducts;
+    public TMP_Text textProducts;
 
     GameObject canvasManager;
     TaskTimer taskTimer;

@@ -97,7 +97,7 @@ public class TutorialController : MonoBehaviour
     private void BasicInformation()
     {
         if(Input.GetKeyUp(KeyCode.Return)) basicIndex++;
-        if (basicIndex > basicInformationStrings.Length)
+        if (basicIndex >= basicInformationStrings.Length)
         {
             basicInformation = false;
             movement = true;
@@ -172,9 +172,19 @@ public class TutorialController : MonoBehaviour
             }
         }
 
+        string[] products1 = new string[] { "Laptop" };
+        var task1 = taskToShow[0].GetComponent<TaskController>();
+        task1.requiredProducts = products1;
+        task1.textProducts.text = "Dator";
+
+        string[] products2 = new string[] { "Laptop", "Boll"};
+        var task2 = taskToShow[1].GetComponent<TaskController>();
+        task2.requiredProducts = products2;
+        task2.textProducts.text = "Dator \n Boll";
+
         // TODO: Hämta translatedProducts och ändra till en produkt och skriv om.
         // Ta bort timer
-        
+
     }
 
 
