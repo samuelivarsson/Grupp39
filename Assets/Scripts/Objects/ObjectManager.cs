@@ -51,8 +51,8 @@ public class ObjectManager : MonoBehaviour
             }
             else
             {
-                PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerLaptop"), new Vector3(6, (float)0.7, (float)13.2), new Quaternion(0, 0, 0, 0));
-                PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerBall"), new Vector3(8, (float)0.7, (float)13.2), new Quaternion(0, 0, 0, 0));
+                PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerLaptop"), new Vector3(6, (float)0.4, (float)13.2), Quaternion.Euler(0, 180, 0));
+                PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerBall"), new Vector3(8, (float)0.4, (float)13.2), new Quaternion(0, 0, 0, 0));
             }
             
             for (int i = 0; i < packageCount; i++)
