@@ -39,7 +39,7 @@ public class PlayerClimbController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         playerLiftController = GetComponent<PlayerLiftController>();
         heightChange = new Vector3(-0.1f, gameObject.transform.localScale.y*0.5f, -0.1f);
-        yPosChange = new Vector3(0, gameObject.transform.localScale.y*0.5f, 0);
+        yPosChange = Vector3.zero;//new Vector3(0, gameObject.transform.localScale.y*0.5f, 0);
     }
 
     void Update()

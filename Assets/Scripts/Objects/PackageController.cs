@@ -80,20 +80,12 @@ public class PackageController : MonoBehaviour, LiftablePackage
         {
             // The order was delivered -> Increment score and destroy products, package and task.
             ScoreController.Instance.IncrementScore(taskController.productAmount * scoreMultiplier);
-            DestroyProducts();
-            if (PV.IsMine)
-            {
-                // Destroy package
-                PhotonNetwork.Destroy(gameObject);
-            }
-            else PV.RPC("DestroyPackage", RpcTarget.OthersBuffered);
-            if (PhotonNetwork.IsMasterClient)
-            {
-                // Destroy task
-                PhotonNetwork.Destroy(taskObj);
-                TaskManager.Instance.GenerateNewTask(taskController.taskNr);
-            }
-            else taskPV.RPC("DestroyTask", RpcTarget.OthersBuffered);
+
+            // Destroy package
+            PV.RPC("DestroyPackage", RpcTarget.AllBuffered);
+
+            // Destroy task
+            taskPV.RPC("DestroyTask", RpcTarget.AllBuffered);
             print("The package contained the required products!");
             return true;
         }
@@ -105,7 +97,8 @@ public class PackageController : MonoBehaviour, LiftablePackage
         }
     }
 
-    void DestroyProducts()
+    [PunRPC]
+    public void DestroyPackage()
     {
         foreach (ProductController productController in GetComponentsInChildren<ProductController>())
         {
@@ -115,13 +108,7 @@ public class PackageController : MonoBehaviour, LiftablePackage
                 // Destroy product
                 PhotonNetwork.Destroy(productController.gameObject);
             }
-            else productPV.RPC("DestroyProduct", RpcTarget.OthersBuffered);
         }
-    }
-
-    [PunRPC]
-    void DestroyPackage()
-    {
         if (PV.IsMine) PhotonNetwork.Destroy(gameObject);
     }
 

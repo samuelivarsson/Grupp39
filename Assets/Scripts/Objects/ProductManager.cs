@@ -6,7 +6,7 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 public class ProductManager : MonoBehaviourPunCallbacks, ICreateController
 {
     [SerializeField] int balance;
-    string type;
+    public string type {get; set;}
 
     string balanceKey;
     PlayerLiftController playerLiftController;
@@ -19,6 +19,7 @@ public class ProductManager : MonoBehaviourPunCallbacks, ICreateController
         type = gameObject.name.Split('(')[0].Substring(gameObject.tag.Length);
         balanceKey = "balance" + PV.ViewID;
         playerLiftController = PlayerManager.myPlayerLiftController;
+        SetMaterials();
     }
 
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
@@ -52,5 +53,35 @@ public class ProductManager : MonoBehaviourPunCallbacks, ICreateController
         PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
 
         return true;
+    }
+
+    void SetMaterials()
+    {
+        // switch (type)
+        // {
+        //     case "Ball":
+        //         GetComponentInChildren<Renderer>().materials.CopyTo(PickUpCheck.standardBall, 0);
+        //         break;
+
+        //     case "Bear":
+        //         GetComponentInChildren<Renderer>().materials.CopyTo(PickUpCheck.standardBear, 0);
+        //         break;
+            
+        //     case "Boat":
+        //         GetComponentInChildren<Renderer>().materials.CopyTo(PickUpCheck.standardBoat, 0);
+        //         break;
+
+        //     case "Book":
+        //         GetComponentInChildren<Renderer>().materials.CopyTo(PickUpCheck.standardBook, 0);
+        //         break;
+
+        //     case "Car":
+        //         GetComponentInChildren<Renderer>().materials.CopyTo(PickUpCheck.standardCar, 0);
+        //         break;
+
+        //     case "Laptop":
+        //         GetComponentInChildren<Renderer>().materials.CopyTo(PickUpCheck.standardLaptop, 0);
+        //         break;
+        // }
     }
 }

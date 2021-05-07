@@ -45,9 +45,10 @@ public class DisconnectHandler : MonoBehaviourPunCallbacks
                 TryReconnectAndRejoin();
                 break;
             case DisconnectCause.None:
+            case DisconnectCause.DisconnectByClientLogic:
+                break;
             case DisconnectCause.OperationNotAllowedInCurrentState:
             case DisconnectCause.CustomAuthenticationFailed:
-            case DisconnectCause.DisconnectByClientLogic:
             case DisconnectCause.InvalidAuthentication:
             case DisconnectCause.ExceptionOnConnect:
                 TryReconnectAndRejoin();

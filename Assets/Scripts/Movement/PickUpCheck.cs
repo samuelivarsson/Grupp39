@@ -7,6 +7,7 @@ public class PickUpCheck : MonoBehaviour
     PlayerLiftController playerLiftController;
     PlayerPackController playerPackController;
     PlayerClimbController playerClimbController;
+    PlayerMultiLiftController playerMultiLiftController;
 
     void Awake()
     {
@@ -14,10 +15,14 @@ public class PickUpCheck : MonoBehaviour
         playerLiftController = GetComponentInParent<PlayerLiftController>();
         playerPackController = GetComponentInParent<PlayerPackController>();
         playerClimbController = GetComponentInParent<PlayerClimbController>();
+        playerMultiLiftController = GetComponentInParent<PlayerMultiLiftController>();
     }
 
     void OnTriggerEnter(Collider other)
     {
+        IHighlight highlighter = GetHighlighter(other.gameObject);
+        if (highlighter != null && PV.IsMine && !playerMultiLiftController.isMultiLifting) highlighter.Highlight(true);
+
         if (other.CompareTag("ProductController") && other.GetComponent<ProductController>().isPackaged) return;
 
         if (other.gameObject != playerLiftController.gameObject && PV.IsMine)
@@ -44,6 +49,9 @@ public class PickUpCheck : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
+        IHighlight highlighter = GetHighlighter(other.gameObject);
+        if (highlighter != null && PV.IsMine) highlighter.Highlight(false);
+
         if (other.CompareTag("ProductController") && other.GetComponent<ProductController>().isPackaged) return;
 
         if (other.gameObject != playerLiftController.gameObject && PV.IsMine)
@@ -67,6 +75,8 @@ public class PickUpCheck : MonoBehaviour
     
     void OnTriggerStay(Collider other)
     {
+        IHighlight highlighter = GetHighlighter(other.gameObject);
+        if (other.gameObject.CompareTag("PackageController") && playerMultiLiftController.isMultiLifting) highlighter.Highlight(false);
         if (other.CompareTag("ProductController") && other.GetComponent<ProductController>().isPackaged) return;
 
         if (other.gameObject != playerLiftController.gameObject && PV.IsMine)
@@ -86,5 +96,10 @@ public class PickUpCheck : MonoBehaviour
         {
             playerClimbController.canClimbID = other.gameObject.GetComponent<PhotonView>().ViewID;
         }
+    }
+
+    public static IHighlight GetHighlighter(GameObject obj)
+    {
+        return obj.CompareTag("ProductController") || obj.CompareTag("ProductManager") ? obj.GetComponent<ProductHighlight>() as IHighlight : obj.GetComponent<PackageHighlight>() as IHighlight;
     }
 }

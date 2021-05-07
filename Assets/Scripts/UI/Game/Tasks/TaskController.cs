@@ -77,23 +77,23 @@ public class TaskController : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
     {
         switch(prodName)
         {
-            case "Green":
-                return "Grön";
+            case "Book":
+                return "Bok";
 
-            case "Blue":
-                return "Blå";
+            case "Car":
+                return "Bil";
             
-            case "Red":
-                return "Röd";
+            case "Ball":
+                return "Boll";
 
-            case "Cyan":
-                return "Turkos";
+            case "Boat":
+                return "Båt";
             
-            case "Yellow":
-                return "Gul";
+            case "Laptop":
+                return "Dator";
             
             default:
-                return "Rosa";
+                return "Nallebjörn";
         }
     }
 }

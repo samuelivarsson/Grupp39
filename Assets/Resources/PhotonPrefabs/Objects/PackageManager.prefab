@@ -794,6 +794,7 @@ GameObject:
   - component: {fileID: 1115476648877536581}
   - component: {fileID: 3631734112957662894}
   - component: {fileID: 7270014342040811899}
+  - component: {fileID: 6867206527911363553}
   m_Layer: 0
   m_Name: PackageManager
   m_TagString: PackageManager
@@ -863,6 +864,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9456be0f4f3db04b88d72482d67fdcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6867206527911363553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7301509492861991149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9067a51d0f8bce448b32796ad753587f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  renderers:
+  - {fileID: 2821919259215918477}
+  - {fileID: 8635639284336982628}
+  - {fileID: 6963677561194386430}
+  - {fileID: 2937148767023433250}
+  - {fileID: 7546958777702207490}
+  - {fileID: 4981417147040869435}
+  - {fileID: 3434844970065568757}
+  - {fileID: 313245620230238206}
+  - {fileID: 2267195426757899121}
+  - {fileID: 1881222724803727280}
+  tapeRenderers:
+  - {fileID: 6161397831268401721}
+  - {fileID: 4377358615960352302}
+  - {fileID: 7267636679709934551}
 --- !u!1 &7372899073379044031
 GameObject:
   m_ObjectHideFlags: 0
