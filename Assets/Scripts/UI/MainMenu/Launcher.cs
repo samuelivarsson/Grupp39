@@ -30,6 +30,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     public const int maxPlayers = 4;
     int playersLeftToFillRoom;
 
+    bool startGamePressed = false;
     bool rejoinCalled = false;
     string latestRoomName;
 
@@ -37,8 +38,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     const float timeBetweenRetries = 3f;
     float connectAgainTimer = timeBetweenRetries;
 
-    List<string> characterList = new List<string> {"Long", "Normal", "Strong", "Fast"};
-    List<int> spawnPointList = new List<int>();
+    List<string> characterList;
+    List<int> spawnPointList;
 
     Dictionary<string, RoomListItem> cachedRoomList = new Dictionary<string, RoomListItem>();
     List<string> abandonedRooms = new List<string>();
@@ -48,10 +49,6 @@ public class Launcher : MonoBehaviourPunCallbacks
     void Awake()
     {
         Instance = this;
-        for (int i = 0; i < maxPlayers; i++)
-        {
-            spawnPointList.Add(i);
-        }
     }
 
     void Start()
@@ -147,12 +144,17 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void StartGame()
     {
+        if (startGamePressed) return;
+        
+        startGamePressed = true;
+        tutorial = false;
         /*if (PhotonNetwork.CurrentRoom.PlayerCount != maxPlayers)
         {
             playersLeftToFillRoom = maxPlayers- PhotonNetwork.CurrentRoom.PlayerCount;
             PopupInfo.Instance.Popup("Det saknas " + playersLeftToFillRoom + " spelare för att kunna starta spelet", 5);
             return;
         }*/
+        SetLists();
         for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
             Hashtable hash = new Hashtable();
@@ -182,6 +184,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         // When the last player has updated the room properties -> Start the game.
         string lastPlayerUserID = PhotonNetwork.PlayerList[PhotonNetwork.PlayerList.Length-1].UserId;
         if (propertiesThatChanged[lastPlayerUserID+"Character"] != null) PhotonNetwork.LoadLevel(1);
+        startGamePressed = false;
     }
 
     public void RejoinRoom()
@@ -293,6 +296,16 @@ public class Launcher : MonoBehaviourPunCallbacks
     }
 
     // ------------------------------------------------------ Helper Methods ------------------------------------------------------
+
+    void SetLists()
+    {
+        characterList = new List<string> {"Long", "Normal", "Strong", "Fast"};
+        spawnPointList = new List<int>();
+        for (int i = 0; i < maxPlayers; i++)
+        {
+            spawnPointList.Add(i);
+        }
+    }
 
     void UpdateCachedRoomList(List<RoomInfo> roomList)
     {
