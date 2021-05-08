@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 using Photon.Pun;
-using String = System.String;
+using System.Collections.Generic;
 using UnityEngine.UI;
-using TMPro;
 
 public class TaskController : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
 {
@@ -11,7 +10,12 @@ public class TaskController : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
 
     [SerializeField] Material[] materials;
     [SerializeField] Image bg;
-    [SerializeField] TMP_Text textProducts;
+    [SerializeField] Texture[] pictures;
+
+    [SerializeField] GameObject[] slots;
+    [SerializeField] GameObject[] pluss;
+
+    Dictionary<string, Texture> pics = new Dictionary<string, Texture>();
 
     GameObject canvasManager;
     TaskTimer taskTimer;
@@ -56,15 +60,7 @@ public class TaskController : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
 
         requiredProducts = (string[]) initData[3];
 
-        string[] translatedProducts = new string[requiredProducts.Length];
-
-        for (int i = 0; i < requiredProducts.Length; i++)
-        {
-            translatedProducts[i] = Translate(requiredProducts[i]);
-        }
-
-        string text = String.Join("\n", translatedProducts);
-        textProducts.text = text;
+        SetPictures(requiredProducts);
 
         int time = (int) initData[4];
         taskTimer.maxTime = time;
@@ -73,27 +69,53 @@ public class TaskController : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
         taskTimer.timerActive = true;
     }
 
-    string Translate(string prodName)
+    void SetPictures(string[] requiredProducts)
     {
-        switch(prodName)
+        for (int i = 0; i < pictures.Length; i++)
         {
-            case "Book":
-                return "Bok";
-
-            case "Car":
-                return "Bil";
-            
-            case "Ball":
-                return "Boll";
-
-            case "Boat":
-                return "Båt";
-            
-            case "Laptop":
-                return "Dator";
-            
-            default:
-                return "Nallebjörn";
+            pics.Add(ObjectManager.possibleProducts[i], pictures[i]);
         }
+        for (int i = 0; i < requiredProducts.Length; i++)
+        {
+            // Activate slots and plus signs in between
+            slots[i].SetActive(true);
+            if (i > 0) pluss[i-1].SetActive(true);
+
+            // Set pictures
+            RawImage rawImage = slots[i].GetComponentInChildren<RawImage>();
+            rawImage.texture = pics[requiredProducts[i]];
+            rawImage.SizeToParent();
+        }
+    }
+}
+
+static class CanvasExtensions
+{
+    public static Vector2 SizeToParent(this RawImage image, float padding = 0) {
+        float w = 0, h = 0;
+        var parent = image.GetComponentInParent<RectTransform>();
+        var imageTransform = image.GetComponent<RectTransform>();
+
+        // check if there is something to do
+        if (image.texture != null) {
+            if (!parent) { return imageTransform.sizeDelta; } //if we don't have a parent, just return our current width;
+            padding = 1 - padding;
+            float ratio = image.texture.width / (float)image.texture.height;
+            var bounds = new Rect(0, 0, parent.rect.width, parent.rect.height);
+            if (Mathf.RoundToInt(imageTransform.eulerAngles.z) % 180 == 90) {
+                //Invert the bounds if the image is rotated
+                bounds.size = new Vector2(bounds.height, bounds.width);
+            }
+            //Size by height first
+            h = bounds.height * padding;
+            w = h * ratio;
+            if (w > bounds.width * padding) { //If it doesn't fit, fallback to width;
+                w = bounds.width * padding;
+                h = w / ratio;
+            }
+        }
+        imageTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, w);
+        imageTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, h);
+        return imageTransform.sizeDelta;
     }
 }

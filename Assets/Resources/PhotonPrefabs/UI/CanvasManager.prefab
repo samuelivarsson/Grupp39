@@ -260,7 +260,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   infoText: {fileID: 284661733}
-  bg: {fileID: 181091897}
 --- !u!225 &5068213622553530118
 CanvasGroup:
   m_ObjectHideFlags: 0
