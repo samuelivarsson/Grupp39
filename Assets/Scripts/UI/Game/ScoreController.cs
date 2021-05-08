@@ -23,7 +23,6 @@ public class ScoreController : MonoBehaviourPunCallbacks
     void Awake()
     {
         canvasManager = CanvasManager.Instance.gameObject;
-        score = 0;
         gameObject.transform.SetParent(canvasManager.transform);
         GetComponent<RectTransform>().anchoredPosition3D = startPos;
         GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
@@ -35,8 +34,15 @@ public class ScoreController : MonoBehaviourPunCallbacks
         Instance = this;
     }
 
+    void Start()
+    {
+        score = (int) PhotonNetwork.CurrentRoom.CustomProperties["score"];
+        text.text = score.ToString();
+    }
+
     public void IncrementScore(int change)
     {
+        score = (int) PhotonNetwork.CurrentRoom.CustomProperties["score"];
         Hashtable hash = new Hashtable();
         score += change;
         hash.Add("score", score);

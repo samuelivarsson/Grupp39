@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ProductHighlight : MonoBehaviour, IHighlight
 {
@@ -14,14 +12,10 @@ public class ProductHighlight : MonoBehaviour, IHighlight
     {
         type = gameObject.CompareTag("ProductController") ? GetComponent<ProductController>().type : GetComponent<ProductManager>().type;
         SetMats();
-        print("mats set");
     }
 
     public void Highlight(bool highlight)
     {
-        if (rend.materials == null) print("1");
-        if (highlightedMats == null) print("2");
-        if (standardMats == null) print("3");
         rend.materials = highlight ? highlightedMats : standardMats;
     }
 

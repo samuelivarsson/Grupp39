@@ -130,6 +130,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         hash.Add("visible", true);
         hash.Add("gOver", false);
         hash.Add("gameStarted", false);
+        hash.Add("score", 0);
         roomOptions.CustomRoomProperties = hash;
         PhotonNetwork.CreateRoom(roomNameInputField.text, roomOptions);
         PhotonNetwork.NickName = createNickNameInputField.text;
@@ -145,7 +146,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     public void StartGame()
     {
         if (startGamePressed) return;
-        
+
         startGamePressed = true;
         tutorial = false;
         /*if (PhotonNetwork.CurrentRoom.PlayerCount != maxPlayers)
@@ -226,6 +227,7 @@ public class Launcher : MonoBehaviourPunCallbacks
             hash.Add("amountMultiplier", 100);
             hash.Add("taskDelay", 30000f);
             hash.Add("gameStarted", true);
+            hash.Add("score", 0);
             PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
 
             PhotonNetwork.LoadLevel(2);
