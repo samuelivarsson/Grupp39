@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class TutorialController : MonoBehaviour
 {
-    public static TutorialController Instance;
-
     bool basicInformation = false;
     bool changeTask = true;
     bool movement = false;
@@ -13,7 +11,7 @@ public class TutorialController : MonoBehaviour
     bool packedProduct = false;
     bool taped = false;
     bool delivered = false;
-    public bool noWalk { get; set; } = true;
+    bool tutorialFinished = false;
 
     GameObject player;
     List<TaskController> taskToShow = new List<TaskController>();
@@ -24,6 +22,7 @@ public class TutorialController : MonoBehaviour
         "På pallarna i högra hörnet hittar du paket, Klicka på Enter för att fortsätta",
         "På hyllorna till vänster hittar du de olika produkterna som kan paketeras, Klicka på Enter för att fortsätta",
         "Bänken till höger är en tejpstation där paketen ska tejpas, Klicka på Enter för att fortsätta",
+        "Bredvid tejpstationen hittar du en soptunna, där kan man lämna paket som blivit fel paketerade, Klicka på Enter för att fortsätta",
         "På högra sidan av skärmen hittar du alla ordrar, färgen på ordern matchar vilken lastbil den ska levereras till, Klicka på Enter för att fortsätta",
         "Uppe till vänster på skärmen ser du hur många poäng du har, Klicka på Enter för att fortsätta",
         "I mitten av skärem högst upp ser du hur många liv du har kvar, du tappar liv genom att missa en order, Klicka på Enter för att fortsätta",
@@ -50,7 +49,6 @@ public class TutorialController : MonoBehaviour
         else if(basicInformation)
         {
             BasicInformation();
-            noWalk = false;
         }
         else if(movement)
         {
@@ -95,7 +93,27 @@ public class TutorialController : MonoBehaviour
         else if(delivered)
         {
             PopupInfo.Instance.Popup("Nu är paketet redo att levereras, du kan nu släppa lådan bakom den rosa lastbilen för att leverera!", 1000000);
+
+            if(PackagedDelivered())
+            {
+                delivered = false;
+                tutorialFinished = true;
+            }
         }
+        else if(tutorialFinished)
+        {
+            PopupInfo.Instance.Popup("Du har nu lärt dig grunderna i spelet. Fortsätta öva på att leverera det sista paketet eller läman rummet och spela med dina kompisar. Du kan lämna genom att klicka på Esc och sedan ´´Lämna rum¨", 1000000);
+        }
+    }
+
+    private bool PackagedDelivered()
+    {
+        if(ScoreController.Instance.score > 0)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private void BasicInformation()
@@ -181,19 +199,11 @@ public class TutorialController : MonoBehaviour
         task1.requiredProducts = products1;
         task1.textProducts.text = "Dator";
 
-        string[] products2 = new string[] { "Laptop", "Boll"};
+        string[] products2 = new string[] { "Laptop", "Ball"};
         var task2 = taskToShow[1].GetComponent<TaskController>();
         task2.requiredProducts = products2;
         task2.textProducts.text = "Dator \n Boll";
-
-        // TODO: Hämta translatedProducts och ändra till en produkt och skriv om.
-        // Ta bort timer
-
     }
-
-
-    // TODO: Fixa tasksen så de är lätta och har oändligt med tid, se till att det bara finns en task
-    // TODO: Lägga in en soptunna
 
     // TODO: Lägga till en delay innan nästa instruktion kommer upp och ge användaren beröm för det hen har gjort. "Bra jobbat, du har nu paketerat ditt första paket"
 }

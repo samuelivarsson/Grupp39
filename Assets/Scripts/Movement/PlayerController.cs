@@ -55,7 +55,7 @@ public class PlayerController : MonoBehaviour
         bool gameStarted = (bool) PhotonNetwork.CurrentRoom.CustomProperties["gameStarted"];
         if (!PV.IsMine || TaskManager.Instance == null || !gameStarted) return;
         SetCondition();
-        if (playerPC.isTaping || playerCC.isCrouching || (TutorialController.Instance.noWalk && Launcher.tutorial))
+        if (playerPC.isTaping || playerCC.isCrouching)
         {
             moveAmount = Vector3.zero;
             moveDir = Vector3.zero;
