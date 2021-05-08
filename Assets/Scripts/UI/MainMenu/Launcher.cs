@@ -147,12 +147,12 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void StartGame()
     {
-        if (PhotonNetwork.CurrentRoom.PlayerCount != maxPlayers)
+        /*if (PhotonNetwork.CurrentRoom.PlayerCount != maxPlayers)
         {
             playersLeftToFillRoom = maxPlayers- PhotonNetwork.CurrentRoom.PlayerCount;
             PopupInfo.Instance.Popup("Det saknas " + playersLeftToFillRoom + " spelare för att kunna starta spelet", 5);
             return;
-        }
+        }*/
         for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
             Hashtable hash = new Hashtable();

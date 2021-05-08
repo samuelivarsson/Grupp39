@@ -91,10 +91,33 @@ public class TaskManager : MonoBehaviour
 
     void CreateTasks()
     {
-        for (int i = 0; i < maxTasks; i++)
-        {
-            CreateTask(i);
-        }
+        
+            if(!PhotonNetwork.OfflineMode)
+            {
+                for (int i = 0; i < maxTasks; i++)
+                {
+                    CreateTask(i);
+                }
+            }
+            else
+            {
+                for(int i = 1; i < 3; i++)
+                {
+                    CreateOfflineTask(i);
+                }
+            }
+            
+        
+    }
+
+    void CreateOfflineTask(int i)
+    {
+        string tag = "Task" + i;
+        int productAmount = i;
+        string[] requiredProducts = i == 1 ? new string[] { "Laptop" } : new string[] { "Laptop", "Ball" };
+        int time = baseTime + (productAmount * amountMultiplier);
+        object[] initData = { tag, i, productAmount, requiredProducts, time };
+        GameObject taskObj = PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "UI", "Tasks", "Task"), Vector3.zero, Quaternion.identity, 0, initData);
     }
 
     public void GenerateNewTask(int i)

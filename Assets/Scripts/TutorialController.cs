@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TutorialController : MonoBehaviour
 {
-    bool basicInformation = false;
+    bool basicInformation = true;
     bool changeTask = true;
     bool movement = false;
     bool pickUp = false;
@@ -39,14 +39,13 @@ public class TutorialController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        if(changeTask)
+        /*if(changeTask)
         {
             ChangeTasks();
             changeTask = false;
             basicInformation = true;
-        }
-        else if(basicInformation)
+        }*/
+        if(basicInformation)
         {
             BasicInformation();
         }
@@ -197,12 +196,12 @@ public class TutorialController : MonoBehaviour
         string[] products1 = new string[] { "Laptop" };
         var task1 = taskToShow[0].GetComponent<TaskController>();
         task1.requiredProducts = products1;
-        task1.textProducts.text = "Dator";
+        task1.SetPictures(task1.requiredProducts);
 
         string[] products2 = new string[] { "Laptop", "Ball"};
         var task2 = taskToShow[1].GetComponent<TaskController>();
         task2.requiredProducts = products2;
-        task2.textProducts.text = "Dator \n Boll";
+        task2.SetPictures(task2.requiredProducts);
     }
 
     // TODO: Lägga till en delay innan nästa instruktion kommer upp och ge användaren beröm för det hen har gjort. "Bra jobbat, du har nu paketerat ditt första paket"
