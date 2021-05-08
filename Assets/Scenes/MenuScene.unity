@@ -6721,7 +6721,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 648deaca9a2aaca49b799325a342d7cc, type: 3}
+  m_Texture: {fileID: 2800000, guid: a713f9dbaf30617468cd3b4681d1348f, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -13348,7 +13348,6 @@ GameObject:
   - component: {fileID: 1358918602}
   - component: {fileID: 1358918601}
   - component: {fileID: 1358918600}
-  - component: {fileID: 1358918603}
   m_Layer: 0
   m_Name: RoomManager
   m_TagString: Untagged
@@ -13404,26 +13403,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1358918603
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1358918599}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5867a53c8db0e6745818285bb6b6e1b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  WindowRect:
-    serializedVersion: 2
-    x: 0
-    y: 100
-    width: 120
-    height: 100
-  WindowId: 101
-  Visible: 1
 --- !u!1 &1367125578
 GameObject:
   m_ObjectHideFlags: 0

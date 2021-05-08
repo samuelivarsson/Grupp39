@@ -57,8 +57,8 @@ public class Launcher : MonoBehaviourPunCallbacks
 
         // Connecting to master server (Set to eu in PhotonServerSettings)
         Debug.Log("Connecting to the master server...");
-        // AuthenticationValues authValues = new AuthenticationValues(PlayerPrefs.GetString("userid", ""));
-        // PhotonNetwork.AuthValues = authValues;
+        AuthenticationValues authValues = new AuthenticationValues(PlayerPrefs.GetString("userid", ""));
+        PhotonNetwork.AuthValues = authValues;
         PhotonNetwork.ConnectUsingSettings();
     }
 
@@ -144,12 +144,12 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void StartGame()
     {
-     /*   if (PhotonNetwork.CurrentRoom.PlayerCount != maxPlayers)
+        if (PhotonNetwork.CurrentRoom.PlayerCount != maxPlayers)
         {
             playersLeftToFillRoom = maxPlayers- PhotonNetwork.CurrentRoom.PlayerCount;
             PopupInfo.Instance.Popup("Det saknas " + playersLeftToFillRoom + " spelare för att kunna starta spelet", 5);
             return;
-        } */
+        }
         for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
             Hashtable hash = new Hashtable();

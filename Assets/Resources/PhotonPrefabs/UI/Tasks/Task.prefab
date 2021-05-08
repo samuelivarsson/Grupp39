@@ -1516,11 +1516,11 @@ MonoBehaviour:
   - {fileID: 2100000, guid: a9a54170011adb84fa16973e9826a837, type: 2}
   bg: {fileID: 4774554098591987985}
   pictures:
-  - {fileID: 2800000, guid: e52d00aa58345394983a588c5abd63b6, type: 3}
+  - {fileID: 2800000, guid: f3ddf6fe76fd6c548abff145e37a14bf, type: 3}
   - {fileID: 2800000, guid: 8471ae8fb02aa4b47ad2410d4df4de56, type: 3}
   - {fileID: 2800000, guid: 0c3ef5dd3d9435548bae9ad7ce70c127, type: 3}
   - {fileID: 2800000, guid: 517482ee0ae9c3d42ad1c08628df75d3, type: 3}
-  - {fileID: 2800000, guid: b60069c823ff8c442b104da4c6ee8da1, type: 3}
+  - {fileID: 2800000, guid: a00d2f327a14e5849bb18362549ac2c0, type: 3}
   - {fileID: 2800000, guid: c1531987e4327a1409087300fd7b8c06, type: 3}
   slots:
   - {fileID: 3846784242014338209}
