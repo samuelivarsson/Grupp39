@@ -24,8 +24,8 @@ public class TaskManager : MonoBehaviour
     float taskDelay;
 
     // Time in seconds
-    int baseTime;
-    int amountMultiplier;
+    public int baseTime {get; set;}
+    public int amountMultiplier {get; set;}
 
     float[] countDownTimes = new float[maxTasks];
     bool[] countDownBools = new bool[maxTasks];

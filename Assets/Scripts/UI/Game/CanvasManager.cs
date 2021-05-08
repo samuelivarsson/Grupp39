@@ -44,6 +44,7 @@ public class CanvasManager : MonoBehaviourPunCallbacks
         GameObject healthObj = PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "UI", "Health", "HealthManager"), Vector3.zero, Quaternion.identity);
         GameObject scoreObj = PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "UI", "ScoreController"), Vector3.zero,  Quaternion.identity);
         GameObject taskObj = PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "UI", "Tasks", "TaskManager"), Vector3.zero,  Quaternion.identity);
+        GameObject info = PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "UI", "Info"), Vector3.zero, Quaternion.identity);
     }
     
     public void LeaveRoom()

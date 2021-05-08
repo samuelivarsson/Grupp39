@@ -87,6 +87,13 @@ public class PlayerLiftController : MonoBehaviour
 
     void Lift()
     {
+        // Long player unable to lift stuff on the floor
+        if (latestTile.CompareTag("PlaceableTile") && character.characterType.Equals("Long"))
+        {
+            PopupInfo.Instance.Popup("Den långa karaktären kan inte lyfta lådor från golvet", 7);
+            return;
+        }
+
         float eulerY = ClosestAngle(latestCollision.transform.rotation.eulerAngles.y - gameObject.transform.rotation.eulerAngles.y);
         PV.RPC("OnLift", RpcTarget.AllBufferedViaServer, latestCollision.GetComponent<PhotonView>().ViewID, eulerY);
     }
@@ -179,7 +186,7 @@ public class PlayerLiftController : MonoBehaviour
         // Long player unable to drop stuff on the floor
         if (latestTile.CompareTag("PlaceableTile") && character.characterType.Equals("Long"))
         {
-            PopupInfo.Instance.Popup("Den långa karaktären kan inte placera en låda på golvet", 7);
+            PopupInfo.Instance.Popup("Den långa karaktären kan inte placera lådor på golvet", 7);
             return;
         }
 

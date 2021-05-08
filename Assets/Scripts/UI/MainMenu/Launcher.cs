@@ -28,7 +28,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     // 10 seconds before the room gets removed after there are no players left.
     const int roomTtl = 10000;
     public const int maxPlayers = 4;
-    
+    int playersLeftToFillRoom;
+
     bool rejoinCalled = false;
     string latestRoomName;
 
@@ -59,8 +60,8 @@ public class Launcher : MonoBehaviourPunCallbacks
 
         // Connecting to master server (Set to eu in PhotonServerSettings)
         Debug.Log("Connecting to the master server...");
-        // AuthenticationValues authValues = new AuthenticationValues(PlayerPrefs.GetString("userid", ""));
-        // PhotonNetwork.AuthValues = authValues;
+        AuthenticationValues authValues = new AuthenticationValues(PlayerPrefs.GetString("userid", ""));
+        PhotonNetwork.AuthValues = authValues;
         PhotonNetwork.ConnectUsingSettings();
     }
 
@@ -104,10 +105,18 @@ public class Launcher : MonoBehaviourPunCallbacks
   
     public void CreateRoom()
     {
-        if(string.IsNullOrEmpty(roomNameInputField.text) || string.IsNullOrEmpty(createNickNameInputField.text))
+        if(string.IsNullOrEmpty(roomNameInputField.text))
         {
-          return;
+            PopupInfo.Instance.Popup("Du måste ange ett namn till rummet innan du kan skapa det", 5);
+            return;
         }
+
+        if (string.IsNullOrEmpty(createNickNameInputField.text))
+        {
+            PopupInfo.Instance.Popup("Du måste ange ett smeknamn innan du kan skapa ett rum", 5);
+            return;
+        }
+
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = maxPlayers;
         roomOptions.PublishUserId = true;
@@ -138,8 +147,12 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void StartGame()
     {
-        //if (PhotonNetwork.CurrentRoom.PlayerCount != maxPlayers) return;
-
+        if (PhotonNetwork.CurrentRoom.PlayerCount != maxPlayers)
+        {
+            playersLeftToFillRoom = maxPlayers- PhotonNetwork.CurrentRoom.PlayerCount;
+            PopupInfo.Instance.Popup("Det saknas " + playersLeftToFillRoom + " spelare för att kunna starta spelet", 5);
+            return;
+        }
         for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
             Hashtable hash = new Hashtable();
@@ -187,7 +200,11 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void JoinRoom(RoomInfo info)
     {        
-        if (string.IsNullOrEmpty(findNickNameInputField.text)) return;
+        if (string.IsNullOrEmpty(findNickNameInputField.text))
+        {
+            PopupInfo.Instance.Popup("Du måste ange ett smeknamn innan du kan gå med i rummet", 5);
+            return;
+        }
         
         PhotonNetwork.JoinRoom(info.Name);
         PhotonNetwork.NickName = findNickNameInputField.text;       

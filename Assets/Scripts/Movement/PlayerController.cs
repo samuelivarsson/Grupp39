@@ -107,8 +107,8 @@ public class PlayerController : MonoBehaviour
     void SetCondition()
     {
         int condition;
-        if (playerLC.IsLifting(-1)) condition = (moveDir == Vector3.zero) ? 0 : 1;
-        else condition = (moveDir == Vector3.zero) ? 2 : 3;
+        if (playerLC.IsLifting(-1)) condition = (moveDir == Vector3.zero || playerCC.isClimbing) ? 0 : 1;
+        else condition = (moveDir == Vector3.zero || playerCC.isClimbing) ? 2 : 3;
         anim.SetInteger("condition", condition);
     }
 }

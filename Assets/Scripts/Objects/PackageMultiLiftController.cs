@@ -191,7 +191,7 @@ public class PackageMultiLiftController : MonoBehaviour
         confJoint.anchor = anchor;
         confJoint.axis = Vector3.zero;
         confJoint.autoConfigureConnectedAnchor = false;
-        confJoint.connectedAnchor = new Vector3(0, 0.8f, 0.5f);
+        confJoint.connectedAnchor = new Vector3(0, 0.8f, 0.4f);
         confJoint.xMotion = ConfigurableJointMotion.Locked;
         confJoint.yMotion = ConfigurableJointMotion.Limited;
         confJoint.zMotion = ConfigurableJointMotion.Locked;
@@ -206,7 +206,7 @@ public class PackageMultiLiftController : MonoBehaviour
 
     public Vector3 CalculateLocalAnchor(PlayerLiftController player)
     {
-        float offset1 = 0.5f;
+        float offset1 = 0.4f;
         Vector3[] list = {new Vector3(offset1, 0, 0), new Vector3(-offset1, 0, 0), new Vector3(0, 0, offset1), new Vector3(0, 0, -offset1)};
 
         Vector3 anchor = list[0];

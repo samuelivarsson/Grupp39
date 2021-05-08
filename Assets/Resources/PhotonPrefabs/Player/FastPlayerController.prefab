@@ -341,7 +341,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   font: {fileID: 12800000, guid: a7c455c5d4a5cf04396d941ee996e4b5, type: 3}
-  face: {fileID: 11400000, guid: ff621b8d20b66fd4bac7dbf2c94e5f31, type: 2}
+  head: {fileID: 6214222205220357479}
 --- !u!1001 &5512031509583204388
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -515,7 +515,7 @@ PrefabInstance:
     - target: {fileID: 6170014291479207502, guid: 2eb2d98a3b026a943b6ff59847e20577,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.7
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 6170014291479207502, guid: 2eb2d98a3b026a943b6ff59847e20577,
         type: 3}
