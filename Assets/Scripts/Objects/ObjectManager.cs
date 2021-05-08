@@ -41,15 +41,24 @@ public class ObjectManager : MonoBehaviour
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            for (int i = 0; i < productCount; i++)
+            if (!PhotonNetwork.OfflineMode)
             {
-                Transform spawnPoint = GetProductSpawnPoint();
-                PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManager"+possibleProducts[i]), spawnPoint.position,  spawnPoint.rotation);
+                for (int i = 0; i < productCount; i++)
+                {
+                    Transform spawnPoint = GetProductSpawnPoint();
+                    PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManager" + possibleProducts[i]), spawnPoint.position, spawnPoint.rotation);
+                }
+                for (int i = 0; i < packageCount; i++)
+                {
+                    Transform pkgSpawnPoint = GetPackageSpawnPoint();
+                    PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "PackageManager"), pkgSpawnPoint.position, pkgSpawnPoint.rotation);
+                }
             }
-            for (int i = 0; i < packageCount; i++)
+            else
             {
-                Transform pkgSpawnPoint = GetPackageSpawnPoint();
-                PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "PackageManager"), pkgSpawnPoint.position, pkgSpawnPoint.rotation);
+                PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerLaptop"), new Vector3(6, (float)0.4, (float)13.2), Quaternion.Euler(0, 180, 0));
+                PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerBall"), new Vector3(8, (float)0.4, (float)13.2), new Quaternion(0, 0, 0, 0));
+                PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "PackageManager"), new Vector3((float)14.5, (float)0.9, (float)5.4), new Quaternion(0, 0, 0, 0));
             }
         }
     }

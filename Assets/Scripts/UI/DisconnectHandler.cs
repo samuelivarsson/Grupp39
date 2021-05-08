@@ -45,10 +45,16 @@ public class DisconnectHandler : MonoBehaviourPunCallbacks
                 TryReconnectAndRejoin();
                 break;
             case DisconnectCause.None:
-            case DisconnectCause.DisconnectByClientLogic:
-                break;
             case DisconnectCause.OperationNotAllowedInCurrentState:
             case DisconnectCause.CustomAuthenticationFailed:
+            case DisconnectCause.DisconnectByClientLogic:
+                if(Launcher.tutorial)
+                {
+                    PhotonNetwork.OfflineMode = true;
+                    PhotonNetwork.CreateRoom("Tutorial");
+                    return;
+                }
+                break;
             case DisconnectCause.InvalidAuthentication:
             case DisconnectCause.ExceptionOnConnect:
                 TryReconnectAndRejoin();

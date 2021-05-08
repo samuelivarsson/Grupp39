@@ -87,6 +87,8 @@ public class PlayerPackController : MonoBehaviour
         // Set booleans and liftingID
         prd.isLifted = false;
         prd.isPackaged = true;
+        canPackID = -1;
+        latestCollision = null;
         GetComponent<PlayerLiftController>().liftingID = -1;
     }
 

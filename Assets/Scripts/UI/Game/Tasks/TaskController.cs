@@ -60,6 +60,7 @@ public class TaskController : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
 
         requiredProducts = (string[]) initData[3];
 
+        SetDictionary();
         SetPictures(requiredProducts);
 
         int time = (int) initData[4];
@@ -69,12 +70,17 @@ public class TaskController : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
         taskTimer.timerActive = true;
     }
 
-    void SetPictures(string[] requiredProducts)
+    void SetDictionary()
     {
         for (int i = 0; i < pictures.Length; i++)
         {
             pics.Add(ObjectManager.possibleProducts[i], pictures[i]);
         }
+    }
+
+    public void SetPictures(string[] requiredProducts)
+    {
+        
         for (int i = 0; i < requiredProducts.Length; i++)
         {
             // Activate slots and plus signs in between
