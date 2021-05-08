@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class TutorialController : MonoBehaviour
 {
+    public static TutorialController Instance;
+
     bool basicInformation = false;
     bool changeTask = true;
     bool movement = false;
@@ -11,6 +13,7 @@ public class TutorialController : MonoBehaviour
     bool packedProduct = false;
     bool taped = false;
     bool delivered = false;
+    public bool noWalk { get; set; } = true;
 
     GameObject player;
     List<TaskController> taskToShow = new List<TaskController>();
@@ -47,6 +50,7 @@ public class TutorialController : MonoBehaviour
         else if(basicInformation)
         {
             BasicInformation();
+            noWalk = false;
         }
         else if(movement)
         {
@@ -96,7 +100,7 @@ public class TutorialController : MonoBehaviour
 
     private void BasicInformation()
     {
-        if(Input.GetKeyUp(KeyCode.Return)) basicIndex++;
+        if (Input.GetKeyUp(KeyCode.Return)) basicIndex++;
         if (basicIndex >= basicInformationStrings.Length)
         {
             basicInformation = false;
