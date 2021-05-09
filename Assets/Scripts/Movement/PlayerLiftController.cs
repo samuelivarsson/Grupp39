@@ -274,7 +274,7 @@ public class PlayerLiftController : MonoBehaviour
 
     void DropHelp()
     {
-        PV.RPC("OnDropHelp", RpcTarget.AllBuffered, latestObject.GetComponent<PhotonView>().ViewID);
+        PV.RPC("OnDropHelp", RpcTarget.AllBufferedViaServer, latestObject.GetComponent<PhotonView>().ViewID);
     }
 
     [PunRPC]
@@ -290,7 +290,8 @@ public class PlayerLiftController : MonoBehaviour
         if (packageMLC == null) return;
         packageMLC.takenAnchors.Remove(playerMLC.myAnchor);
         playerMLC.myAnchor = Vector3.zero;
-        packageMLC.RemoveHelper(this);
+        if (packageMLC.lifters.Count > 1) packageMLC.RemoveHelper(this);
+        else Drop();
     }
 
     [PunRPC]
