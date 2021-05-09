@@ -83,7 +83,7 @@ public class PlayerLiftController : MonoBehaviour
             Lift();
             return;
         }
-        if (Input.GetKeyDown(PlayerController.useButton) && IsLifting(latestObjViewID) && latestTile && !TileIsOccupied() && DropableTile(latestTile))
+        if (Input.GetKeyDown(PlayerController.useButton) && IsLifting(latestObjViewID) && latestTile && DropableTile(latestTile))
         {
             Drop();
             return;
@@ -227,7 +227,7 @@ public class PlayerLiftController : MonoBehaviour
 
         float eulerY = ClosestAngle(latestObject.transform.rotation.eulerAngles.y);
         Vector3 offset = GetTileOffset(latestObject, latestTile);
-        PV.RPC("OnDrop", RpcTarget.AllBuffered, latestObject.GetComponent<PhotonView>().ViewID, eulerY, latestTile.name, offset);
+        PV.RPC("OnDrop", RpcTarget.AllBufferedViaServer, latestObject.GetComponent<PhotonView>().ViewID, eulerY, latestTile.name, offset);
     }
 
     [PunRPC]
@@ -236,6 +236,7 @@ public class PlayerLiftController : MonoBehaviour
         GameObject obj = PhotonView.Find(viewID).gameObject;
         if (obj == null) return;
         GameObject tile = GameObject.Find(tileName);
+        if (tile == null || TileIsOccupied(tile)) return;
 
         // Make child and fix position & rotation
         obj.transform.parent = tile.transform;
@@ -342,10 +343,10 @@ public class PlayerLiftController : MonoBehaviour
         else return PackageController.GetTileOffset(tile);
     }
 
-    bool TileIsOccupied()
+    bool TileIsOccupied(GameObject tile)
     {
-        PackageController pkg = latestTile.GetComponentInChildren<PackageController>();
-        ProductController prdct = latestTile.GetComponentInChildren<ProductController>();
+        PackageController pkg = tile.GetComponentInChildren<PackageController>();
+        ProductController prdct = tile.GetComponentInChildren<ProductController>();
         return pkg != null || prdct != null;
     }
 

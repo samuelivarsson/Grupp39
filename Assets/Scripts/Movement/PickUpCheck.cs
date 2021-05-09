@@ -45,7 +45,8 @@ public class PickUpCheck : MonoBehaviour
             playerClimbController.latestCollision = other.gameObject;
         }
 
-        if (other.CompareTag("PackageController") && playerLiftController.IsLifting() && PhotonView.Find(playerLiftController.liftingID).CompareTag("ProductController"))
+        PhotonView view = PhotonView.Find(playerLiftController.liftingID);
+        if (other.CompareTag("PackageController") && playerLiftController.IsLifting() && view != null && view.CompareTag("ProductController"))
         {
             playerPackController.canPackID = other.GetComponent<PhotonView>().ViewID;
             playerPackController.latestCollision = other.gameObject;
@@ -76,7 +77,8 @@ public class PickUpCheck : MonoBehaviour
             playerClimbController.canClimbID = -1;
         }
 
-        if (other.CompareTag("PackageController") && playerLiftController.IsLifting() && PhotonView.Find(playerLiftController.liftingID).CompareTag("ProductController"))
+        PhotonView view = PhotonView.Find(playerLiftController.liftingID);
+        if (other.CompareTag("PackageController") && playerLiftController.IsLifting() && view != null && view.CompareTag("ProductController"))
         {
             playerPackController.canPackID = -1;
         }
@@ -105,7 +107,8 @@ public class PickUpCheck : MonoBehaviour
             playerClimbController.canClimbID = other.gameObject.GetComponent<PhotonView>().ViewID;
         }
 
-        if (other.CompareTag("PackageController") && playerLiftController.IsLifting() && PhotonView.Find(playerLiftController.liftingID).CompareTag("ProductController"))
+        PhotonView view = PhotonView.Find(playerLiftController.liftingID);
+        if (other.CompareTag("PackageController") && playerLiftController.IsLifting() && view != null && view.CompareTag("ProductController"))
         {
             playerPackController.canPackID = other.GetComponent<PhotonView>().ViewID;
         }
