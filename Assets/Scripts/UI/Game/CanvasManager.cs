@@ -87,7 +87,7 @@ public class CanvasManager : MonoBehaviourPunCallbacks
         Hashtable hash = new Hashtable();
         hash.Add("gOver", true);
         PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
-        PV.RPC("OnGameOver", RpcTarget.OthersBuffered);
+        PV.RPC("OnGameOver", RpcTarget.Others);
     }
 
     [PunRPC]

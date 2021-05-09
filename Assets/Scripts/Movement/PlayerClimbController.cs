@@ -78,7 +78,7 @@ public class PlayerClimbController : MonoBehaviour
 
     void Crouch()
     {
-        PV.RPC("OnCrouch", RpcTarget.AllBufferedViaServer);
+        PV.RPC("OnCrouch", RpcTarget.AllViaServer);
     }
 
     [PunRPC]
@@ -91,7 +91,7 @@ public class PlayerClimbController : MonoBehaviour
 
     void Stand() 
     {
-        PV.RPC("OnStand", RpcTarget.AllBufferedViaServer);
+        PV.RPC("OnStand", RpcTarget.AllViaServer);
     }
 
     [PunRPC]
@@ -106,7 +106,7 @@ public class PlayerClimbController : MonoBehaviour
 
     void Climb()
     {
-        PV.RPC("OnClimb", RpcTarget.AllBufferedViaServer, latestCollision.GetComponent<PhotonView>().ViewID);
+        PV.RPC("OnClimb", RpcTarget.AllViaServer, latestCollision.GetComponent<PhotonView>().ViewID);
     }
 
     [PunRPC]
@@ -131,7 +131,7 @@ public class PlayerClimbController : MonoBehaviour
 
     void ClimbDown()
     {
-        PV.RPC("OnClimbDown", RpcTarget.AllBufferedViaServer);
+        PV.RPC("OnClimbDown", RpcTarget.AllViaServer);
     }
 
     [PunRPC]

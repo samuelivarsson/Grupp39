@@ -44,7 +44,7 @@ public class PackageController : MonoBehaviour, LiftablePackage
         timebar.enabled = false;
     }
 
-    public bool OrderDelivery(GameObject latestTile)
+    public bool OrderDelivery(GameObject latestTile, PlayerMultiLiftController playerMLC)
     {
         if (!isTaped)
         {
@@ -82,11 +82,15 @@ public class PackageController : MonoBehaviour, LiftablePackage
             ScoreController.Instance.IncrementScore(taskController.productAmount * scoreMultiplier);
 
             // Destroy package
-            PV.RPC("DestroyPackage", RpcTarget.AllBuffered);
+            PV.RPC("DestroyPackage", RpcTarget.All);
 
             // Destroy task
-            taskPV.RPC("DestroyTask", RpcTarget.AllBuffered);
+            taskPV.RPC("DestroyTask", RpcTarget.All);
+            
+            playerMLC.tooHeavy = false;
+
             print("The package contained the required products!");
+            
             return true;
         }
         else

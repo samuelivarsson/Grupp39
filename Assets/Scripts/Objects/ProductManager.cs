@@ -50,6 +50,6 @@ public class ProductManager : MonoBehaviourPunCallbacks, ICreateController
         playerLiftController.latestCollision = obj;
         int objViewID = obj.GetComponent<PhotonView>().ViewID;
         playerLiftController.canLiftID = objViewID;
-        playerLiftController.GetComponent<PhotonView>().RPC("OnLift", RpcTarget.AllBufferedViaServer,objViewID, 0f);
+        playerLiftController.GetComponent<PhotonView>().RPC("OnLift", RpcTarget.AllViaServer, objViewID, 0f);
     }
 }

@@ -100,7 +100,7 @@ public class PlayerLiftController : MonoBehaviour
         }
 
         float eulerY = ClosestAngle(latestCollision.transform.rotation.eulerAngles.y - gameObject.transform.rotation.eulerAngles.y);
-        PV.RPC("OnLift", RpcTarget.AllBufferedViaServer, latestCollision.GetComponent<PhotonView>().ViewID, eulerY);
+        PV.RPC("OnLift", RpcTarget.AllViaServer, latestCollision.GetComponent<PhotonView>().ViewID, eulerY);
     }
 
     [PunRPC]
@@ -153,7 +153,7 @@ public class PlayerLiftController : MonoBehaviour
         if (packageMLC == null || packageMLC.takenAnchors.Contains(anchor)) return;
 
         // Add the side to the list of taken anchors and start helping.
-        PV.RPC("OnHelpLift", RpcTarget.AllBufferedViaServer, latestCollision.GetComponent<PhotonView>().ViewID, anchor);
+        PV.RPC("OnHelpLift", RpcTarget.AllViaServer, latestCollision.GetComponent<PhotonView>().ViewID, anchor);
     }
 
     [PunRPC]
@@ -196,7 +196,7 @@ public class PlayerLiftController : MonoBehaviour
             // Try to deliver if it's a package
             if (latestObject.CompareTag("PackageController"))
             {
-                bool delivered = latestObject.GetComponent<PackageController>().OrderDelivery(latestTile);
+                bool delivered = latestObject.GetComponent<PackageController>().OrderDelivery(latestTile, playerMLC);
                 if (delivered)
                 {
                     DropBooleans(latestObject);
@@ -221,13 +221,13 @@ public class PlayerLiftController : MonoBehaviour
         // Dropped on trashcan -> trash it
         if (latestTile.CompareTag("TrashTile"))
         {
-            PV.RPC("OnTrash", RpcTarget.AllBuffered, latestObject.GetComponent<PhotonView>().ViewID);
+            PV.RPC("OnTrash", RpcTarget.All, latestObject.GetComponent<PhotonView>().ViewID);
             return;
         }
 
         float eulerY = ClosestAngle(latestObject.transform.rotation.eulerAngles.y);
         Vector3 offset = GetTileOffset(latestObject, latestTile);
-        PV.RPC("OnDrop", RpcTarget.AllBufferedViaServer, latestObject.GetComponent<PhotonView>().ViewID, eulerY, latestTile.name, offset);
+        PV.RPC("OnDrop", RpcTarget.AllViaServer, latestObject.GetComponent<PhotonView>().ViewID, eulerY, latestTile.name, offset);
     }
 
     [PunRPC]
@@ -274,7 +274,7 @@ public class PlayerLiftController : MonoBehaviour
 
     void DropHelp()
     {
-        PV.RPC("OnDropHelp", RpcTarget.AllBufferedViaServer, latestObject.GetComponent<PhotonView>().ViewID);
+        PV.RPC("OnDropHelp", RpcTarget.AllViaServer, latestObject.GetComponent<PhotonView>().ViewID);
     }
 
     [PunRPC]
