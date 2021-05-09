@@ -2,5 +2,5 @@
 
 public interface ICreateController
 {
-    bool CreateController(Vector3 startPos);
+    void CreateController(int playerViewID, Vector3 startPos);
 }

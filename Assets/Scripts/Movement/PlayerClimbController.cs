@@ -50,7 +50,7 @@ public class PlayerClimbController : MonoBehaviour
 
     void CheckCrouchAndStand() 
     {        
-        if (Input.GetKeyDown(PlayerController.crouchButton) && !isCrouching && playerLiftController.IsLifting(-1) && !isClimbing)
+        if (Input.GetKeyDown(PlayerController.crouchButton) && !isCrouching && !playerLiftController.IsLifting() && !isClimbing)
         {
             Crouch();
             return;

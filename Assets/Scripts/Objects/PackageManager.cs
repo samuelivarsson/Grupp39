@@ -4,25 +4,26 @@ using System.IO;
 
 public class PackageManager : MonoBehaviour, ICreateController
 {
-    PlayerLiftController playerLiftController;
+    PhotonView PV;
  
     void Awake()
     {
-        playerLiftController = PlayerManager.myPlayerLiftController;
-        // PickUpCheck.standardPackage = GetComponentInChildren<Renderer>().materials;
+        PV = GetComponent<PhotonView>();
     }
 
-    public bool CreateController(Vector3 startPos)
+    public void CreateController(int playerViewID, Vector3 startPos)
     {
-        if (playerLiftController.liftingID != -1)
-        {
-            Debug.Log("You are already lifting something!");
-            return false;
-        }
-        GameObject obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "PackageController"), startPos,  Quaternion.identity);
-        playerLiftController.latestCollision = obj;
-        playerLiftController.canLiftID = obj.GetComponent<PhotonView>().ViewID;
+        PV.RPC("OnCreateController", RpcTarget.MasterClient, playerViewID, startPos);
+    }
 
-        return true;
+    [PunRPC]
+    void OnCreateController(int playerViewID, Vector3 startPos)
+    {
+        PlayerLiftController playerLiftController = PhotonView.Find(playerViewID).GetComponent<PlayerLiftController>();
+        GameObject obj = PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "PackageController"), startPos,  Quaternion.identity);
+        playerLiftController.latestCollision = obj;
+        int objViewID = obj.GetComponent<PhotonView>().ViewID;
+        playerLiftController.canLiftID = objViewID;
+        playerLiftController.GetComponent<PhotonView>().RPC("OnLift", RpcTarget.AllBufferedViaServer,objViewID, 0f);
     }
 }

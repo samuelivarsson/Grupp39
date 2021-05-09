@@ -86,7 +86,7 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
-        if (playerMLC.tooHeavy && !playerLC.IsLifting(-1))
+        if (playerMLC.tooHeavy && playerLC.IsLifting())
         {
             moveAmount = Vector3.zero;
             moveDir = Vector3.zero;
@@ -107,7 +107,7 @@ public class PlayerController : MonoBehaviour
     void SetCondition()
     {
         int condition;
-        if (playerLC.IsLifting(-1)) condition = (moveDir == Vector3.zero || playerCC.isClimbing) ? 0 : 1;
+        if (!playerLC.IsLifting()) condition = (moveDir == Vector3.zero || playerCC.isClimbing) ? 0 : 1;
         else condition = (moveDir == Vector3.zero || playerCC.isClimbing) ? 2 : 3;
         anim.SetInteger("condition", condition);
     }

@@ -24,12 +24,14 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] GameObject startGameButton;
     [SerializeField] GameObject rejoinContainer;
     [SerializeField] GameObject settingsContainer;
+    [SerializeField] GameObject notFourPlayersContainer;
 
     // 10 seconds before the room gets removed after there are no players left.
     const int roomTtl = 10000;
     public const int maxPlayers = 4;
     int playersLeftToFillRoom;
 
+    bool startAnyways = false;
     bool startGamePressed = false;
     bool rejoinCalled = false;
     string latestRoomName;
@@ -85,6 +87,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinLobby();
         Debug.Log("Connected to the " + PhotonNetwork.CloudRegion + " server!");
         PlayerPrefs.SetString("userid", PhotonNetwork.LocalPlayer.UserId);
+        PhotonNetwork.LocalPlayer.NickName = PlayerPrefs.GetString("latestNick", "");
         PhotonNetwork.AutomaticallySyncScene = true;
     }
 
@@ -143,18 +146,31 @@ public class Launcher : MonoBehaviourPunCallbacks
         MenuManager.Instance.OpenMenu("error");
     }
 
+    public void StartAnyways()
+    {
+        startAnyways = true;
+        notFourPlayersContainer.SetActive(false);
+        StartGame();
+        startAnyways = false;
+    }
+
+    public void CancelStart()
+    {
+        notFourPlayersContainer.SetActive(false);
+    }
+
     public void StartGame()
     {
+        if (PhotonNetwork.CurrentRoom.PlayerCount != maxPlayers && !startAnyways && !startGamePressed)
+        {
+            notFourPlayersContainer.SetActive(true);
+            return;
+        }
+
         if (startGamePressed) return;
 
         startGamePressed = true;
         tutorial = false;
-        /*if (PhotonNetwork.CurrentRoom.PlayerCount != maxPlayers)
-        {
-            playersLeftToFillRoom = maxPlayers- PhotonNetwork.CurrentRoom.PlayerCount;
-            PopupInfo.Instance.Popup("Det saknas " + playersLeftToFillRoom + " spelare för att kunna starta spelet", 5);
-            return;
-        }*/
         SetLists();
         for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
@@ -238,13 +254,13 @@ public class Launcher : MonoBehaviourPunCallbacks
             // UnityEngine.SceneManagement.SceneManager.LoadScene(1);
             // if (PhotonNetwork.IsMasterClient) PhotonNetwork.LoadLevel(1);
             if (PhotonNetwork.IsMasterClient) UnityEngine.SceneManagement.SceneManager.LoadScene(1);
-            print("Nick: "+PhotonNetwork.LocalPlayer.NickName);
             return;
         }
         roomNameText.text = PhotonNetwork.CurrentRoom.Name;
         MenuManager.Instance.OpenMenu("room");
 
         SetNick(PhotonNetwork.LocalPlayer);
+        PlayerPrefs.SetString("latestNick", PhotonNetwork.LocalPlayer.NickName);
         object[] initData = {PhotonNetwork.LocalPlayer.NickName};
         PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "UI", "MainMenu", "PlayerListItem"), Vector3.zero, Quaternion.identity, 0, initData);
 

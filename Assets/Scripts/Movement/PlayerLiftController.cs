@@ -59,11 +59,16 @@ public class PlayerLiftController : MonoBehaviour
         PackageMultiLiftController packageMLC = latestCollision.GetComponent<PackageMultiLiftController>();
         if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && (latestCollision.CompareTag("ProductManager") || latestCollision.CompareTag("PackageManager")))
         {
+            if (IsLifting())
+            {
+                PopupInfo.Instance.Popup("Du lyfter redan någonting!", 5);
+                return;
+            }
             ICreateController manager = GetManager(latestCollision);
-            if (manager.CreateController(hand.position)) Lift(0);
+            manager.CreateController(PV.ViewID, hand.position);
             return;
         }
-        if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && IsLifting(-1) && CanHelp(packageMLC) && !playerCC.isCrouching)
+        if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && !IsLifting() && CanHelp(packageMLC) && !playerCC.isCrouching)
         {
             HelpLift();
             return;
@@ -73,7 +78,7 @@ public class PlayerLiftController : MonoBehaviour
             DropHelp();
             return;
         }
-        if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && IsLifting(-1) && !IsPackaged(controller) && !controller.isLifted && !playerCC.isCrouching)
+        if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && !IsLifting() && !IsPackaged(controller) && !controller.isLifted && !playerCC.isCrouching)
         {
             Lift();
             return;
@@ -95,11 +100,6 @@ public class PlayerLiftController : MonoBehaviour
         }
 
         float eulerY = ClosestAngle(latestCollision.transform.rotation.eulerAngles.y - gameObject.transform.rotation.eulerAngles.y);
-        PV.RPC("OnLift", RpcTarget.AllBufferedViaServer, latestCollision.GetComponent<PhotonView>().ViewID, eulerY);
-    }
-
-    void Lift(float eulerY)
-    {
         PV.RPC("OnLift", RpcTarget.AllBufferedViaServer, latestCollision.GetComponent<PhotonView>().ViewID, eulerY);
     }
 
@@ -354,7 +354,12 @@ public class PlayerLiftController : MonoBehaviour
         return tile.CompareTag("PlaceableTile") || tile.CompareTag("PlaceableOutsideTile") || tile.CompareTag("DropZone") || tile.CompareTag("TableTile") || tile.CompareTag("TapeTile") || tile.CompareTag("TrashTile");
     }
 
-    public bool IsLifting(int _liftingID)
+    public bool IsLifting()
+    {
+        return liftingID != -1;
+    }
+
+    bool IsLifting(int _liftingID)
     {
         return liftingID == _liftingID;
     }

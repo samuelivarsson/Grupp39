@@ -16,27 +16,14 @@ public class ProductHighlight : MonoBehaviour, IHighlight
 
     public void Highlight(bool highlight)
     {
+        if (highlightedMats == null || standardMats == null) SetMats();
         rend.materials = highlight ? highlightedMats : standardMats;
-    }
-
-    Material[] FindHighlightedMaterial(Material[] mats)
-    {
-        Material[] matsTemp = CopyMaterialArray(mats);
-        float offset;
-        if (type == "Bear" || type == "Car") offset = 0.8f;
-        else if (type == "Ball") offset = 0.3f;
-        else if (type == "Laptop") offset = 0.15f;
-        else offset = 0.5f;
-        foreach (Material mat in matsTemp)
-        {
-            mat.SetColor("_Color", new Color(mat.color.r+offset, mat.color.g+offset, mat.color.b+offset, mat.color.a));
-        }
-        return matsTemp;
     }
 
     void SetMats()
     {
         Material[] mats = rend.materials;
+        type = gameObject.name.Split('(')[0].Substring(gameObject.tag.Length);
         switch (type)
         {
             case "Ball":
@@ -65,6 +52,21 @@ public class ProductHighlight : MonoBehaviour, IHighlight
                 
         }
         highlightedMats = FindHighlightedMaterial(standardMats);
+    }
+
+    Material[] FindHighlightedMaterial(Material[] mats)
+    {
+        Material[] matsTemp = CopyMaterialArray(mats);
+        float offset;
+        if (type == "Bear" || type == "Car") offset = 0.8f;
+        else if (type == "Ball") offset = 0.3f;
+        else if (type == "Laptop") offset = 0.15f;
+        else offset = 0.5f;
+        foreach (Material mat in matsTemp)
+        {
+            mat.SetColor("_Color", new Color(mat.color.r+offset, mat.color.g+offset, mat.color.b+offset, mat.color.a));
+        }
+        return matsTemp;
     }
 
     Material[] CopyMaterialArray(Material[] arr)

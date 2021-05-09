@@ -48,7 +48,12 @@ public class RoomManager : MonoBehaviourPunCallbacks
                 playersLoaded++;
                 if (playersLoaded == PhotonNetwork.CurrentRoom.PlayerCount) PV.RPC("OnAllLoaded", RpcTarget.AllViaServer);
             }
-            else PV.RPC("OnLoaded", RpcTarget.MasterClient);
+            else
+            {
+                bool gameStarted = (bool) PhotonNetwork.CurrentRoom.CustomProperties["gameStarted"];
+                if (!gameStarted) PV.RPC("OnLoaded", RpcTarget.MasterClient);
+                // else GetGameState();
+            }
         }
         if(scene.buildIndex == 2) // Tutorial scene
         {
@@ -77,4 +82,47 @@ public class RoomManager : MonoBehaviourPunCallbacks
         TaskManager.Instance.startCountDown = true;
         CanvasManager.Instance.countDownObj.SetActive(true);
     }
+
+    // void GetGameState()
+    // {
+    //     foreach (PhotonView view in PhotonNetwork.PhotonViewCollection)
+    //     {
+    //         if (view.IsRoomView) PV.RPC("GetTransform", RpcTarget.MasterClient, view.ViewID, PhotonNetwork.LocalPlayer.ActorNumber);
+    //     }
+    // }
+
+    // [PunRPC]
+    // void GetTransform(int viewID, int senderActorNumber)
+    // {
+    //     GameObject obj = PhotonView.Find(viewID).gameObject;
+    //     Transform trans = obj.transform;
+    //     string parentName = transform.parent == null ? "" : transform.parent.name;
+    //     Vector3 pos = trans.position;
+    //     Quaternion rot = trans.rotation;
+    //     Vector3 scale = trans.localScale;
+    //     object[] data = {parentName, pos, rot, scale};
+    //     PV.RPC("TransformResponse", RpcTarget.Others, viewID, senderActorNumber, data);
+    // }
+
+    // [PunRPC]
+    // void TransformResponse(int viewID, int senderActorNumber, object[] data)
+    // {
+    //     if (PhotonNetwork.LocalPlayer.ActorNumber != senderActorNumber) return;
+
+    //     string parentName = (string) data[0];
+    //     Vector3 pos = (Vector3) data[1];
+    //     Quaternion rot = (Quaternion) data[2];
+    //     Vector3 scale = (Vector3) data[3];
+    //     GameObject obj = PhotonView.Find(viewID).gameObject;
+    //     Transform trans = obj.transform;
+    //     Transform parent = parentName == "" ? null : GameObject.Find(parentName).transform;
+    //     trans.parent = parent;
+    //     trans.position = pos;
+    //     trans.rotation = rot;
+    //     trans.localScale = scale;
+    //     Debug.LogError("parent: "+parentName);
+    //     Debug.LogError("pos: "+pos);
+    //     Debug.LogError("rot: "+rot);
+    //     Debug.LogError("scale: "+scale);
+    // }
 }
