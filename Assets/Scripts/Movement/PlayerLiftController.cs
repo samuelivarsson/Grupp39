@@ -31,6 +31,9 @@ public class PlayerLiftController : MonoBehaviour
     // This player's climb controller
     PlayerClimbController playerCC;
 
+    // This player's pack controller
+    PlayerPackController playerPC;
+
     // This player's multi lift controller
     PlayerMultiLiftController playerMLC;
 
@@ -39,6 +42,7 @@ public class PlayerLiftController : MonoBehaviour
         PV = GetComponent<PhotonView>();
         character = GetComponent<Character>();
         playerCC = GetComponent<PlayerClimbController>();
+        playerPC = GetComponent<PlayerPackController>();
         playerMLC = GetComponent<PlayerMultiLiftController>();
     }
 
@@ -78,7 +82,7 @@ public class PlayerLiftController : MonoBehaviour
             DropHelp();
             return;
         }
-        if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && !IsLifting() && !IsPackaged(controller) && !controller.isLifted && !playerCC.isCrouching)
+        if (Input.GetKeyDown(PlayerController.useButton) && CanLift(latestColViewID) && !IsLifting() && !IsPackaged(controller) && !controller.isLifted && !playerCC.isCrouching && !playerPC.isTaping)
         {
             Lift();
             return;
