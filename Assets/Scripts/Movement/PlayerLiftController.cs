@@ -113,7 +113,7 @@ public class PlayerLiftController : MonoBehaviour
         GameObject obj = PhotonView.Find(viewID).gameObject;
         latestObject = obj;
         Liftable controller = GetController(obj);
-        if (controller.isLifted) return;
+        if (controller.isLifted || playerCC.isCrouching) return;
 
         // Make child and change position & rotation
         obj.transform.parent = gameObject.transform;

@@ -8895,8 +8895,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
-  m_fontSizeBase: 30
+  m_fontSize: 32
+  m_fontSizeBase: 32
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -11425,8 +11425,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "F\xF6r att lyckas i spelet kr\xE4vs det att ni kommunicerar! D\xE4rf\xF6r
-    uppmuntras det att n\xE5gon slags kommunikationskanal anv\xE4nds."
+  m_text: "F\xF6r att lyckas i spelet kr\xE4vs det att ni kommunicerar med varandra!
+    D\xE4rf\xF6r uppmuntras det att n\xE5gon slags kommunikationskanal anv\xE4nds."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
@@ -11453,8 +11453,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28
-  m_fontSizeBase: 28
+  m_fontSize: 30
+  m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -13969,7 +13969,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
@@ -15744,7 +15744,7 @@ GameObject:
   - component: {fileID: 1492530046}
   - component: {fileID: 1492530045}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: CommunicationInfo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15768,7 +15768,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 100, y: -150}
-  m_SizeDelta: {x: 450, y: 300}
+  m_SizeDelta: {x: 450, y: 250}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1492530045
 MonoBehaviour:
@@ -15783,7 +15783,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.11372549, g: 0.11372549, b: 0.11372549, a: 1}
+  m_Color: {r: 0.11372549, g: 0.11372549, b: 0.11372549, a: 0.78431374}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:

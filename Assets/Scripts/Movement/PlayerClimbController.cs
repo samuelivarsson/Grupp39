@@ -84,6 +84,8 @@ public class PlayerClimbController : MonoBehaviour
     [PunRPC]
     void OnCrouch()
     {
+        if (playerLiftController.IsLifting()) return;
+
         gameObject.transform.localScale -= heightChange;
         isCrouching = true;
         rb.isKinematic = true;
