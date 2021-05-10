@@ -26,8 +26,6 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] GameObject settingsContainer;
     [SerializeField] GameObject notFourPlayersContainer;
 
-    // 10 seconds before the room gets removed after there are no players left.
-    const int roomTtl = 10000;
     public const int maxPlayers = 4;
     int playersLeftToFillRoom;
 
@@ -120,7 +118,6 @@ public class Launcher : MonoBehaviourPunCallbacks
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = maxPlayers;
         roomOptions.PublishUserId = true;
-        roomOptions.EmptyRoomTtl = roomTtl;
         string[] roomPropsLobby = new string[maxPlayers+2];
         for (int i = 0; i < maxPlayers; i++)
         {

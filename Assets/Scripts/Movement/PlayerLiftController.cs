@@ -225,6 +225,7 @@ public class PlayerLiftController : MonoBehaviour
         // Dropped on trashcan -> trash it
         if (latestTile.CompareTag("TrashTile"))
         {
+            playerMLC.tooHeavy = false;
             PV.RPC("OnTrash", RpcTarget.All, latestObject.GetComponent<PhotonView>().ViewID);
             return;
         }
