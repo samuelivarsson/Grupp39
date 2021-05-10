@@ -185,7 +185,7 @@ public class PlayerLiftController : MonoBehaviour
 
     void Drop()
     {
-        if (latestObject == null) return;
+        if (latestObject == null || latestTile == null) return;
 
         // Long player unable to drop stuff on the floor
         if (latestTile.CompareTag("PlaceableTile") && character.characterType.Equals("Long"))

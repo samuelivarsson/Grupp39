@@ -97,7 +97,8 @@ public class TaskController : MonoBehaviourPunCallbacks, IPunInstantiateMagicCal
 
 static class CanvasExtensions
 {
-    public static Vector2 SizeToParent(this RawImage image, float padding = 0) {
+    public static Vector2 SizeToParent(this RawImage image, float padding = 0)
+    {
         float w = 0, h = 0;
         var parent = image.GetComponentInParent<RectTransform>();
         var imageTransform = image.GetComponent<RectTransform>();
