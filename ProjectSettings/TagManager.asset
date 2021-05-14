@@ -3,7 +3,29 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Box
+  - Hand
+  - Task1
+  - Task2
+  - Task3
+  - PlayerCollider
+  - ProductController
+  - PlaceableTile
+  - NonPlaceableTile
+  - DropZone
+  - ProductManager
+  - PackageManager
+  - PackageController
+  - Table
+  - TapeTile
+  - TableTile
+  - PlayerController
+  - Task0
+  - TrashTile
+  - TapeTable
+  - Trash
+  - PlaceableOutsideTile
   layers:
   - Default
   - TransparentFX
@@ -13,9 +35,9 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
+  - Cabinet
+  - Player
+  - Liftable
   - 
   - 
   - 
