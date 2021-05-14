@@ -1,32 +1,31 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Photon.Pun;
 
 public class PlayerController : MonoBehaviour
 {
     PhotonView PV;
     Rigidbody rb;
-    [SerializeField] GameObject myPlayerIcon;
     [SerializeField] public float smoothTime;
     [SerializeField] public float rotateSpeed;
     float horizontalInput, verticalInput;
 
     Vector3 smoothMoveVelocity;
     Vector3 moveDir;
+    public Vector3 rotateDir {get; set;} = Vector3.zero;
     Vector3 moveAmount;
-    Quaternion rotation;
+    public Quaternion rotation {get; set;} 
 
     PlayerLiftController playerLC;
     PlayerPackController playerPC;
     PlayerClimbController playerCC;
     PlayerMultiLiftController playerMLC;
     Character character;
+    Animator anim;
 
     public static KeyCode useButton = KeyCode.Space;
-    public static KeyCode tapeButton = KeyCode.E;
-    public static KeyCode packButton = KeyCode.LeftShift;
-    public static KeyCode crouchButton = KeyCode.LeftControl;
+    public static KeyCode crouchButton = KeyCode.Z;
+    public static KeyCode packButton = KeyCode.X;
+    public static KeyCode tapeButton = KeyCode.C;
 
     Vector3 networkMoveAmount = Vector3.zero;
     Quaternion networkRotation = Quaternion.identity;
@@ -35,12 +34,12 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         PV = GetComponent<PhotonView>();
-        myPlayerIcon.SetActive(PV.CreatorActorNr == PhotonNetwork.LocalPlayer.ActorNumber);
         playerLC = GetComponent<PlayerLiftController>();
         playerPC = GetComponent<PlayerPackController>();
         playerCC = GetComponent<PlayerClimbController>();
         playerMLC = GetComponent<PlayerMultiLiftController>();
         character = GetComponent<Character>();
+        anim = GetComponent<Animator>();
     }
 
     void Start()
@@ -48,15 +47,18 @@ public class PlayerController : MonoBehaviour
         if (!PV.IsMine) rb.isKinematic = true;
 
         rb.centerOfMass = Vector3.zero;
+        rotation = rb.rotation;
     }
 
     void Update()
     {
-        if (!PV.IsMine) return;
-        
-        if (playerPC.isTaping)
+        bool gameStarted = (bool) PhotonNetwork.CurrentRoom.CustomProperties["gameStarted"];
+        if (!PV.IsMine || TaskManager.Instance == null || !gameStarted) return;
+        SetCondition();
+        if (playerPC.isTaping || playerCC.isCrouching)
         {
             moveAmount = Vector3.zero;
+            moveDir = Vector3.zero;
             return;
         }
         Inputs();
@@ -69,12 +71,7 @@ public class PlayerController : MonoBehaviour
         if (!PV.IsMine) return;
         
         if (playerMLC.isMultiLifting) return;
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, -Vector3.up, out hit, 1.5f))
-        {
-            float dist = hit.distance - 0.5f;
-            rb.MovePosition(new Vector3(transform.position.x, transform.position.y - dist, transform.position.z));
-        }
+        
         rb.velocity = new Vector3(moveAmount.x, rb.velocity.y, moveAmount.z);
         rb.MoveRotation(rotation);
     }
@@ -84,13 +81,16 @@ public class PlayerController : MonoBehaviour
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
         moveDir = new Vector3(horizontalInput, 0, verticalInput).normalized;
+        rotateDir = (moveDir != Vector3.zero) ? moveDir : rotateDir;
     }
 
     void Move()
     {
-        if (playerMLC.tooHeavy && playerLC.liftingID != -1)
+        if (playerMLC.tooHeavy && playerLC.IsLifting())
         {
             moveAmount = Vector3.zero;
+            moveDir = Vector3.zero;
+            PopupInfo.Instance.Popup("Lådan är för tung att lyfta själv", 7);
             return;
         }
         moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * character.movementSpeed, ref smoothMoveVelocity, smoothTime);
@@ -98,13 +98,17 @@ public class PlayerController : MonoBehaviour
 
     void Rotate()
     {
-        if (playerCC.isCrouching || moveDir == Vector3.zero)
-        {
-            rotation = rb.rotation;
-            return;
-        }
+        if (playerCC.isCrouching || rotateDir == Vector3.zero) return;
 
-        Quaternion targetRotation = Quaternion.LookRotation(moveDir);
+        Quaternion targetRotation = Quaternion.LookRotation(rotateDir);
         rotation = Quaternion.Slerp(rb.rotation, targetRotation, Time.fixedDeltaTime * rotateSpeed);
+    }
+
+    void SetCondition()
+    {
+        int condition;
+        if (!playerLC.IsLifting()) condition = (moveDir == Vector3.zero || playerCC.isClimbing) ? 0 : 1;
+        else condition = (moveDir == Vector3.zero || playerCC.isClimbing) ? 2 : 3;
+        anim.SetInteger("condition", condition);
     }
 }

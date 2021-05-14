@@ -1,4 +1,6 @@
-﻿public interface ICreateController
+﻿using UnityEngine;
+
+public interface ICreateController
 {
-    bool CreateController();
+    void CreateController(int playerViewID, Vector3 startPos);
 }

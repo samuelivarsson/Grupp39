@@ -90,7 +90,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 940ef31aa3f6c8a4885e472b3e9dc12e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  score: 0
   text: {fileID: 7005250143038889831}
 --- !u!114 &4178896222317171443
 MonoBehaviour:
@@ -191,7 +190,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '-'
+  m_Text: 0
 --- !u!1 &7005250143829956569
 GameObject:
   m_ObjectHideFlags: 0
@@ -269,4 +268,4 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Score: '
+  m_Text: "Po\xE4ng: "

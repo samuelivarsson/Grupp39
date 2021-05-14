@@ -28,6 +28,15 @@ public class TestMovement1 : MonoBehaviour
 
     void FixedUpdate()
     {
+        // RaycastHit hit;
+        // // print("1: "+transform.position);
+        // if (Physics.Raycast(transform.position, -Vector3.up, out hit, 1.5f))
+        // {
+        //     // print("2: "+hit.distance);
+        //     Vector3 dir = Vector3.ProjectOnPlane(Vector3.down*(hit.distance - 1f), hit.normal);
+        //     // print("3: "+dir);
+        //     rb.MovePosition(new Vector3(transform.position.x, transform.position.y-(hit.distance - 1f), transform.position.z));
+        // }
         rb.velocity = new Vector3(moveAmount.x, rb.velocity.y, moveAmount.z);
         //rb.MovePosition(rb.position + transform.TransformDirection(moveAmount) * Time.fixedDeltaTime);
         rb.MoveRotation(rotation);

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Photon.Pun;
 using System.IO;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
@@ -23,11 +21,24 @@ public class PlayerManager : MonoBehaviour
 
     void CreateController()
     {
-        Hashtable hash = PhotonNetwork.LocalPlayer.CustomProperties;
-        string character = (string) hash["character"];
-        int spIndex = (int) hash["spawnPoint"];
-        Transform spawnPoint = SpawnManager.Instance.GetSpawnPoint(spIndex);
-        GameObject playerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Player", character+"PlayerController"), spawnPoint.position, spawnPoint.rotation);
+        if(PhotonNetwork.OfflineMode)
+        {
+            SpawnPlayerController("Normal", 0);
+            return;
+        }
+
+        Hashtable hash = PhotonNetwork.CurrentRoom.CustomProperties;
+        string character = (string) hash[PhotonNetwork.LocalPlayer.UserId+"Character"];
+        int spIndex = (int) hash[PhotonNetwork.LocalPlayer.UserId+"SpawnPoint"];
+
+        SpawnPlayerController(character, spIndex);
+    }
+
+    void SpawnPlayerController(string character, int spIndex)
+    {
+        Transform spawnPoint = SpawnManager.Instance.GetPlayerSpawnPoint(spIndex);
+        GameObject playerObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Player", character + "PlayerController"), spawnPoint.position, spawnPoint.rotation);
+
         myPlayerLiftController = playerObj.GetComponent<PlayerLiftController>();
         myPlayerPackController = playerObj.GetComponent<PlayerPackController>();
         playerObj.GetComponent<Character>().characterType = character;

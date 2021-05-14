@@ -11,7 +11,6 @@ TagManager:
   - Task3
   - PlayerCollider
   - ProductController
-  - Task4
   - PlaceableTile
   - NonPlaceableTile
   - DropZone
@@ -22,10 +21,11 @@ TagManager:
   - TapeTile
   - TableTile
   - PlayerController
-  - Health3
-  - Health2
-  - Health1
-  - HealthController
+  - Task0
+  - TrashTile
+  - TapeTable
+  - Trash
+  - PlaceableOutsideTile
   layers:
   - Default
   - TransparentFX
@@ -35,9 +35,9 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
+  - Cabinet
+  - Player
+  - Liftable
   - 
   - 
   - 

@@ -1,58 +1,55 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Photon.Pun;
 using System.IO;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class ProductManager : MonoBehaviourPunCallbacks, ICreateController
 {
-    [SerializeField] int balance;
-    [SerializeField] string type;
+    // [SerializeField] int balance;
+    public string type {get; set;}
 
-    string balanceKey;
-    PlayerLiftController playerLiftController;
+    // string balanceKey;
 
     PhotonView PV;
  
     void Awake()
     {
         PV = GetComponent<PhotonView>();
-        balanceKey = "balance" + PV.ViewID;
-        playerLiftController = PlayerManager.myPlayerLiftController;
+        type = gameObject.name.Split('(')[0].Substring(gameObject.tag.Length);
+        // balanceKey = "balance" + PV.ViewID;
     }
 
-    public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
+    // public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
+    // {
+    //     if (propertiesThatChanged[balanceKey] != null)
+    //     {
+    //         balance = (int)propertiesThatChanged[balanceKey];
+    //     }
+    // }
+
+    public void CreateController(int playerViewID, Vector3 startPos)
     {
-        if (propertiesThatChanged[balanceKey] != null)
-        {
-            balance = (int)propertiesThatChanged[balanceKey];
-        }
+        // if (balance == 0)
+        // {
+        //     print("Balance is 0!");
+        //     return false;
+        // }
+        PV.RPC("OnCreateController", RpcTarget.MasterClient, playerViewID, startPos);
+        // Hashtable hash = new Hashtable();
+        // balance--;
+        // hash.Add(balanceKey, balance);
+        // PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
     }
 
-    public bool CreateController()
+    [PunRPC]
+    void OnCreateController(int playerViewID, Vector3 startPos)
     {
-        if (playerLiftController.liftingID != -1)
-        {
-            Debug.Log("You are already lifting something!");
-            return false;
-        }
-        if (balance == 0)
-        {
-            Debug.Log("Balance is 0!");
-            return false;
-        }
-        GameObject obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Objects", "Products", "Controllers", "ProductController"+type), Vector3.zero,  Quaternion.identity);
+        PlayerLiftController playerLiftController = PhotonView.Find(playerViewID).GetComponent<PlayerLiftController>();
+        object[] initData = {type};
+        GameObject obj = PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Controllers", "ProductController"+type), startPos,  Quaternion.identity, 0, initData);
         playerLiftController.latestCollision = obj;
-        playerLiftController.canLiftID = obj.GetComponent<PhotonView>().ViewID;
-        ProductController productController = obj.GetComponent<ProductController>();
-        productController.type = type;
-
-        Hashtable hash = new Hashtable();
-        balance--;
-        hash.Add(balanceKey, balance);
-        PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
-
-        return true;
+        int objViewID = obj.GetComponent<PhotonView>().ViewID;
+        playerLiftController.canLiftID = objViewID;
+        playerLiftController.GetComponent<PhotonView>().RPC("OnLift", RpcTarget.AllViaServer, objViewID, 0f);
     }
 }

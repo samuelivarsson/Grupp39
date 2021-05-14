@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using System.IO;
@@ -7,19 +6,30 @@ using System.IO;
 public class ObjectManager : MonoBehaviour
 {
     PhotonView PV;
-    
-    Vector3 productPos1 = new Vector3(13.2f, 0.95f, 11f);
-    Vector3 productPos2 = new Vector3(13.2f, 0.95f, 13f);
-    Vector3 productPos3 = new Vector3(1.8f, 0.95f, 7f);
-    Vector3 productPos4 = new Vector3(1.8f, 0.95f, 9f);
-    Vector3 productPos5 = new Vector3(2f, 2.45f, 13.2f);
-    Vector3 productPos6 = new Vector3(3.75f, 1.55f, 7f);
 
-    Vector3 packagePos = new Vector3(14.5f, 0.91f, 5.5f);
+    // The different products
+    public static List<string> possibleProducts = new List<string>() {"Boat", "Laptop", "Ball", "Book", "Car", "Bear"};
+
+    // The amount of different products
+    static int productCount = possibleProducts.Count;
+
+    // The amount of package spawn points
+    const int packageCount = 2;
+
+    List<int> productSpawnPointList = new List<int>();
+    List<int> packageSpawnPointList = new List<int>();
  
     void Awake()
     {
         PV = GetComponent<PhotonView>();
+        for (int i = 0; i < productCount; i++)
+        {
+            productSpawnPointList.Add(i);
+        }
+        for (int i = 0; i < packageCount; i++)
+        {
+            packageSpawnPointList.Add(i);
+        }
     }
         
     void Start()
@@ -31,14 +41,41 @@ public class ObjectManager : MonoBehaviour
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerRed"), productPos1,  Quaternion.identity);
-            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerBlue"), productPos2,  Quaternion.identity);
-            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerGreen"), productPos3,  Quaternion.identity);
-            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerPink"), productPos4,  Quaternion.identity);
-            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerYellow"), productPos5,  Quaternion.identity);
-            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerCyan"), productPos6,  Quaternion.identity);
-
-            PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "PackageManager"), packagePos, Quaternion.identity);
+            if (!PhotonNetwork.OfflineMode)
+            {
+                for (int i = 0; i < productCount; i++)
+                {
+                    Transform spawnPoint = GetProductSpawnPoint();
+                    PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManager" + possibleProducts[i]), spawnPoint.position, spawnPoint.rotation);
+                }
+                for (int i = 0; i < packageCount; i++)
+                {
+                    Transform pkgSpawnPoint = GetPackageSpawnPoint();
+                    PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "PackageManager"), pkgSpawnPoint.position, pkgSpawnPoint.rotation);
+                }
+            }
+            else
+            {
+                PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerLaptop"), new Vector3(6, (float)0.4, (float)13.2), Quaternion.Euler(0, 180, 0));
+                PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "Products", "Managers", "ProductManagerBall"), new Vector3(8, (float)0.4, (float)13.2), new Quaternion(0, 0, 0, 0));
+                PhotonNetwork.InstantiateRoomObject(Path.Combine("PhotonPrefabs", "Objects", "PackageManager"), new Vector3((float)14.5, (float)0.9, (float)5.4), new Quaternion(0, 0, 0, 0));
+            }
         }
+    }
+
+    Transform GetProductSpawnPoint()
+    {
+        int index = Random.Range(0, productSpawnPointList.Count);
+        int result = productSpawnPointList[index];
+        productSpawnPointList.RemoveAt(index);
+        return SpawnManager.Instance.GetProductSpawnPoint(result);
+    }
+
+    Transform GetPackageSpawnPoint()
+    {
+        int index = Random.Range(0, packageSpawnPointList.Count);
+        int result = packageSpawnPointList[index];
+        packageSpawnPointList.RemoveAt(index);
+        return SpawnManager.Instance.GetPackageSpawnPoint(result);
     }
 }

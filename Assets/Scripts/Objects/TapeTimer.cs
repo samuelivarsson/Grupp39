@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class TapeTimer : MonoBehaviour
@@ -29,7 +27,7 @@ public class TapeTimer : MonoBehaviour
     }
 
     // Update is called once per frame
-     public void Update()
+    public void Update()
     {
         if (packageController.isTaped && !doneTaping)
         {

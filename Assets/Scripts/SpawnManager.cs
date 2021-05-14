@@ -1,20 +1,37 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
     public static SpawnManager Instance;
-    SpawnPoint[] spawnPoints;
+
+    SpawnPoint[] playerSpawnPoints;
+    SpawnPoint[] productSpawnPoints;
+    SpawnPoint[] packageSpawnPoints;
+
+    [SerializeField] GameObject playerObj;
+    [SerializeField] GameObject productObj;
+    [SerializeField] GameObject packageObj;
 
     void Awake()
     {
         Instance = this;
-        spawnPoints = GetComponentsInChildren<SpawnPoint>();
+        playerSpawnPoints = playerObj.GetComponentsInChildren<SpawnPoint>();
+        productSpawnPoints = productObj.GetComponentsInChildren<SpawnPoint>();
+        packageSpawnPoints = packageObj.GetComponentsInChildren<SpawnPoint>();
     }
 
-    public Transform GetSpawnPoint(int i)
+    public Transform GetPlayerSpawnPoint(int i)
     {
-        return spawnPoints[i].transform;
+        return playerSpawnPoints[i].transform;
+    }
+
+    public Transform GetProductSpawnPoint(int i)
+    {
+        return productSpawnPoints[i].transform;
+    }
+
+    public Transform GetPackageSpawnPoint(int i)
+    {
+        return packageSpawnPoints[i].transform;
     }
 }

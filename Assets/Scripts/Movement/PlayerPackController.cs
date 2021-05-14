@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Photon.Pun;
 
 public class PlayerPackController : MonoBehaviour
@@ -59,78 +57,75 @@ public class PlayerPackController : MonoBehaviour
         }
     }
 
-    void _Pack(PackageController pkg, ProductController prd, float eulerY)
-    {
-        // Make child and set scale & rotation
-        prd.transform.parent = pkg.transform;
-        prd.transform.localScale = packScale;
-        prd.transform.rotation = Quaternion.Euler(0, eulerY, 0);
-
-        // Set position based on what's open and increment productCount
-        if (!pkg.bpic1)
-        {
-            prd.transform.localPosition = pkg.pic1.transform.localPosition;
-            pkg.bpic1 = true;
-            pkg.productCount++;
-        }
-        else if (!pkg.bpic2)
-        {
-            prd.transform.localPosition = pkg.pic2.transform.localPosition;
-            pkg.bpic2 = true;
-            pkg.productCount++;
-        }
-        else if (!pkg.bpic3)
-        {
-            prd.transform.localPosition = pkg.pic3.transform.localPosition;
-            pkg.bpic3 = true;
-            pkg.productCount++;
-        }
-
-        // Set booleans and liftingID
-        prd.isLifted = false;
-        prd.isPackaged = true;
-        GetComponent<PlayerLiftController>().liftingID = -1;
-    }
-
     void Pack(ProductController productController)
     {
         latestPackage = latestCollision;
         float eulerY = PlayerLiftController.ClosestAngle(latestPackage.transform.rotation.eulerAngles.y);
-        _Pack(latestPackage.GetComponent<PackageController>(), productController, eulerY);
-        PV.RPC("OnPack", RpcTarget.OthersBuffered, productController.GetComponent<PhotonView>().ViewID, latestPackage.GetComponent<PhotonView>().ViewID, eulerY);
+        PV.RPC("OnPack", RpcTarget.AllViaServer, productController.GetComponent<PhotonView>().ViewID, latestPackage.GetComponent<PhotonView>().ViewID, eulerY);
     }
 
     [PunRPC]
     void OnPack(int productViewID, int packageViewID, float eulerY)
     {
         GameObject productControllerObj = PhotonView.Find(productViewID).gameObject;
-        ProductController productController = productControllerObj.GetComponent<ProductController>();
+        ProductController prd = productControllerObj.GetComponent<ProductController>();
         GameObject packageControllerObj = PhotonView.Find(packageViewID).gameObject;
-        PackageController packageController = packageControllerObj.GetComponent<PackageController>();
+        PackageController pkg = packageControllerObj.GetComponent<PackageController>();
 
-        _Pack(packageController, productController, eulerY);
-    }
+        Vector3 pos;
 
-    void _Tape(PackageController pkg)
-    {
-        pkg.timebar.enabled = true;
-        pkg.isTaped = true;
-        pkg.canTape = false;
-        isTaping = true;
+        // Set position based on what's open and increment productCount
+        if (!pkg.bpic1)
+        {
+            pos = pkg.pic1.transform.localPosition;
+            pkg.bpic1 = true;
+            pkg.productCount++;
+        }
+        else if (!pkg.bpic2)
+        {
+            pos = pkg.pic2.transform.localPosition;
+            pkg.bpic2 = true;
+            pkg.productCount++;
+        }
+        else if (!pkg.bpic3)
+        {
+            pos = pkg.pic3.transform.localPosition;
+            pkg.bpic3 = true;
+            pkg.productCount++;
+        }
+        else return;
+
+        // Make child and set scale & rotation
+        prd.transform.parent = pkg.transform;
+        prd.transform.localScale = prd.transform.localScale*prd.scaleMultiplier;
+        prd.transform.rotation = Quaternion.Euler(0, eulerY, 0);
+        prd.transform.localPosition = pos;
+
+        // Set booleans and liftingID
+        prd.isLifted = false;
+        prd.isPackaged = true;
+        canPackID = -1;
+        latestCollision = null;
+        GetComponent<PlayerLiftController>().liftingID = -1;
     }
 
     void Tape(PackageController packageController)
     {
-        _Tape(packageController);
-        PV.RPC("OnTape", RpcTarget.OthersBuffered, packageController.GetComponent<PhotonView>().ViewID);
+        PV.RPC("OnTape", RpcTarget.AllViaServer, packageController.GetComponent<PhotonView>().ViewID);
     }
 
     [PunRPC]
     void OnTape(int packageViewID)
     {
         GameObject packageControllerObj = PhotonView.Find(packageViewID).gameObject;
-        PackageController packageController = packageControllerObj.GetComponent<PackageController>();
-        _Tape(packageController);
+        PackageController pkg = packageControllerObj.GetComponent<PackageController>();
+
+        if (pkg.isTaped || !pkg.canTape) return;
+
+        pkg.timebar.enabled = true;
+        pkg.isTaped = true;
+        pkg.canTape = false;
+        isTaping = true;
     }
 
     bool CanPack(int _canPackID)
