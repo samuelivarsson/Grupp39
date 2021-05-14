@@ -67,6 +67,7 @@ public class PlayerClimbController : MonoBehaviour
     {
         if (!latestCollision) return;
 
+        if (Input.GetKeyDown(PlayerController.useButton)) print(CanClimb());
         if (Input.GetKeyDown(PlayerController.useButton) && CanClimb() && CanClimbPlayer(latestCollision.GetComponent<PhotonView>().ViewID))
         {
             Climb();
@@ -123,7 +124,7 @@ public class PlayerClimbController : MonoBehaviour
         PlayerClimbController crouchingPCC = crouchingPV.GetComponent<PlayerClimbController>();
 
         // Check that the game state hasn't changed
-        if (!crouchingPCC.isCrouching || crouchingPCC.isClimbed || CanClimb()) return;
+        if (!crouchingPCC.isCrouching || crouchingPCC.isClimbed || !CanClimb()) return;
         
         // Save climbed player and position
         latestPlayerClimbed = crouchingPCC;
