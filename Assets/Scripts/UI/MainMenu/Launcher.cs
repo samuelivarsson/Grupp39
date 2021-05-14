@@ -158,6 +158,12 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void StartGame()
     {
+        if (PhotonNetwork.CurrentRoom.PlayerCount < 2)
+        {
+            PopupInfo.Instance.Popup("Du kan inte starta spelet ensam!", 5);
+            return;
+        }
+        
         if (PhotonNetwork.CurrentRoom.PlayerCount != maxPlayers && !startAnyways && !startGamePressed)
         {
             notFourPlayersContainer.SetActive(true);
