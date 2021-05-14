@@ -30,14 +30,16 @@ public class PlayerClimbController : MonoBehaviour
     PhotonView PV;
     Rigidbody rb;
 
-    Vector3 heightChange; 
+    Vector3 standScale;
+    Vector3 crouchScale; 
 
     void Awake()
     {
         PV = GetComponent<PhotonView>();
         rb = GetComponent<Rigidbody>();
         playerLiftController = GetComponent<PlayerLiftController>();
-        heightChange = new Vector3(-0.1f, gameObject.transform.localScale.y*0.5f, -0.1f);
+        standScale = gameObject.transform.localScale;
+        crouchScale = new Vector3(gameObject.transform.localScale.x-0.1f, gameObject.transform.localScale.y*0.5f, gameObject.transform.localScale.z-0.1f);
     }
 
     void Update()
@@ -50,12 +52,12 @@ public class PlayerClimbController : MonoBehaviour
 
     void CheckCrouchAndStand() 
     {        
-        if (Input.GetKeyDown(PlayerController.crouchButton) && !isCrouching && !playerLiftController.IsLifting() && !isClimbing)
+        if (Input.GetKeyDown(PlayerController.crouchButton) && CanCrouch())
         {
             Crouch();
             return;
         }
-        if (Input.GetKeyDown(PlayerController.crouchButton) && isCrouching)
+        if (Input.GetKeyDown(PlayerController.crouchButton) && CanStand())
         {
             Stand();
         }
@@ -65,12 +67,12 @@ public class PlayerClimbController : MonoBehaviour
     {
         if (!latestCollision) return;
 
-        if (Input.GetKeyDown(PlayerController.useButton) && !isClimbing && CanClimb(latestCollision.GetComponent<PhotonView>().ViewID))
+        if (Input.GetKeyDown(PlayerController.useButton) && CanClimb() && CanClimbPlayer(latestCollision.GetComponent<PhotonView>().ViewID))
         {
             Climb();
             return;
         }
-        if (Input.GetKeyDown(PlayerController.crouchButton) && isClimbing)
+        if (Input.GetKeyDown(PlayerController.crouchButton) && CanClimbDown())
         {
             ClimbDown();
         }
@@ -84,9 +86,10 @@ public class PlayerClimbController : MonoBehaviour
     [PunRPC]
     void OnCrouch()
     {
-        if (playerLiftController.IsLifting()) return;
+        // Check that the game state hasn't changed
+        if (!CanCrouch()) return;
 
-        gameObject.transform.localScale -= heightChange;
+        gameObject.transform.localScale = crouchScale;
         isCrouching = true;
         rb.isKinematic = true;
     }
@@ -99,9 +102,10 @@ public class PlayerClimbController : MonoBehaviour
     [PunRPC]
     void OnStand()
     {
-        if (isClimbed) return;
+        // Check that the game state hasn't changed
+        if (!CanStand()) return;
 
-        gameObject.transform.localScale += heightChange;
+        gameObject.transform.localScale = standScale;
         isCrouching = false;
         if (PV.IsMine) rb.isKinematic = false;
     }
@@ -114,8 +118,12 @@ public class PlayerClimbController : MonoBehaviour
     [PunRPC]
     void OnClimb(int crouchingPlayerID) 
     {
-        PlayerClimbController crouchingPCC = PhotonView.Find(crouchingPlayerID).GetComponent<PlayerClimbController>();
-        if(!crouchingPCC.isCrouching || crouchingPCC.isClimbed) return;
+        PhotonView crouchingPV = PhotonView.Find(crouchingPlayerID);
+        if (crouchingPV == null) return;
+        PlayerClimbController crouchingPCC = crouchingPV.GetComponent<PlayerClimbController>();
+
+        // Check that the game state hasn't changed
+        if (!crouchingPCC.isCrouching || crouchingPCC.isClimbed || CanClimb()) return;
         
         // Save climbed player and position
         latestPlayerClimbed = crouchingPCC;
@@ -139,6 +147,9 @@ public class PlayerClimbController : MonoBehaviour
     [PunRPC]
     void OnClimbDown()
     {
+        // Check that the game state hasn't changed
+        if (!CanClimbDown()) return;
+        
         // Remove parent and reset position
         gameObject.transform.parent = null;
         gameObject.transform.position = posPreClimb;
@@ -149,7 +160,27 @@ public class PlayerClimbController : MonoBehaviour
         latestPlayerClimbed.isClimbed = false;
     }
 
-    bool CanClimb(int _canClimbID)
+    bool CanCrouch()
+    {
+        return !playerLiftController.IsLifting() && !isCrouching && !isClimbing && !isClimbed;
+    }
+
+    bool CanStand()
+    {
+        return !isClimbed && isCrouching && !playerLiftController.IsLifting() && !isClimbing;
+    }
+
+    bool CanClimb()
+    {
+        return !playerLiftController.IsLifting() && !isCrouching && !isClimbed && !isClimbing;
+    }
+
+    bool CanClimbDown()
+    {
+        return !isCrouching && !isClimbed && isClimbing;
+    }
+
+    bool CanClimbPlayer(int _canClimbID)
     {
         return canClimbID == _canClimbID;
     }
